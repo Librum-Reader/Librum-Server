@@ -25,10 +25,6 @@ namespace Domain.Entities
         public /*override*/ string Email { get; set; }
 
         [Required]
-        [Range(0, 120, ErrorMessage = "The age needs to in bounds of 0 and 120")]
-        public int Age { get; set; }
-
-        [Required]
         public DateTime AccountCreation { get; set; }
 
         

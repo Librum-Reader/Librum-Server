@@ -14,6 +14,17 @@ var app = builder.Build();
 
 
 
+// Startup action
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+    loggerFactory.AddFile(Directory.GetCurrentDirectory() + "/Data/Logs/");
+}
+
+
+
 // Http pipeline
 app.UseHttpsRedirection();
 app.UseCors(options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
