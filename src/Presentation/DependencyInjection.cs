@@ -1,5 +1,7 @@
-using Application.Common.Interfaces;
-using Infrastructure.Persistance;
+using Application.Common.Interfaces.Repositories;
+using Application.Common.Interfaces.Services;
+using Infrastructure.Persistence;
+using Infrastructure.Persistence.Repository;
 using Infrastructure.Services.v1;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +12,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserService, UserService>();
         
         services.AddLogging();

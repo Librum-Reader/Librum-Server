@@ -1,7 +1,7 @@
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Persistance;
+namespace Infrastructure.Persistence;
 
 public class DataContext : DbContext
 {
@@ -12,6 +12,10 @@ public class DataContext : DbContext
 
     public DataContext(DbContextOptions<DataContext> options) :
         base(options)
+    {
+    }
+    
+    public DataContext()
     {
     }
 }

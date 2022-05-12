@@ -1,3 +1,4 @@
+using Infrastructure.Persistence;
 using Presentation;
 
 
@@ -21,6 +22,8 @@ using (var scope = app.Services.CreateScope())
 
     var loggerFactory = services.GetRequiredService<ILoggerFactory>();
     loggerFactory.AddFile(Directory.GetCurrentDirectory() + "/Data/Logs/");
+
+    await DataContextSeeding.SeedDataContext(services.GetRequiredService<DataContext>());
 }
 
 

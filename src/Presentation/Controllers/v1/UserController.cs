@@ -1,6 +1,6 @@
 using Application.Common.DTOs;
 using Application.Common.Exceptions;
-using Application.Common.Interfaces;
+using Application.Common.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -25,7 +25,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            return await _userService.GetUser("test");
+            return await _userService.GetUserAsync("test");
         }
         catch (InvalidParameterException e)
         {
