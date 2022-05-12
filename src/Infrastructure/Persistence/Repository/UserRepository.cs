@@ -15,5 +15,10 @@ public class UserRepository : IUserRepository
     }
     
     
-    public Task<User> GetAsync(string email) => _dbContext.Users.SingleOrDefaultAsync(user => user.Email == email);
+    public Task<User> GetAsync(string email, bool trackChanges)
+    {
+        return trackChanges
+            ? _dbContext.Users.SingleOrDefaultAsync(user => user.Email == email)
+            : _dbContext.Users.AsNoTracking().SingleOrDefaultAsync(user => user.Email == email);
+    }
 }

@@ -1,3 +1,4 @@
+using Application.Common.Middleware;
 using Infrastructure.Persistence;
 using Presentation;
 
@@ -9,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Services
 builder.Services.AddControllers();
 builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.ConfigureIdentity();
+builder.Services.ConfigureJwt(builder.Configuration);
 
 
 var app = builder.Build();
@@ -29,8 +32,10 @@ using (var scope = app.Services.CreateScope())
 
 
 // Http pipeline
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseCors(options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

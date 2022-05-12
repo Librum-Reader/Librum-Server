@@ -4,5 +4,5 @@ namespace Application.Common.Interfaces.Repositories;
 
 public interface IUserRepository
 {
-    public Task<User> GetAsync(string email);
+    public Task<User> GetAsync(string email, bool trackChanges);
 }

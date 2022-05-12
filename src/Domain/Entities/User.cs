@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Domain.Entities
 {
     [Index(nameof(Email), IsUnique = true)]
-    public class User/* : IdentityUser*/
+    public class User : IdentityUser
     {
-        public /*string*/ int UserId { get; set; }
+        public string UserId { get; set; }
 
         [Required]
         [MinLength(2, ErrorMessage = "The firstname is too short")]
@@ -22,7 +22,7 @@ namespace Domain.Entities
         [Required]
         [MinLength(6, ErrorMessage = "The email is too short")]
         [MaxLength(50, ErrorMessage = "The email is too long")]
-        public /*override*/ string Email { get; set; }
+        public override string Email { get; set; }
 
         [Required]
         public DateTime AccountCreation { get; set; }

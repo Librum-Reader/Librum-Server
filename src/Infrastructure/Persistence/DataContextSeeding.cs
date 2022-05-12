@@ -17,6 +17,7 @@ public static class DataContextSeeding
                 FirstName = "Luke",
                 LastName = "Ratatui",
                 Email = "LukeRatatui@gmail.com",
+                UserName = "LukeRatatui@gmail.com",
                 AccountCreation = DateTime.UtcNow
             },
             new User
@@ -24,6 +25,7 @@ public static class DataContextSeeding
                 FirstName = "Lisa",
                 LastName = "Lambatz",
                 Email = "LisaLambatz",
+                UserName = "LisaLambatz",
                 AccountCreation = DateTime.UtcNow,
                 Books = new List<Book>
                 {
@@ -76,6 +78,7 @@ public static class DataContextSeeding
                 FirstName = "Kaktor",
                 LastName = "Dumbatz",
                 Email = "KaktorDumbatz@gmail.com",
+                UserName = "KaktorDumbatz@gmail.com",
                 AccountCreation = DateTime.UtcNow,
                 Books = new List<Book>
                 {
