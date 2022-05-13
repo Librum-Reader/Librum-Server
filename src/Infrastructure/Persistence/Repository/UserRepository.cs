@@ -6,19 +6,29 @@ namespace Infrastructure.Persistence.Repository;
 
 public class UserRepository : IUserRepository
 {
-    private readonly DataContext _dbContext;
+    private readonly DataContext _context;
 
     
-    public UserRepository(DataContext dbContext)
+    public UserRepository(DataContext context)
     {
-        _dbContext = dbContext;
+        _context = context;
     }
     
     
-    public Task<User> GetAsync(string email, bool trackChanges)
+    public async Task<User> GetAsync(string email, bool trackChanges)
     {
         return trackChanges
-            ? _dbContext.Users.SingleOrDefaultAsync(user => user.Email == email)
-            : _dbContext.Users.AsNoTracking().SingleOrDefaultAsync(user => user.Email == email);
+            ? await _context.Users.SingleOrDefaultAsync(user => user.Email == email)
+            : await _context.Users.AsNoTracking().SingleOrDefaultAsync(user => user.Email == email);
+    }
+
+    public void DeleteAsync(User user)
+    {
+        _context.Users.Remove(user);
+    }
+
+    public async Task<int> SaveChangesAsync()
+    {
+        return await _context.SaveChangesAsync();
     }
 }

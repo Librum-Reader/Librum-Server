@@ -30,4 +30,14 @@ public class UserService : IUserService
 
         return _mapper.Map<UserOutDto>(user);
     }
+
+    public async Task DeleteUserAsync(string email)
+    {
+        var user = await _userRepository.GetAsync(email, true);
+        if (user == null)
+            throw new InvalidParameterException("No user with the given email exists");
+        
+        _userRepository.DeleteAsync(user);
+        await _userRepository.SaveChangesAsync();
+    }
 }

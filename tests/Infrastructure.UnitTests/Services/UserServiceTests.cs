@@ -61,4 +61,45 @@ public class UserServiceTests
         // Assert
         await Assert.ThrowsAsync<InvalidParameterException>(() => _userService.GetUserAsync("johnDoe@gmail.com"));
     }
+
+    [Fact]
+    public async Task DeleteUserAsync_ShouldDeleteUser_WhenUserExists()
+    {
+        // Arrange
+        var user = new User
+        {
+            Email = "johnDoe@gmail.com",
+            AccountCreation = DateTime.Now,
+            FirstName = "John",
+            LastName = "Doe"
+        };
+
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(new User());
+
+        
+        // Act
+        await _userService.DeleteUserAsync(user.Email);
+
+        // Assert
+        _userRepositoryMock.Verify(x => x.DeleteAsync(It.IsAny<User>()), Times.Once);
+        _userRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
+    }
+    
+    [Fact]
+    public async Task DeleteUserAsync_ShouldThrow_WhenUserDoesNotExist()
+    {
+        // Arrange
+        var user = new User
+        {
+            Email = "johnDoe@gmail.com",
+            AccountCreation = DateTime.Now,
+            FirstName = "John",
+            LastName = "Doe"
+        };
+        
+
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() => _userService.DeleteUserAsync(user.Email));
+    }
 }

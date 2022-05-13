@@ -29,11 +29,26 @@ public class UserController : ControllerBase
     {
         try
         {
-            return await _userService.GetUserAsync(HttpContext.User.Identity.Name);
+            return await _userService.GetUserAsync(HttpContext.User.Identity!.Name);
         }
         catch (InvalidParameterException e)
         {
-            _logger.LogWarning("Getting user: " + e.Message);
+            _logger.LogWarning("Getting user failed: {ErrorMessage}", e.Message);
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpDelete]
+    public async Task<ActionResult> DeleteUser()
+    {
+        try
+        {
+            await _userService.DeleteUserAsync(HttpContext.User.Identity!.Name);
+            return NoContent();
+        }
+        catch (InvalidParameterException e)
+        {
+            _logger.LogWarning("Deleting user failed: {ErrorMessage}", e.Message);
             return BadRequest(e.Message);
         }
     }
