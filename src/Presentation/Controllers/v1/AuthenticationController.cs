@@ -33,7 +33,7 @@ public class AuthenticationController : ControllerBase
 
         try
         {
-            await _authenticationService.RegisterUser(registerDto);
+            await _authenticationService.RegisterUserAsync(registerDto);
             return StatusCode(201);
         }
         catch (InvalidParameterException e)
@@ -44,7 +44,7 @@ public class AuthenticationController : ControllerBase
     }
     
     [AllowAnonymous]
-    [HttpPost("api/login")]
+    [HttpPost("login")]
     public async Task<ActionResult<string>> LoginUser([FromBody] LoginDto loginDto)
     {
         if (loginDto == null)
@@ -55,12 +55,19 @@ public class AuthenticationController : ControllerBase
 
         try
         {
-            return await _authenticationService.LoginUser(loginDto);
+            return await _authenticationService.LoginUserAsync(loginDto);
         }
         catch (InvalidParameterException e)
         {
             _logger.LogWarning("User registration failed: " + e.Message);
             return BadRequest(e.Message);
         }
+    }
+
+    [AllowAnonymous]
+    [HttpPost("recoverAccount/{email}")]
+    public async Task<ActionResult> RecoverAccount(string email)
+    {
+        return Ok();
     }
 }

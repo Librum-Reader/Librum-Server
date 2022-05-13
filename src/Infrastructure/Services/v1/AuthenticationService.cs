@@ -24,7 +24,7 @@ public class AuthenticationService : IAuthenticationService
     }
     
     
-    public async Task<string> LoginUser(LoginDto loginDto)
+    public async Task<string> LoginUserAsync(LoginDto loginDto)
     {
         if (!await _authenticationManager.UserExistsAsync(loginDto.Email, loginDto.Password))
         {
@@ -34,7 +34,7 @@ public class AuthenticationService : IAuthenticationService
         return await _authenticationManager.CreateTokenAsync(loginDto);
     }
     
-    public async Task RegisterUser(RegisterDto registerDto)
+    public async Task RegisterUserAsync(RegisterDto registerDto)
     {
         if (await _authenticationManager.UserExistsAsync(registerDto.Email, registerDto.Password))
         {

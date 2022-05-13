@@ -4,6 +4,6 @@ namespace Application.Common.Interfaces.Services;
 
 public interface IAuthenticationService
 {
-    public Task<string> LoginUser(LoginDto loginDto);
-    public Task RegisterUser(RegisterDto registerDto);
+    public Task<string> LoginUserAsync(LoginDto loginDto);
+    public Task RegisterUserAsync(RegisterDto registerDto);
 }

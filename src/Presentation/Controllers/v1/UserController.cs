@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 namespace Presentation.Controllers.v1;
 
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class UserController : ControllerBase
@@ -23,13 +24,12 @@ public class UserController : ControllerBase
     }
     
     
-    [HttpGet("{email}")]
-    [Authorize]
-    public async Task<ActionResult<UserOutDto>> GetUser(string email)
+    [HttpGet]
+    public async Task<ActionResult<UserOutDto>> GetUser()
     {
         try
         {
-            return await _userService.GetUserAsync(email);
+            return await _userService.GetUserAsync(HttpContext.User.Identity.Name);
         }
         catch (InvalidParameterException e)
         {
