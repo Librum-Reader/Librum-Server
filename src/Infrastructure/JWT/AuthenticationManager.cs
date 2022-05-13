@@ -49,7 +49,9 @@ public class AuthenticationManager : IAuthenticationManager
     
     private async Task<List<Claim>> GetClaimsAsync(LoginDto loginDto)
     {
-        User user = await _userManager.FindByEmailAsync(loginDto.Email);
+        var user = await _userManager.FindByEmailAsync(loginDto?.Email);
+        if (user == null)
+            throw new ArgumentException("Getting claims failed: User does not exist");
 
         var claims = new List<Claim>
         {

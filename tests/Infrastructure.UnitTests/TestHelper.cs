@@ -1,9 +1,13 @@
+using System.Threading.Tasks;
+using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 
 namespace Infrastructure.UnitTests;
 
-public class MockHelpers
+public static class TestHelpers
 {
     public static Mock<UserManager<TUser>> MockUserManager<TUser>() where TUser : class
     {

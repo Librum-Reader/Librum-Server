@@ -16,7 +16,7 @@ namespace Infrastructure.UnitTests.Services;
 
 public class AuthenticationServiceTests
 {
-    private readonly Mock<UserManager<User>> _userManagerMock = MockHelpers.MockUserManager<User>();
+    private readonly Mock<UserManager<User>> _userManagerMock = TestHelpers.MockUserManager<User>();
     private readonly Mock<IAuthenticationManager> _authenticationManagerMock = new Mock<IAuthenticationManager>();
     private readonly IMapper _mapper;
     private readonly AuthenticationService _authenticationService;
