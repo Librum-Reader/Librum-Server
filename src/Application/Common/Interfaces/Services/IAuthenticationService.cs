@@ -1,5 +1,5 @@
 using Application.Common.DTOs;
-using Application.Common.DTOs.User;
+using Application.Common.DTOs.Users;
 
 namespace Application.Common.Interfaces.Services;
 

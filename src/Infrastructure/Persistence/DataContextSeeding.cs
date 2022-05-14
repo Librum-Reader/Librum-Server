@@ -31,8 +31,8 @@ public static class DataContextSeeding
                 {
                     new Book
                     {
-                        Name = "Professional CMake",
-                        PublishingDate = new DateTime(2018, 01, 02),
+                        Title = "Professional CMake",
+                        ReleaseDate = new DateTime(2018, 01, 02),
                         Format = "Pdf",
                         Pages = 1101,
                         Authors = new List<Author>
@@ -51,8 +51,8 @@ public static class DataContextSeeding
                     },
                     new Book
                     {
-                        Name = "Test Driven Development with C++",
-                        PublishingDate = new DateTime(2012, 02, 27),
+                        Title = "Test Driven Development with C++",
+                        ReleaseDate = new DateTime(2012, 02, 27),
                         Format = "Pdf",
                         Pages = 521,
                         Authors = new List<Author>
@@ -66,8 +66,8 @@ public static class DataContextSeeding
                     },
                     new Book
                     {
-                        Name = "C# in a nutshell",
-                        PublishingDate = new DateTime(2019, 11, 14),
+                        Title = "C# in a nutshell",
+                        ReleaseDate = new DateTime(2019, 11, 14),
                         Format = "Pdf",
                         Pages = 1243
                     }
@@ -84,15 +84,15 @@ public static class DataContextSeeding
                 {
                     new Book
                     {
-                        Name = "Im ok; your ok",
-                        PublishingDate = new DateTime(2009, 07, 21),
+                        Title = "Im ok; your ok",
+                        ReleaseDate = new DateTime(2009, 07, 21),
                         Format = "Epub",
                         Pages = 412
                     },
                     new Book
                     {
-                        Name = "Professional CMake",
-                        PublishingDate = new DateTime(2018, 01, 02),
+                        Title = "Professional CMake",
+                        ReleaseDate = new DateTime(2018, 01, 02),
                         Format = "Pdf",
                         Pages = 1101,
                         Authors = new List<Author>

@@ -31,4 +31,9 @@ public class UserRepository : IUserRepository
     {
         return await _context.SaveChangesAsync();
     }
+
+    public async Task LoadRelationShips(User user)
+    {
+        await _context.Entry(user).Collection(p => p.Books).LoadAsync();
+    }
 }

@@ -1,12 +1,10 @@
-namespace Application.Common.DTOs.User;
+namespace Application.Common.DTOs.Users;
 
-public class UserOutDto
+public class UserForUpdateDto
 {
     public string FirstName { get; set; }
     
     public string LastName { get; set; }
-
+    
     public string Email { get; set; }
-
-    public DateTime AccountCreation { get; set; }
 }

@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Application.Common.DTOs;
-using Application.Common.DTOs.User;
+using Application.Common.DTOs.Users;
 using Application.Common.Interfaces;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;

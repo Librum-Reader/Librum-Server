@@ -25,6 +25,8 @@ public static class DependencyInjection
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IAuthenticationManager, AuthenticationManager>();
+        services.AddScoped<IBookService, BookService>();
+        services.AddScoped<IBookRepository, BookRepository>();
         services.AddLogging();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddDbContext<DataContext>(options =>

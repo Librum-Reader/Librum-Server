@@ -28,6 +28,6 @@ namespace Domain.Entities
         public DateTime AccountCreation { get; set; }
 
         
-        public IEnumerable<Book> Books { get; set; }
+        public ICollection<Book> Books { get; set; }
     }
 }

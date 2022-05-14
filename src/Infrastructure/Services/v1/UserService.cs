@@ -1,4 +1,4 @@
-using Application.Common.DTOs.User;
+using Application.Common.DTOs.Users;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;

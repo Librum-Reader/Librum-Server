@@ -13,9 +13,9 @@ public class Author
     public string FirstName { get; set; }
 
     [Required]
-    [MinLength(2, ErrorMessage = "The provided firstname is too short")]
-    [MaxLength(40, ErrorMessage = "The provided firstname is too long")]
+    [MinLength(2, ErrorMessage = "The provided lastname is too short")]
+    [MaxLength(50, ErrorMessage = "The provided last is too long")]
     public string LastName { get; set; }
-
+    
     public Book Book { get; set; }
 }
