@@ -1,4 +1,4 @@
-namespace Application.Common.DTOs;
+namespace Application.Common.DTOs.User;
 
 public class UserOutDto
 {

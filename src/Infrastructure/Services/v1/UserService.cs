@@ -1,9 +1,10 @@
-using Application.Common.DTOs;
+using Application.Common.DTOs.User;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using AutoMapper;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Infrastructure.Services.v1;
 
@@ -38,6 +39,27 @@ public class UserService : IUserService
             throw new InvalidParameterException("No user with the given email exists");
         
         _userRepository.DeleteAsync(user);
+        await _userRepository.SaveChangesAsync();
+    }
+
+    public async Task PatchUserAsync(string email, JsonPatchDocument<UserForUpdateDto> patchDoc, ControllerBase controllerBase)
+    {
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        if (user == null)
+            throw new InvalidParameterException("No user with the given email exists");
+        
+
+        var userToPatch = _mapper.Map<UserForUpdateDto>(user);
+        
+        patchDoc.ApplyTo(userToPatch, controllerBase.ModelState);
+        controllerBase.TryValidateModel(controllerBase.ModelState);
+
+        if (!controllerBase.ModelState.IsValid)
+            throw new InvalidParameterException("The provided data is invalid");
+
+        
+        _mapper.Map(userToPatch, user);
+
         await _userRepository.SaveChangesAsync();
     }
 }

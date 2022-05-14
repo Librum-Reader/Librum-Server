@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 // Services
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.ConfigureIdentity();
 builder.Services.ConfigureJwt(builder.Configuration);

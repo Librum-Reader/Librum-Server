@@ -1,4 +1,5 @@
 using Application.Common.DTOs;
+using Application.Common.DTOs.User;
 
 namespace Application.Common.Interfaces;
 

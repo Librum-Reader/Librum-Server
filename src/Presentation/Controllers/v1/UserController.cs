@@ -1,7 +1,9 @@
 using Application.Common.DTOs;
+using Application.Common.DTOs.User;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -38,6 +40,27 @@ public class UserController : ControllerBase
         }
     }
 
+    [HttpPatch]
+    public async Task<ActionResult> PatchUser([FromBody] JsonPatchDocument<UserForUpdateDto> patchDoc)
+    {
+        if (patchDoc == null)
+        {
+            _logger.LogWarning("Patching user failed: The provided JsonPatchDocument is null");
+            return BadRequest("The provided data is invalid");
+        }
+    
+        try
+        {
+            await _userService.PatchUserAsync(HttpContext.User.Identity!.Name, patchDoc, this);
+            return Ok();
+        }
+        catch (InvalidParameterException e)
+        {
+            _logger.LogWarning("Patching user failed: {ErrorMessage}", e.Message);
+            return BadRequest(e.Message);
+        }
+    }
+    
     [HttpDelete]
     public async Task<ActionResult> DeleteUser()
     {

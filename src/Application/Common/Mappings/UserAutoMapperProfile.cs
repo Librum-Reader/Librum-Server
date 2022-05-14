@@ -1,4 +1,5 @@
 using Application.Common.DTOs;
+using Application.Common.DTOs.User;
 using AutoMapper;
 using Domain.Entities;
 
@@ -13,5 +14,7 @@ public class UserAutoMapperProfile : Profile
             .ForMember(dest => dest.UserName, temp => temp.MapFrom(src => src.Email))
             .ForMember(dest => dest.AccountCreation, temp => temp.MapFrom(src => DateTime.Now))
             .ForMember(dest => dest.PasswordHash, temp => temp.Ignore());
+        CreateMap<User, UserForUpdateDto>()
+            .ReverseMap();
     }
 }

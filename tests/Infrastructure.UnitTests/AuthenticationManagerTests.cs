@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Application.Common.DTOs;
+using Application.Common.DTOs.User;
 using Domain.Entities;
 using Infrastructure.JWT;
 using Microsoft.AspNetCore.Identity;
