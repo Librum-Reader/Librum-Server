@@ -22,11 +22,19 @@ public class BookService : IBookService
     }
 
 
-    public async Task CreateBook(string email, BookInDto bookInDto)
+    public async Task CreateBookAsync(string email, BookInDto bookInDto)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
         if (user == null)
+        {
             throw new InvalidParameterException("No user with the given email exists");
+        }
+
+        if (await _bookRepository.BookAlreadyExists(bookInDto.Title))
+        {
+            throw new InvalidParameterException("A book with this title already exists");
+        }
+        
         
         await _userRepository.LoadRelationShipsAsync(user);
         var book = _mapper.Map<Book>(bookInDto);

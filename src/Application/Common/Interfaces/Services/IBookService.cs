@@ -4,5 +4,5 @@ namespace Application.Common.Interfaces.Services;
 
 public interface IBookService
 {
-    public Task CreateBook(string email, BookInDto bookInDto);
+    public Task CreateBookAsync(string email, BookInDto bookInDto);
 }

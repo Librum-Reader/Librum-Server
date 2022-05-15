@@ -33,7 +33,7 @@ public class BookController : ControllerBase
 
         try
         {
-            await _bookService.CreateBook(HttpContext.User.Identity!.Name, bookInDto);
+            await _bookService.CreateBookAsync(HttpContext.User.Identity!.Name, bookInDto);
             return StatusCode(201);
         }
         catch (InvalidParameterException e)

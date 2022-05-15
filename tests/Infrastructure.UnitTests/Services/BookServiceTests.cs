@@ -63,7 +63,7 @@ public class BookServiceTests
 
 
         // Act
-        await _bookService.CreateBook("JohnDoe@gmail.com", bookDto);
+        await _bookService.CreateBookAsync("JohnDoe@gmail.com", bookDto);
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
@@ -78,6 +78,21 @@ public class BookServiceTests
         
 
         // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.CreateBook("JohnDoe@gmail.com", new BookInDto()));
+        await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.CreateBookAsync("JohnDoe@gmail.com", new BookInDto()));
+    }
+
+    [Fact]
+    public async Task CreateBookAsync_ShouldThrow_WhenABookWithTheTitleAlreadyExists()
+    {
+        // Arrange
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(new User());
+        
+        _bookRepositoryMock.Setup(x => x.BookAlreadyExists(It.IsAny<string>()))
+            .ReturnsAsync(true);
+        
+
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.CreateBookAsync("JohnDoe@gmail.com", new BookInDto()));
     }
 }
