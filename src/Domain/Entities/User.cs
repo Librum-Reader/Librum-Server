@@ -13,8 +13,8 @@ public class User : IdentityUser
     public string FirstName { get; set; }
 
     [Required]
-    [MinLength(2, ErrorMessage = "The firstname is too short")]
-    [MaxLength(50, ErrorMessage = "The firstname is too long")]
+    [MinLength(2, ErrorMessage = "The lastname is too short")]
+    [MaxLength(50, ErrorMessage = "The lastname is too long")]
     public string LastName { get; set; }
 
     [Required]

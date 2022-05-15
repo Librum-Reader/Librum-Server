@@ -1,4 +1,3 @@
-using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using Application.Common.DTOs.Authors;
 

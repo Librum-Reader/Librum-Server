@@ -1,4 +1,3 @@
-using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces.Repositories;

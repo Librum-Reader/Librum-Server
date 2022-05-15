@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace Domain.Entities;
@@ -11,8 +10,8 @@ public class Book
     public Guid BookId { get; set; }
 
     [Required]
-    [MinLength(4, ErrorMessage = "The provided book name is too short")]
-    [MaxLength(120, ErrorMessage = "The provided book name is too long")]
+    [MinLength(4, ErrorMessage = "The provided book title is too short")]
+    [MaxLength(120, ErrorMessage = "The provided book title is too long")]
     public string Title { get; set; }
 
     public DateTime ReleaseDate { get; set; }
@@ -21,7 +20,7 @@ public class Book
     [Range(0, int.MaxValue)]
     public int Pages { get; set; }
 
-    [MaxLength(40, ErrorMessage = "The provided book format name is too long")]
+    [MaxLength(40, ErrorMessage = "The provided book format is too long")]
     public string Format { get; set; }
     
     [Required]

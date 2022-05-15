@@ -36,8 +36,10 @@ public class UserService : IUserService
     {
         var user = await _userRepository.GetAsync(email, true);
         if (user == null)
+        {
             throw new InvalidParameterException("No user with the given email exists");
-        
+        }
+
         await _userRepository.DeleteAsync(user);
         await _userRepository.SaveChangesAsync();
     }
@@ -46,18 +48,20 @@ public class UserService : IUserService
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
         if (user == null)
+        {
             throw new InvalidParameterException("No user with the given email exists");
+        }
         
-
         var userToPatch = _mapper.Map<UserForUpdateDto>(user);
         
         patchDoc.ApplyTo(userToPatch, controllerBase.ModelState);
         controllerBase.TryValidateModel(controllerBase.ModelState);
 
         if (!controllerBase.ModelState.IsValid)
+        {
             throw new InvalidParameterException("The provided data is invalid");
+        }
 
-        
         _mapper.Map(userToPatch, user);
 
         await _userRepository.SaveChangesAsync();

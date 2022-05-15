@@ -1,6 +1,3 @@
-using Application.Common.DTOs.Books;
-using Domain.Entities;
-
 namespace Application.Common.Interfaces.Repositories;
 
 public interface IBookRepository

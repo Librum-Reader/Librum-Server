@@ -1,6 +1,4 @@
-using System.Text.Json;
 using Newtonsoft.Json;
-using JsonSerializer = Newtonsoft.Json.JsonSerializer;
 
 namespace Application.Common.DTOs;
 

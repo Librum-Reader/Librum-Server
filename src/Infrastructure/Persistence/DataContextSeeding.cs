@@ -103,7 +103,5 @@ public static class DataContextSeeding
             await authenticationService.RegisterUserAsync(users[i]);
             await bookService.CreateBookAsync(users[i].Email, books[i]);
         }
-        
-        await context.SaveChangesAsync();
     }
 }
