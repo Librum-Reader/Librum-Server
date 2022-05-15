@@ -21,7 +21,6 @@ public class Book
     [Range(0, int.MaxValue)]
     public int Pages { get; set; }
 
-    [Required]
     [MaxLength(40, ErrorMessage = "The provided book format name is too long")]
     public string Format { get; set; }
     
