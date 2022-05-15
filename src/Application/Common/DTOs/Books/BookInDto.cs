@@ -1,4 +1,6 @@
+using System.Collections;
 using System.ComponentModel.DataAnnotations;
+using Application.Common.DTOs.Authors;
 
 namespace Application.Common.DTOs.Books;
 
@@ -22,4 +24,6 @@ public class BookInDto
     [Required]
     [Range(0, int.MaxValue)]
     public int CurrentPage { get; set; }
+    
+    public IList<AuthorInDto> Authors { get; set; }
 }   

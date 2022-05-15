@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces.Repositories;
@@ -24,7 +26,8 @@ public class BookServiceTests
     
     public BookServiceTests()
     {
-        var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<BookAutoMapperProfile>());
+        var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfiles(new List<Profile> 
+            { new BookAutoMapperProfile(), new AuthorAutoMappingProfile() }));
         _mapper = new Mapper(mapperConfig);
 
         _bookService = new BookService(_mapper, _bookRepositoryMock.Object, _userRepositoryMock.Object);
@@ -41,13 +44,19 @@ public class BookServiceTests
             ReleaseDate = DateTime.Now,
             Format = "PDF",
             Pages = 1200,
-            CurrentPage = 2
+            CurrentPage = 2,
+            Authors = new Collection<AuthorInDto>()
         };
+        
+        for (int i = 0; i < 14; ++i)
+        {
+            bookDto.Authors.Add(new AuthorInDto { FirstName = "Someone", LastName = "SomeonesLastName" });
+        }
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new User { Books = new Collection<Book>() });
 
-        _userRepositoryMock.Setup(x => x.LoadRelationShips(It.IsAny<User>()));
+        _userRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<User>()));
         
         _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
             .ReturnsAsync(1);
@@ -58,7 +67,6 @@ public class BookServiceTests
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
-        // _bookRepositoryMock.Verify(x => x.Add(It.IsAny<Book>()), Times.Once);
     }
 
     [Fact]
@@ -71,5 +79,37 @@ public class BookServiceTests
 
         // Assert
         await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.CreateBook("JohnDoe@gmail.com", new BookInDto()));
+    }
+
+    [Fact]
+    public async Task CreateBookAsync_ShouldThrow_WhenTooManyAuthorsAreSpecified()
+    {
+        // Arrange
+        var bookDto = new BookInDto
+        {
+            Title = "Some book",
+            ReleaseDate = DateTime.Now,
+            Format = "PDF",
+            Pages = 1200,
+            CurrentPage = 2,
+            Authors = new Collection<AuthorInDto>()
+        };
+
+        for (int i = 0; i < 16; ++i)
+        {
+            bookDto.Authors.Add(new AuthorInDto { FirstName = "Someone", LastName = "SomeonesLastName" });
+        }
+        
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(new User { Books = new Collection<Book>() });
+
+        _userRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<User>()));
+        
+        _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
+            .ReturnsAsync(1);
+        
+
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.CreateBook("JohnDoe@gmail.com", bookDto));
     }
 }

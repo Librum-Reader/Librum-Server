@@ -39,7 +39,7 @@ public class AuthenticationController : ControllerBase
         }
         catch (InvalidParameterException e)
         {
-            _logger.LogWarning("User registration failed: " + e.Message);
+            _logger.LogWarning("User registration failed: {ExceptionMessage}", e.Message);
             return BadRequest(e.Message);
         }
     }
@@ -60,14 +60,14 @@ public class AuthenticationController : ControllerBase
         }
         catch (InvalidParameterException e)
         {
-            _logger.LogWarning("User registration failed: " + e.Message);
+            _logger.LogWarning("User registration failed: {ExceptionMessage}", e.Message);
             return BadRequest(e.Message);
         }
     }
 
     [AllowAnonymous]
     [HttpPost("recoverAccount/{email}")]
-    public async Task<ActionResult> RecoverAccount(string email)
+    public ActionResult RecoverAccount(string email)
     {
         return Ok();
     }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Infrastructure.Persistence.Migrations
 {
-    public partial class AddedIdentity : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -28,7 +28,6 @@ namespace Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "TEXT", nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", nullable: true),
                     FirstName = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
                     LastName = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
@@ -164,13 +163,13 @@ namespace Infrastructure.Persistence.Migrations
                 {
                     BookId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 120, nullable: false),
-                    PublishingDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Title = table.Column<string>(type: "TEXT", maxLength: 120, nullable: false),
+                    ReleaseDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Pages = table.Column<int>(type: "INTEGER", nullable: false),
-                    Format = table.Column<string>(type: "TEXT", maxLength: 40, nullable: true),
-                    DataLink = table.Column<string>(type: "TEXT", nullable: true),
+                    Format = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
+                    DataLink = table.Column<string>(type: "TEXT", nullable: false),
                     CurrentPage = table.Column<int>(type: "INTEGER", nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", nullable: true)
+                    UserId = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -179,7 +178,8 @@ namespace Infrastructure.Persistence.Migrations
                         name: "FK_Books_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -189,8 +189,8 @@ namespace Infrastructure.Persistence.Migrations
                     AuthorId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     FirstName = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
-                    LastName = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
-                    BookId = table.Column<int>(type: "INTEGER", nullable: true)
+                    LastName = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    BookId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -199,7 +199,8 @@ namespace Infrastructure.Persistence.Migrations
                         name: "FK_Author_Books_BookId",
                         column: x => x.BookId,
                         principalTable: "Books",
-                        principalColumn: "BookId");
+                        principalColumn: "BookId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

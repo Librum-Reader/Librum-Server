@@ -22,8 +22,9 @@ public class UserRepository : IUserRepository
             : await _context.Users.AsNoTracking().SingleOrDefaultAsync(user => user.Email == email);
     }
 
-    public void DeleteAsync(User user)
+    public async Task DeleteAsync(User user)
     {
+        await LoadRelationShipsAsync(user);
         _context.Users.Remove(user);
     }
 
@@ -32,7 +33,7 @@ public class UserRepository : IUserRepository
         return await _context.SaveChangesAsync();
     }
 
-    public async Task LoadRelationShips(User user)
+    public async Task LoadRelationShipsAsync(User user)
     {
         await _context.Entry(user).Collection(p => p.Books).LoadAsync();
     }

@@ -38,7 +38,7 @@ public class UserService : IUserService
         if (user == null)
             throw new InvalidParameterException("No user with the given email exists");
         
-        _userRepository.DeleteAsync(user);
+        await _userRepository.DeleteAsync(user);
         await _userRepository.SaveChangesAsync();
     }
 

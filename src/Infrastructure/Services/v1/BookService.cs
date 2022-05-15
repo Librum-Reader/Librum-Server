@@ -1,3 +1,4 @@
+using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces.Repositories;
@@ -27,11 +28,10 @@ public class BookService : IBookService
         if (user == null)
             throw new InvalidParameterException("No user with the given email exists");
         
+        await _userRepository.LoadRelationShipsAsync(user);
         var book = _mapper.Map<Book>(bookInDto);
-
-        await _userRepository.LoadRelationShips(user);
         user.Books.Add(book);
-
+        
         await _bookRepository.SaveChangesAsync();
     }
 }

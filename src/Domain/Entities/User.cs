@@ -7,8 +7,6 @@ namespace Domain.Entities
     [Index(nameof(Email), IsUnique = true)]
     public class User : IdentityUser
     {
-        public string UserId { get; set; }
-
         [Required]
         [MinLength(2, ErrorMessage = "The firstname is too short")]
         [MaxLength(40, ErrorMessage = "The firstname is too long")]
