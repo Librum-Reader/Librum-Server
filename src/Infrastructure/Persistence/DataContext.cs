@@ -21,12 +21,7 @@ public class DataContext : IdentityDbContext<User>
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        builder.Entity<User>()
-            .HasMany(x => x.Books)
-            .WithOne(x => x.User)
-            .HasForeignKey(x => x.UserId)
-            .IsRequired()
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         base.OnModelCreating(builder);
     }

@@ -3,6 +3,7 @@ using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
+using Application.Common.RequestParameters;
 using AutoMapper;
 using Domain.Entities;
 
@@ -41,5 +42,10 @@ public class BookService : IBookService
         user.Books.Add(book);
         
         await _bookRepository.SaveChangesAsync();
+    }
+    
+    public async Task<IList<BookOutDto>> GetBooksAsync(BookRequestParameter bookRequestParameter)
+    {
+        return new List<BookOutDto>();
     }
 }

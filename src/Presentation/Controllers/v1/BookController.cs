@@ -1,6 +1,7 @@
 using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces.Services;
+using Application.Common.RequestParameters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,13 +29,34 @@ public class BookController : ControllerBase
         if (bookInDto == null)
         {
             _logger.LogWarning("Creating book failed: book input dto is null");
-            throw new InvalidParameterException("The provided data is invalid");
+            return BadRequest("The provided data is invalid");
         }
 
         try
         {
             await _bookService.CreateBookAsync(HttpContext.User.Identity!.Name, bookInDto);
             return StatusCode(201);
+        }
+        catch (InvalidParameterException e)
+        {
+            _logger.LogWarning("Creating book failed: {ErrorMessage}", e.Message);
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<BookOutDto>> GetBooks([FromBody] BookRequestParameter bookRequestParameter)
+    {
+        if (bookRequestParameter == null)
+        {
+            _logger.LogWarning("Getting books failed: book request parameter is null");
+            return BadRequest("The provided data is invalid");
+        }
+
+        try
+        {
+            var books = _bookService.GetBooksAsync(bookRequestParameter);
+            return Ok(books);
         }
         catch (InvalidParameterException e)
         {

@@ -1,119 +1,109 @@
+using Application.Common.DTOs.Authors;
+using Application.Common.DTOs.Books;
+using Application.Common.DTOs.Users;
+using Application.Common.Interfaces.Services;
+using AutoMapper;
 using Domain.Entities;
 
 namespace Infrastructure.Persistence;
 
 public static class DataContextSeeding
 {
-    public static async Task SeedDataContext(DataContext context)
+    public static async Task SeedDataContext(DataContext context, IAuthenticationService authenticationService, IBookService bookService)
     {
         if (context.Users.Any())
             return;
 
 
-        var users = new List<User>
+        var users = new List<RegisterDto>
         {
-            new User
+            new RegisterDto
             {
                 FirstName = "Luke",
                 LastName = "Ratatui",
                 Email = "LukeRatatui@gmail.com",
-                UserName = "LukeRatatui@gmail.com",
-                AccountCreation = DateTime.UtcNow
+                Password = "MyPassword123"
             },
-            new User
+            new RegisterDto
             {
                 FirstName = "Lisa",
                 LastName = "Lambatz",
-                Email = "LisaLambatz",
-                UserName = "LisaLambatz",
-                AccountCreation = DateTime.UtcNow,
-                Books = new List<Book>
-                {
-                    new Book
-                    {
-                        Title = "Professional CMake",
-                        ReleaseDate = new DateTime(2018, 01, 02),
-                        Format = "Pdf",
-                        Pages = 1101,
-                        Authors = new List<Author>
-                        {
-                            new Author
-                            {
-                                FirstName = "Lerry",
-                                LastName = "Wheelson"
-                            },
-                            new Author
-                            {
-                                FirstName = "Major",
-                                LastName = "Tom"
-                            }
-                        }
-                    },
-                    new Book
-                    {
-                        Title = "Test Driven Development with C++",
-                        ReleaseDate = new DateTime(2012, 02, 27),
-                        Format = "Pdf",
-                        Pages = 521,
-                        Authors = new List<Author>
-                        {
-                            new Author
-                            {
-                                FirstName = "Alfred",
-                                LastName = "Orus"
-                            }
-                        }
-                    },
-                    new Book
-                    {
-                        Title = "C# in a nutshell",
-                        ReleaseDate = new DateTime(2019, 11, 14),
-                        Format = "Pdf",
-                        Pages = 1243
-                    }
-                }
+                Email = "LisaLambatz@gmail.com",
+                Password = "MyPassword123"
             },
-            new User
+            new RegisterDto
             {
                 FirstName = "Kaktor",
                 LastName = "Dumbatz",
                 Email = "KaktorDumbatz@gmail.com",
-                UserName = "KaktorDumbatz@gmail.com",
-                AccountCreation = DateTime.UtcNow,
-                Books = new List<Book>
-                {
-                    new Book
-                    {
-                        Title = "Im ok; your ok",
-                        ReleaseDate = new DateTime(2009, 07, 21),
-                        Format = "Epub",
-                        Pages = 412
-                    },
-                    new Book
-                    {
-                        Title = "Professional CMake",
-                        ReleaseDate = new DateTime(2018, 01, 02),
-                        Format = "Pdf",
-                        Pages = 1101,
-                        Authors = new List<Author>
-                        {
-                            new Author
-                            {
-                                FirstName = "Lerry",
-                                LastName = "Wheelson"
-                            },
-                            new Author
-                            {
-                                FirstName = "Major",
-                                LastName = "Tom"
-                            }
-                        }
-                    }
-                }
+                Password = "MyPassword123"
             }
         };
 
-        context.AddRange(users);
+        var books = new List<BookInDto>()
+        {
+            new BookInDto
+            {
+                Title = "LukesRandomBook",
+                ReleaseDate = DateTime.Now,
+                Authors = new List<AuthorInDto>()
+                {
+                    new AuthorInDto
+                    {
+                        FirstName = "Dave",
+                        LastName = "Lebovski"
+                    },
+                    new AuthorInDto()
+                    {
+                        FirstName= "Sos",
+                        LastName = "trator"
+                    }
+                },
+                Pages = 1200,
+                Format = "PDF",
+                CurrentPage = 2
+            },
+            new BookInDto
+            {
+                Title = "LisasRandomBook",
+                ReleaseDate = DateTime.Now,
+                Authors = new List<AuthorInDto>()
+                {
+                    new AuthorInDto
+                    {
+                        FirstName = "Kai",
+                        LastName = "Jeff"
+                    }
+                },
+                Pages = 409,
+                Format = "EPUB",
+                CurrentPage = 211
+            },
+            new BookInDto
+            {
+                Title = "KaktorsRandomBook",
+                ReleaseDate = DateTime.Now,
+                Authors = new List<AuthorInDto>()
+                {
+                    new AuthorInDto
+                    {
+                        FirstName = "Vorel",
+                        LastName = "Nameskin"
+                    }
+                },
+                Pages = 931200,
+                Format = "Mobi",
+                CurrentPage = 1234
+            }
+        };
+
+
+        for (int i = 0; i < users.Count; ++i)
+        {
+            await authenticationService.RegisterUserAsync(users[i]);
+            await bookService.CreateBookAsync(users[i].Email, books[i]);
+        }
+        
         await context.SaveChangesAsync();
     }
 }

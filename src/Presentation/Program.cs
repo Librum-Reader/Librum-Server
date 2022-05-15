@@ -1,5 +1,9 @@
+using Application.Common.Interfaces.Services;
 using Application.Common.Middleware;
+using AutoMapper;
+using Domain.Entities;
 using Infrastructure.Persistence;
+using Microsoft.AspNetCore.Identity;
 using Presentation;
 
 
@@ -26,7 +30,8 @@ using (var scope = app.Services.CreateScope())
     var loggerFactory = services.GetRequiredService<ILoggerFactory>();
     loggerFactory.AddFile(Directory.GetCurrentDirectory() + "/Data/Logs/");
 
-    // await DataContextSeeding.SeedDataContext(services.GetRequiredService<DataContext>());
+    await DataContextSeeding.SeedDataContext(services.GetRequiredService<DataContext>(), services.GetRequiredService<IAuthenticationService>(),
+        services.GetRequiredService<IBookService>());
 }
 
 
