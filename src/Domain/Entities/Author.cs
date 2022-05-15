@@ -5,7 +5,7 @@ namespace Domain.Entities;
 public class Author
 {
     [Key]
-    public int AuthorId { get; set; }
+    public Guid AuthorId { get; set; }
     
     [Required]
     [MinLength(2, ErrorMessage = "The provided firstname is too short")]
@@ -17,6 +17,6 @@ public class Author
     [MaxLength(50, ErrorMessage = "The provided last is too long")]
     public string LastName { get; set; }
 
-    public int BookId { get; set; }
+    public Guid BookId { get; set; }
     public Book Book { get; set; }
 }

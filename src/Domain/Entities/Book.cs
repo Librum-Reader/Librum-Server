@@ -6,7 +6,7 @@ namespace Domain.Entities;
 public class Book
 {
     [Key]
-    public int BookId { get; set; }
+    public Guid BookId { get; set; }
 
     [Required]
     [MinLength(4, ErrorMessage = "The provided book name is too short")]
