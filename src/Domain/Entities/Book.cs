@@ -35,7 +35,6 @@ public class Book
 
     public ICollection<Author> Authors { get; set; }
     
-    [MaxLength(128), ForeignKey("User")]
     public string UserId { get; set; }
     public User User { get; set; }
 }

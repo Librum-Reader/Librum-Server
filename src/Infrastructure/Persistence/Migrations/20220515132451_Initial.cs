@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Infrastructure.Persistence.Migrations
 {
-    public partial class ChangedPrincipalKeyFromIntToGuid : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -168,7 +168,7 @@ namespace Infrastructure.Persistence.Migrations
                     Format = table.Column<string>(type: "TEXT", maxLength: 40, nullable: false),
                     DataLink = table.Column<string>(type: "TEXT", nullable: false),
                     CurrentPage = table.Column<int>(type: "INTEGER", nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false)
+                    UserId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -248,6 +248,12 @@ namespace Infrastructure.Persistence.Migrations
                 name: "IX_Author_BookId",
                 table: "Author",
                 column: "BookId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Books_Title",
+                table: "Books",
+                column: "Title",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Books_UserId",
