@@ -80,36 +80,4 @@ public class BookServiceTests
         // Assert
         await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.CreateBook("JohnDoe@gmail.com", new BookInDto()));
     }
-
-    [Fact]
-    public async Task CreateBookAsync_ShouldThrow_WhenTooManyAuthorsAreSpecified()
-    {
-        // Arrange
-        var bookDto = new BookInDto
-        {
-            Title = "Some book",
-            ReleaseDate = DateTime.Now,
-            Format = "PDF",
-            Pages = 1200,
-            CurrentPage = 2,
-            Authors = new Collection<AuthorInDto>()
-        };
-
-        for (int i = 0; i < 16; ++i)
-        {
-            bookDto.Authors.Add(new AuthorInDto { FirstName = "Someone", LastName = "SomeonesLastName" });
-        }
-        
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(new User { Books = new Collection<Book>() });
-
-        _userRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<User>()));
-        
-        _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
-            .ReturnsAsync(1);
-        
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.CreateBook("JohnDoe@gmail.com", bookDto));
-    }
 }
