@@ -6,5 +6,5 @@ namespace Application.Common.Interfaces.Services;
 public interface IBookService
 {
     public Task CreateBookAsync(string email, BookInDto bookInDto);
-    Task<IList<BookOutDto>> GetBooksAsync(BookRequestParameter bookRequestParameter);
+    Task<IList<BookOutDto>> GetBooksAsync(string email, BookRequestParameter bookRequestParameter);
 }

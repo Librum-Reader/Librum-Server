@@ -9,5 +9,6 @@ public class AuthorAutoMappingProfile : Profile
     public AuthorAutoMappingProfile()
     {
         CreateMap<AuthorInDto, Author>();
+        CreateMap<Author, AuthorOutDto>();
     }
 }

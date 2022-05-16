@@ -45,7 +45,7 @@ public class BookController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<BookOutDto>> GetBooks([FromBody] BookRequestParameter bookRequestParameter)
+    public async Task<ActionResult<IList<BookOutDto>>> GetBooks([FromBody] BookRequestParameter bookRequestParameter)
     {
         if (bookRequestParameter == null)
         {
@@ -55,7 +55,7 @@ public class BookController : ControllerBase
 
         try
         {
-            var books = _bookService.GetBooksAsync(bookRequestParameter);
+            var books = await _bookService.GetBooksAsync(HttpContext.User.Identity!.Name, bookRequestParameter);
             return Ok(books);
         }
         catch (InvalidParameterException e)

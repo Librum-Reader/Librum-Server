@@ -14,5 +14,5 @@ public class BookOutDto
 
     public int CurrentPage { get; set; }
     
-    public IList<AuthorInDto> Authors { get; set; }
+    public IList<AuthorOutDto> Authors { get; set; }
 }

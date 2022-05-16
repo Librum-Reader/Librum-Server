@@ -43,8 +43,11 @@ public class BookService : IBookService
         await _bookRepository.SaveChangesAsync();
     }
     
-    public async Task<IList<BookOutDto>> GetBooksAsync(BookRequestParameter bookRequestParameter)
+    public async Task<IList<BookOutDto>> GetBooksAsync(string email, BookRequestParameter bookRequestParameter)
     {
-        return new List<BookOutDto>();
+        var user = await _userRepository.GetAsync(email, trackChanges: false);
+        var books = await _bookRepository.GetBooksByQuery(user.Id, bookRequestParameter);
+
+        return books.Select(book => _mapper.Map<BookOutDto>(book)).ToList();
     }
 }

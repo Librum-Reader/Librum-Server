@@ -10,5 +10,7 @@ public class BookAutoMapperProfile : Profile
     {
         CreateMap<BookInDto, Book>()
             .ForMember(dest => dest.DataLink, temp => temp.MapFrom(src => "none"));
+
+        CreateMap<Book, BookOutDto>();
     }
 }
