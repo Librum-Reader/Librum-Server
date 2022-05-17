@@ -1,3 +1,5 @@
+using Application.Common.Enums;
+
 namespace Application.Common.RequestParameters;
 
 public class BookRequestParameter
@@ -6,9 +8,9 @@ public class BookRequestParameter
 
     public int PageSize { get; set; } = 10;
 
-    public string Query { get; set; }
+    public string Query { get; set; } = "";
 
-    public string SortBy { get; set; }
+    public BookSortOptions SortBy { get; set; } = BookSortOptions.Nothing;
     
     public string Author { get; set; }
     

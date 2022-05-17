@@ -7,5 +7,6 @@ public interface IBookRepository
 {
     public Task<int> SaveChangesAsync();
     Task<bool> BookAlreadyExists(string title);
-    Task<ICollection<Book>> GetBooksByQuery(string userId, BookRequestParameter bookRequestParameter);
+    Task<IList<Book>> GetBooksByQuery(string userId, string searchString, 
+        int pageNumber, int pageSize);
 }

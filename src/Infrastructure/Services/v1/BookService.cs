@@ -1,4 +1,5 @@
 using Application.Common.DTOs.Books;
+using Application.Common.Enums;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
@@ -46,8 +47,24 @@ public class BookService : IBookService
     public async Task<IList<BookOutDto>> GetBooksAsync(string email, BookRequestParameter bookRequestParameter)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: false);
-        var books = await _bookRepository.GetBooksByQuery(user.Id, bookRequestParameter);
+        
+        var queryMatchingBooks = await _bookRepository.GetBooksByQuery(user.Id, bookRequestParameter.Query,
+            bookRequestParameter.PageNumber, bookRequestParameter.PageSize);
 
-        return books.Select(book => _mapper.Map<BookOutDto>(book)).ToList();
+        var sortedBooks = SortBooks(queryMatchingBooks, bookRequestParameter);
+        
+        
+        return sortedBooks.Select(book => _mapper.Map<BookOutDto>(book)).ToList();
+    }
+
+    private IList<Book> SortBooks(IList<Book> books, BookRequestParameter bookRequestParameter)
+    {
+        switch (bookRequestParameter.SortBy)
+        {
+            case BookSortOptions.RecentlyRead:
+                return books.OrderByDescending((x) => x.LastOpened).ToList();
+            default:
+                return books;
+        }
     }
 }

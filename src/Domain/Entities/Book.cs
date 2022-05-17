@@ -15,6 +15,9 @@ public class Book
     public string Title { get; set; }
 
     public DateTime ReleaseDate { get; set; }
+    
+    [Required]
+    public DateTime LastOpened { get; set; }
 
     [Required]
     [Range(0, int.MaxValue)]
@@ -30,7 +33,8 @@ public class Book
     [Range(0, int.MaxValue)]
     public int CurrentPage { get; set; }
     
-
+    
+    
     public ICollection<Author> Authors { get; set; }
     
     public string UserId { get; set; }

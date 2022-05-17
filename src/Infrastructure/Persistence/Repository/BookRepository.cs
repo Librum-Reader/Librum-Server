@@ -27,24 +27,25 @@ public class BookRepository : IBookRepository
         return await _context.Books.AnyAsync(book => book.Title == title);
     }
 
-    public async Task<ICollection<Book>> GetBooksByQuery(string userId, BookRequestParameter bookRequestParameter)
+    public async Task<IList<Book>> GetBooksByQuery(string userId, string searchString, 
+        int pageNumber, int pageSize)
     {
         var books = await _context.Books
             .Where(book => book.UserId == userId)
             .Select(book => new
             {
                 book,
-                orderController = book.Title.StartsWith(bookRequestParameter.Query)
+                orderController = book.Title.StartsWith(searchString)
                     ? 1
-                    : (book.Title.Contains(bookRequestParameter.Query))
+                    : (book.Title.Contains(searchString))
                         ? 2
                         : 3
             })
             .OrderBy(f => f.orderController)
             .ThenBy(f => f.book.Title)
             .Select(f => f.book)
-            .Skip((bookRequestParameter.PageNumber - 1) * bookRequestParameter.PageSize)
-            .Take(bookRequestParameter.PageSize)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
 
         return books;
