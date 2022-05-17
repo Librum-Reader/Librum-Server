@@ -34,32 +34,14 @@ public class BookRepository : IBookRepository
             await LoadRelationShipsAsync(book);
         }
     }
-    
+
     public async Task<bool> BookAlreadyExists(string title)
     {
         return await _context.Books.AnyAsync(book => book.Title == title);
     }
 
-    public async Task<IList<Book>> GetBooksByQuery(string userId, string searchString, int pageNumber, int pageSize)
+    public IQueryable<Book> GetBooks(string userId)
     {
-        var books = await _context.Books
-            .Where(book => book.UserId == userId)
-            .Select(book => new
-            {
-                book,
-                orderController = book.Title.StartsWith(searchString)
-                    ? 1
-                    : (book.Title.Contains(searchString))
-                        ? 2
-                        : 3
-            })
-            .OrderBy(f => f.orderController)
-            .ThenBy(f => f.book.Title)
-            .Select(f => f.book)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-
-        return books;
+        return _context.Books.Where(book => book.UserId == userId);
     }
 }

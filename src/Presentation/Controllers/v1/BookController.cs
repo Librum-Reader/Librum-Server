@@ -23,7 +23,7 @@ public class BookController : ControllerBase
     }
 
 
-    [HttpPost]
+    [HttpPost("create")]
     public async Task<ActionResult> CreateBook([FromBody] BookInDto bookInDto)
     {
         if (bookInDto == null)
@@ -44,7 +44,7 @@ public class BookController : ControllerBase
         }
     }
 
-    [HttpGet]
+    [HttpPost("get")]
     public async Task<ActionResult<IList<BookOutDto>>> GetBooks([FromBody] BookRequestParameter bookRequestParameter)
     {
         if (bookRequestParameter == null)

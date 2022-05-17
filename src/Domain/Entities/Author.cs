@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities;
 
@@ -16,9 +17,7 @@ public class Author
     [MinLength(2, ErrorMessage = "The provided lastname is too short")]
     [MaxLength(50, ErrorMessage = "The provided lastname is too long")]
     public string LastName { get; set; }
-    
-    
-    
+
     public Guid BookId { get; set; }
     public Book Book { get; set; }
 }

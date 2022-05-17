@@ -6,6 +6,7 @@ using Application.Common.Interfaces.Services;
 using Application.Common.RequestParameters;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.v1;
 
@@ -35,15 +36,15 @@ public class BookService : IBookService
         {
             throw new InvalidParameterException("A book with this title already exists");
         }
-        
-        
+
+
         await _userRepository.LoadRelationShipsAsync(user);
         var book = _mapper.Map<Book>(bookInDto);
         user.Books.Add(book);
-        
+
         await _bookRepository.SaveChangesAsync();
     }
-    
+
     public async Task<IList<BookOutDto>> GetBooksAsync(string email, BookRequestParameter bookRequestParameter)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: false);
@@ -52,39 +53,84 @@ public class BookService : IBookService
             throw new InvalidParameterException("No user with the given email exists");
         }
 
-        var queryMatchingBooks = await _bookRepository.GetBooksByQuery(user.Id, bookRequestParameter.Query,
-            bookRequestParameter.PageNumber, bookRequestParameter.PageSize);
+        var books = _bookRepository.GetBooks(user.Id);
+        await _bookRepository.LoadRelationShipsAsync(books);
+        
+        var bestMatchingBooks = SortByBestMatch(books, bookRequestParameter.SearchString.ToLower());
+        var booksFilteredByAuthor = FilterByAuthor(bestMatchingBooks, bookRequestParameter.Author.ToLower());
+        var booksFilteredByTimeSinceAdded = FilterByTimeSinceAdded(booksFilteredByAuthor, bookRequestParameter.Added);
+        var booksFilteredByFormat = FilterByFormat(booksFilteredByTimeSinceAdded, bookRequestParameter.Format);
+        var filteredBooks = FilterByOptions(booksFilteredByFormat, bookRequestParameter);
+        var booksFilteredByTag = FilterByTags(filteredBooks, bookRequestParameter.Tag);
+        var result = SortByCategories(booksFilteredByTag, bookRequestParameter.SortBy);
+        
 
-        await _bookRepository.LoadRelationShipsAsync(queryMatchingBooks);
-        
-        var sortedBooks = SortBooks(queryMatchingBooks, bookRequestParameter);
-        
-        
-        return sortedBooks.Select(book => _mapper.Map<BookOutDto>(book)).ToList();
+        return await result.Select(book => _mapper.Map<BookOutDto>(book)).ToListAsync();
+    }
+    
+    private IQueryable<Book> SortByBestMatch(IQueryable<Book> books, string target)
+    {
+        var sortedBooks =
+            from book in books
+            let orderController = book.Title.ToLower().StartsWith(target)
+                ? 1
+                : book.Title.ToLower().Contains(target)
+                    ? 2
+                    : 3
+            orderby orderController, book.Title
+            select book;
+
+        return sortedBooks;
     }
 
-    private IList<Book> SortBooks(IList<Book> books, BookRequestParameter bookRequestParameter)
+    private IQueryable<Book> FilterByAuthor(IQueryable<Book> books, string authorName)
     {
-        switch (bookRequestParameter.SortBy)
+        if (authorName == string.Empty)
         {
-            case BookSortOptions.RecentlyRead:
-                return books.OrderByDescending(book => book.LastOpened).ToList();
-            case BookSortOptions.RecentlyAdded:
-                return books.OrderByDescending(book => book.CreationDate).ToList();
-            case BookSortOptions.Percentage:
-                return books.OrderByDescending(book => ((double)book.CurrentPage / book.Pages)).ToList();
-            case BookSortOptions.TitleLexicAsc:
-                return books.OrderBy(book => book.Title).ToList();
-            case BookSortOptions.TitleLexicDec:
-                return books.OrderByDescending(book => book.Title).ToList();
-            case BookSortOptions.AuthorLexicAsc:
-                return books.OrderBy(book => book.Authors.ElementAtOrDefault(0)?.FirstName == null)
-                    .ThenBy(book => book.Authors.ElementAtOrDefault(0)?.LastName).ToList();
-            case BookSortOptions.AuthorLexicDec:
-                return books.OrderByDescending(book => book.Authors.ElementAtOrDefault(0)?.FirstName)
-                    .ThenByDescending(book => book.Authors.ElementAtOrDefault(0)?.LastName).ToList();
-            default:
-                return books;
+            return books;
         }
+        
+        return books.Where(book => book.Authors
+            .Any(author => (author.FirstName.ToLower() + " " + author.LastName.ToLower()).Contains(authorName)));
+    }
+    
+    private IQueryable<Book> FilterByTimeSinceAdded(IQueryable<Book> books, TimeSpan added)
+    {
+        return books;
+    }
+    
+    private IQueryable<Book> FilterByFormat(IQueryable<Book> books, string format)
+    {
+        return books;
+    }
+    
+    private IQueryable<Book> FilterByOptions(IQueryable<Book> books, BookRequestParameter bookRequestParameter)
+    {
+        return books;
+    }
+    
+    private IQueryable<Book> FilterByTags(IQueryable<Book> books, string tag)
+    {
+        return books;
+    }
+    
+    private IQueryable<Book> SortByCategories(IQueryable<Book> books, BookSortOptions sortOption)
+    {
+        return sortOption switch
+        {
+            BookSortOptions.Nothing => books,
+            BookSortOptions.RecentlyRead => books.OrderByDescending(book => book.LastOpened),
+            BookSortOptions.RecentlyAdded => books.OrderByDescending(book => book.CreationDate),
+            BookSortOptions.Percentage => books.OrderByDescending(book => ((double)book.CurrentPage / book.Pages)),
+            BookSortOptions.TitleLexicAsc => books.OrderBy(book => book.Title),
+            BookSortOptions.TitleLexicDec => books.OrderByDescending(book => book.Title),
+            BookSortOptions.AuthorLexicAsc => books
+                .OrderBy(book => book.Authors.ElementAtOrDefault(0).FirstName == null)
+                .ThenBy(book => book.Authors.ElementAtOrDefault(0).LastName),
+            BookSortOptions.AuthorLexicDec => books
+                .OrderByDescending(book => book.Authors.ElementAtOrDefault(0).FirstName)
+                .ThenByDescending(book => book.Authors.ElementAtOrDefault(0).LastName),
+            _ => throw new InvalidParameterException("Selected a not supported 'SortBy' value")
+        };
     }
 }
