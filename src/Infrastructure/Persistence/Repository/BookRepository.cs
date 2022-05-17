@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.RequestParameters;
 using Domain.Entities;
@@ -42,6 +43,8 @@ public class BookRepository : IBookRepository
             .OrderBy(f => f.orderController)
             .ThenBy(f => f.book.Title)
             .Select(f => f.book)
+            .Skip((bookRequestParameter.PageNumber - 1) * bookRequestParameter.PageSize)
+            .Take(bookRequestParameter.PageSize)
             .ToListAsync();
 
         return books;
