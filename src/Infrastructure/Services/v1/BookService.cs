@@ -63,6 +63,8 @@ public class BookService : IBookService
         {
             case BookSortOptions.RecentlyRead:
                 return books.OrderByDescending((x) => x.LastOpened).ToList();
+            case BookSortOptions.RecentlyAdded:
+                return books.OrderByDescending((x) => x.CreationDate).ToList();
             default:
                 return books;
         }

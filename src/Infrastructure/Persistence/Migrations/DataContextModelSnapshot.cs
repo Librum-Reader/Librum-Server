@@ -49,6 +49,9 @@ namespace Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("CurrentPage")
                         .HasColumnType("INTEGER");
 

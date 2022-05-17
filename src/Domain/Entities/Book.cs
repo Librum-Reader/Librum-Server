@@ -17,9 +17,6 @@ public class Book
     public DateTime ReleaseDate { get; set; }
     
     [Required]
-    public DateTime LastOpened { get; set; }
-
-    [Required]
     [Range(0, int.MaxValue)]
     public int Pages { get; set; }
 
@@ -32,6 +29,12 @@ public class Book
     [Required]
     [Range(0, int.MaxValue)]
     public int CurrentPage { get; set; }
+    
+    [Required]
+    public DateTime CreationDate { get; set; }
+
+    [Required]
+    public DateTime LastOpened { get; set; }
     
     
     
