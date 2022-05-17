@@ -22,13 +22,25 @@ public class BookRepository : IBookRepository
         return await _context.SaveChangesAsync();
     }
 
+    public async Task LoadRelationShipsAsync(Book book)
+    {
+        await _context.Entry(book).Collection(p => p.Authors).LoadAsync();
+    }
+
+    public async Task LoadRelationShipsAsync(IEnumerable<Book> books)
+    {
+        foreach (var book in books)
+        {
+            await LoadRelationShipsAsync(book);
+        }
+    }
+    
     public async Task<bool> BookAlreadyExists(string title)
     {
         return await _context.Books.AnyAsync(book => book.Title == title);
     }
 
-    public async Task<IList<Book>> GetBooksByQuery(string userId, string searchString, 
-        int pageNumber, int pageSize)
+    public async Task<IList<Book>> GetBooksByQuery(string userId, string searchString, int pageNumber, int pageSize)
     {
         var books = await _context.Books
             .Where(book => book.UserId == userId)

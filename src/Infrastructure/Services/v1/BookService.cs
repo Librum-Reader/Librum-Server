@@ -47,10 +47,16 @@ public class BookService : IBookService
     public async Task<IList<BookOutDto>> GetBooksAsync(string email, BookRequestParameter bookRequestParameter)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: false);
-        
+        if (user == null)
+        {
+            throw new InvalidParameterException("No user with the given email exists");
+        }
+
         var queryMatchingBooks = await _bookRepository.GetBooksByQuery(user.Id, bookRequestParameter.Query,
             bookRequestParameter.PageNumber, bookRequestParameter.PageSize);
 
+        await _bookRepository.LoadRelationShipsAsync(queryMatchingBooks);
+        
         var sortedBooks = SortBooks(queryMatchingBooks, bookRequestParameter);
         
         
@@ -71,7 +77,12 @@ public class BookService : IBookService
                 return books.OrderBy(book => book.Title).ToList();
             case BookSortOptions.TitleLexicDec:
                 return books.OrderByDescending(book => book.Title).ToList();
-            
+            case BookSortOptions.AuthorLexicAsc:
+                return books.OrderBy(book => book.Authors.ElementAt(0)?.FirstName )
+                    .ThenBy(book => book.Authors.ElementAt(0)?.LastName).ToList();
+            case BookSortOptions.AuthorLexicDec:
+                return books.OrderByDescending(book => book.Authors.ElementAt(0)?.FirstName )
+                    .ThenByDescending(book => book.Authors.ElementAt(0)?.LastName).ToList();
             default:
                 return books;
         }
