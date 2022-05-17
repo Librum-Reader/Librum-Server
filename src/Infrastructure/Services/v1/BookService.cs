@@ -1,6 +1,7 @@
 using Application.Common.DTOs.Books;
 using Application.Common.Enums;
 using Application.Common.Exceptions;
+using Application.Common.Extensions;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.RequestParameters;
@@ -57,105 +58,16 @@ public class BookService : IBookService
         var books = _bookRepository.GetBooks(user.Id);
         await _bookRepository.LoadRelationShipsAsync(books);
 
-        var bestMatchingBooks = SortByBestMatch(books, bookRequestParameter.SearchString.ToLower());
-        var booksFilteredByAuthor = FilterByAuthor(bestMatchingBooks, bookRequestParameter.Author.ToLower());
-        var booksFilteredByTimeSinceAdded =
-            FilterByTimeSinceAdded(booksFilteredByAuthor, bookRequestParameter.TimePassed);
-        var booksFilteredByFormat = FilterByFormat(booksFilteredByTimeSinceAdded, bookRequestParameter.Format);
-        var filteredBooks = FilterByOptions(booksFilteredByFormat, bookRequestParameter);
-        var booksFilteredByTag = FilterByTags(filteredBooks, bookRequestParameter.Tag);
-        var result = SortByCategories(booksFilteredByTag, bookRequestParameter.SortBy);
-
+        var result = books.SortByBestMatch(bookRequestParameter.SearchString.ToLower())
+            .FilterByAuthor(bookRequestParameter.Author.ToLower())
+            .FilterByTimeSinceAdded(bookRequestParameter.TimePassed)
+            .FilterByFormat(bookRequestParameter.Format)
+            .FilterByOptions(bookRequestParameter)
+            .FilterByTags(bookRequestParameter.Tag)
+            .PaginateBooks(bookRequestParameter.PageNumber, bookRequestParameter.PageSize)
+            .SortByCategories(bookRequestParameter.SortBy);
+        
 
         return await result.Select(book => _mapper.Map<BookOutDto>(book)).ToListAsync();
-    }
-
-    private IQueryable<Book> SortByBestMatch(IQueryable<Book> books, string target)
-    {
-        if (target == string.Empty)
-        {
-            return books;
-        }
-
-        var sortedBooks =
-            from book in books
-            let orderController = book.Title.ToLower().StartsWith(target)
-                ? 1
-                : book.Title.ToLower().Contains(target)
-                    ? 2
-                    : 3
-            orderby orderController, book.Title
-            select book;
-
-        return sortedBooks;
-    }
-
-    private IQueryable<Book> FilterByAuthor(IQueryable<Book> books, string authorName)
-    {
-        if (authorName == string.Empty)
-        {
-            return books;
-        }
-
-        return books.Where(book => book.Authors
-            .Any(author => (author.FirstName.ToLower() + " " + author.LastName.ToLower()).Contains(authorName)));
-    }
-
-    private IQueryable<Book> FilterByTimeSinceAdded(IQueryable<Book> books, TimeSpan timePassed)
-    {
-        if (timePassed == default)
-        {
-            return books;
-        }
-
-        DateTime lastAcceptedTime = DateTime.Now.Subtract(timePassed);
-        return books
-            .Where(book => lastAcceptedTime <= book.CreationDate);
-    }
-
-    private IQueryable<Book> FilterByFormat(IQueryable<Book> books, BookFormats format)
-    {
-        if (format == default)
-        {
-            return books;
-        }
-
-        return books.Where(book => book.Format == format);
-    }
-
-    private IQueryable<Book> FilterByOptions(IQueryable<Book> books, BookRequestParameter bookRequestParameter)
-    {
-        if (bookRequestParameter.Read)
-            books = books.Where(book => book.CurrentPage == book.Pages);
-
-        if (bookRequestParameter.Unread)
-            books = books.Where(book => book.CurrentPage != book.Pages);
-        
-        return books;
-    }
-
-    private IQueryable<Book> FilterByTags(IQueryable<Book> books, string tag)
-    {
-        return books;
-    }
-
-    private IQueryable<Book> SortByCategories(IQueryable<Book> books, BookSortOptions sortOption)
-    {
-        return sortOption switch
-        {
-            BookSortOptions.Nothing => books,
-            BookSortOptions.RecentlyRead => books.OrderByDescending(book => book.LastOpened),
-            BookSortOptions.RecentlyAdded => books.OrderByDescending(book => book.CreationDate),
-            BookSortOptions.Percentage => books.OrderByDescending(book => ((double)book.CurrentPage / book.Pages)),
-            BookSortOptions.TitleLexicAsc => books.OrderBy(book => book.Title),
-            BookSortOptions.TitleLexicDec => books.OrderByDescending(book => book.Title),
-            BookSortOptions.AuthorLexicAsc => books
-                .OrderBy(book => book.Authors.ElementAtOrDefault(0).FirstName == null)
-                .ThenBy(book => book.Authors.ElementAtOrDefault(0).LastName),
-            BookSortOptions.AuthorLexicDec => books
-                .OrderByDescending(book => book.Authors.ElementAtOrDefault(0).FirstName)
-                .ThenByDescending(book => book.Authors.ElementAtOrDefault(0).LastName),
-            _ => throw new InvalidParameterException("Selected a not supported 'SortBy' value")
-        };
     }
 }
