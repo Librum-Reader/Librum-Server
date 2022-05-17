@@ -62,9 +62,11 @@ public class BookService : IBookService
         switch (bookRequestParameter.SortBy)
         {
             case BookSortOptions.RecentlyRead:
-                return books.OrderByDescending((x) => x.LastOpened).ToList();
+                return books.OrderByDescending(book => book.LastOpened).ToList();
             case BookSortOptions.RecentlyAdded:
-                return books.OrderByDescending((x) => x.CreationDate).ToList();
+                return books.OrderByDescending(book => book.CreationDate).ToList();
+            case BookSortOptions.Percentage:
+                return books.OrderByDescending(book => ((double)book.CurrentPage / book.Pages)).ToList();
             default:
                 return books;
         }
