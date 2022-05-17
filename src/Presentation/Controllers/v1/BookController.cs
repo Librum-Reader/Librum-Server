@@ -34,19 +34,7 @@ public class BookController : ControllerBase
 
         try
         {
-            for (int i = 900; i < 1000; ++i)
-            {
-                var bookDto = new BookInDto
-                {
-                    Pages = bookInDto.Pages,
-                    Format = bookInDto.Format,
-                    Authors = bookInDto.Authors,
-                    CurrentPage = 2,
-                    Title = bookInDto.Title + i.ToString()
-                };
-                await _bookService.CreateBookAsync(HttpContext.User.Identity!.Name, bookDto);
-            }
-
+            await _bookService.CreateBookAsync(HttpContext.User.Identity!.Name, bookInDto);
             return StatusCode(201);
         }
         catch (InvalidParameterException e)
