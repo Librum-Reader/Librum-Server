@@ -78,11 +78,11 @@ public class BookService : IBookService
             case BookSortOptions.TitleLexicDec:
                 return books.OrderByDescending(book => book.Title).ToList();
             case BookSortOptions.AuthorLexicAsc:
-                return books.OrderBy(book => book.Authors.ElementAt(0)?.FirstName )
-                    .ThenBy(book => book.Authors.ElementAt(0)?.LastName).ToList();
+                return books.OrderBy(book => book.Authors.ElementAtOrDefault(0)?.FirstName == null)
+                    .ThenBy(book => book.Authors.ElementAtOrDefault(0)?.LastName).ToList();
             case BookSortOptions.AuthorLexicDec:
-                return books.OrderByDescending(book => book.Authors.ElementAt(0)?.FirstName )
-                    .ThenByDescending(book => book.Authors.ElementAt(0)?.LastName).ToList();
+                return books.OrderByDescending(book => book.Authors.ElementAtOrDefault(0)?.FirstName)
+                    .ThenByDescending(book => book.Authors.ElementAtOrDefault(0)?.LastName).ToList();
             default:
                 return books;
         }
