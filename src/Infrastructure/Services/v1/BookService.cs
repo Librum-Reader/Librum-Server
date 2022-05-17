@@ -67,6 +67,11 @@ public class BookService : IBookService
                 return books.OrderByDescending(book => book.CreationDate).ToList();
             case BookSortOptions.Percentage:
                 return books.OrderByDescending(book => ((double)book.CurrentPage / book.Pages)).ToList();
+            case BookSortOptions.TitleLexicAsc:
+                return books.OrderBy(book => book.Title).ToList();
+            case BookSortOptions.TitleLexicDec:
+                return books.OrderByDescending(book => book.Title).ToList();
+            
             default:
                 return books;
         }
