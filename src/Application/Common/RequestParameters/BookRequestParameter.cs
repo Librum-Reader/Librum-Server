@@ -1,5 +1,5 @@
 using Application.Common.Enums;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Domain.Enums;
 
 namespace Application.Common.RequestParameters;
 
@@ -25,9 +25,15 @@ public class BookRequestParameter
         set => _author = value;
     }
 
-    public TimeSpan Added { get; set; }
+    public string TimePassedAsString
+    {
+        private get => throw new NotImplementedException();
+        set => TimePassed = TimeSpan.Parse(value);
+    }
 
-    public string Format { get; set; }
+    public TimeSpan TimePassed { get; private set; }
+
+    public BookFormats Format { get; set; }
 
     public bool Read { get; set; }
     

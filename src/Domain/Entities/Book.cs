@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Domain.Entities;
@@ -21,7 +22,7 @@ public class Book
     public int Pages { get; set; }
 
     [MaxLength(40, ErrorMessage = "The provided book format is too long")]
-    public string Format { get; set; }
+    public BookFormats Format { get; set; }
     
     [Required]
     public string DataLink { get; set; }

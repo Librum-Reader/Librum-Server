@@ -6,6 +6,7 @@ using Application.Common.Interfaces.Services;
 using Application.Common.RequestParameters;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.v1;
@@ -55,21 +56,27 @@ public class BookService : IBookService
 
         var books = _bookRepository.GetBooks(user.Id);
         await _bookRepository.LoadRelationShipsAsync(books);
-        
+
         var bestMatchingBooks = SortByBestMatch(books, bookRequestParameter.SearchString.ToLower());
         var booksFilteredByAuthor = FilterByAuthor(bestMatchingBooks, bookRequestParameter.Author.ToLower());
-        var booksFilteredByTimeSinceAdded = FilterByTimeSinceAdded(booksFilteredByAuthor, bookRequestParameter.Added);
+        var booksFilteredByTimeSinceAdded =
+            FilterByTimeSinceAdded(booksFilteredByAuthor, bookRequestParameter.TimePassed);
         var booksFilteredByFormat = FilterByFormat(booksFilteredByTimeSinceAdded, bookRequestParameter.Format);
         var filteredBooks = FilterByOptions(booksFilteredByFormat, bookRequestParameter);
         var booksFilteredByTag = FilterByTags(filteredBooks, bookRequestParameter.Tag);
         var result = SortByCategories(booksFilteredByTag, bookRequestParameter.SortBy);
-        
+
 
         return await result.Select(book => _mapper.Map<BookOutDto>(book)).ToListAsync();
     }
-    
+
     private IQueryable<Book> SortByBestMatch(IQueryable<Book> books, string target)
     {
+        if (target == string.Empty)
+        {
+            return books;
+        }
+
         var sortedBooks =
             from book in books
             let orderController = book.Title.ToLower().StartsWith(target)
@@ -89,31 +96,49 @@ public class BookService : IBookService
         {
             return books;
         }
-        
+
         return books.Where(book => book.Authors
             .Any(author => (author.FirstName.ToLower() + " " + author.LastName.ToLower()).Contains(authorName)));
     }
-    
-    private IQueryable<Book> FilterByTimeSinceAdded(IQueryable<Book> books, TimeSpan added)
+
+    private IQueryable<Book> FilterByTimeSinceAdded(IQueryable<Book> books, TimeSpan timePassed)
     {
-        return books;
+        if (timePassed == default)
+        {
+            return books;
+        }
+
+        DateTime lastAcceptedTime = DateTime.Now.Subtract(timePassed);
+        return books
+            .Where(book => lastAcceptedTime <= book.CreationDate);
     }
-    
-    private IQueryable<Book> FilterByFormat(IQueryable<Book> books, string format)
+
+    private IQueryable<Book> FilterByFormat(IQueryable<Book> books, BookFormats format)
     {
-        return books;
+        if (format == default)
+        {
+            return books;
+        }
+
+        return books.Where(book => book.Format == format);
     }
-    
+
     private IQueryable<Book> FilterByOptions(IQueryable<Book> books, BookRequestParameter bookRequestParameter)
     {
+        if (bookRequestParameter.Read)
+            books = books.Where(book => book.CurrentPage == book.Pages);
+
+        if (bookRequestParameter.Unread)
+            books = books.Where(book => book.CurrentPage != book.Pages);
+        
         return books;
     }
-    
+
     private IQueryable<Book> FilterByTags(IQueryable<Book> books, string tag)
     {
         return books;
     }
-    
+
     private IQueryable<Book> SortByCategories(IQueryable<Book> books, BookSortOptions sortOption)
     {
         return sortOption switch
