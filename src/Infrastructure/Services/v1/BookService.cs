@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Application.Common.DTOs.Books;
 using Application.Common.Enums;
 using Application.Common.Exceptions;
@@ -58,16 +59,23 @@ public class BookService : IBookService
         var books = _bookRepository.GetBooks(user.Id);
         await _bookRepository.LoadRelationShipsAsync(books);
 
-        var result = books.SortByBestMatch(bookRequestParameter.SearchString.ToLower())
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
+
+        var result = books
+            .FilterByTags(bookRequestParameter.Tag)
             .FilterByAuthor(bookRequestParameter.Author.ToLower())
             .FilterByTimeSinceAdded(bookRequestParameter.TimePassed)
             .FilterByFormat(bookRequestParameter.Format)
             .FilterByOptions(bookRequestParameter)
-            .FilterByTags(bookRequestParameter.Tag)
-            .PaginateBooks(bookRequestParameter.PageNumber, bookRequestParameter.PageSize)
-            .SortByCategories(bookRequestParameter.SortBy);
+            .SortByBestMatch(bookRequestParameter.SearchString.ToLower())
+            .SortByCategories(bookRequestParameter.SortBy, bookRequestParameter.SearchString)
+            .PaginateBooks(bookRequestParameter.PageNumber, bookRequestParameter.PageSize);
         
-
+        sw.Stop();
+        Console.WriteLine("--- BENCHMARK --- " + sw.ElapsedMilliseconds + " ms");
+        
+        
         return await result.Select(book => _mapper.Map<BookOutDto>(book)).ToListAsync();
     }
 }

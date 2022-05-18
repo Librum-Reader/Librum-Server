@@ -46,14 +46,14 @@ public static class QueryableExtensions
             return books;
         }
 
-        DateTime lastAcceptedTime = DateTime.Now.Subtract(timePassed);
+        var lastAcceptedTime = DateTime.Now.Subtract(timePassed);
         return books
-            .Where(book => lastAcceptedTime <= book.CreationDate);
+            .Where(book => book.CreationDate >= lastAcceptedTime);
     }
 
     public static IQueryable<Book> FilterByFormat(this IQueryable<Book> books, BookFormats format)
     {
-        if (format == default)
+        if (format == BookFormats.None)
         {
             return books;
         }
@@ -85,8 +85,14 @@ public static class QueryableExtensions
             .Take(pageSize);
     }
 
-    public static IQueryable<Book> SortByCategories(this IQueryable<Book> books, BookSortOptions sortOption)
+    public static IQueryable<Book> SortByCategories(this IQueryable<Book> books, BookSortOptions sortOption, string sortString)
     {
+        // Dont sort by categories, when sorting by a search string
+        if (sortString.Length !> 0)
+        {
+            return books;
+        }
+        
         return sortOption switch
         {
             BookSortOptions.Nothing => books,
@@ -96,11 +102,12 @@ public static class QueryableExtensions
             BookSortOptions.TitleLexicAsc => books.OrderBy(book => book.Title),
             BookSortOptions.TitleLexicDec => books.OrderByDescending(book => book.Title),
             BookSortOptions.AuthorLexicAsc => books
-                .OrderBy(book => book.Authors.ElementAtOrDefault(0).FirstName == null)
-                .ThenBy(book => book.Authors.ElementAtOrDefault(0).LastName),
+                .OrderBy(book => String.IsNullOrEmpty(book.Authors.First().FirstName))  // Move books without authors to the end
+                .ThenBy(book => book.Authors.First().FirstName)
+                .ThenBy(book => book.Authors.FirstOrDefault().LastName),
             BookSortOptions.AuthorLexicDec => books
-                .OrderByDescending(book => book.Authors.ElementAtOrDefault(0).FirstName)
-                .ThenByDescending(book => book.Authors.ElementAtOrDefault(0).LastName),
+                .OrderByDescending(book => book.Authors.First().FirstName)
+                .ThenByDescending(book => book.Authors.FirstOrDefault().LastName),
             _ => throw new InvalidParameterException("Selected a not supported 'SortBy' value")
         };
     }
