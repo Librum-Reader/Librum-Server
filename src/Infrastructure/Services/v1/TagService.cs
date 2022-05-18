@@ -34,7 +34,7 @@ public class TagService : ITagService
 
         await _userRepository.LoadRelationShipsAsync(user);
         
-        if (_tagRepository.AlreadyExists(user, tagIn))
+        if (_tagRepository.Exists(user, tagIn))
         {
             throw new InvalidParameterException("A tag with the given name already exists");
         }
@@ -43,6 +43,27 @@ public class TagService : ITagService
         var tag = _mapper.Map<Tag>(tagIn);
         user.Tags.Add(tag);
         
+        await _tagRepository.SaveChangesAsync();
+    }
+
+    public async Task DeleteTagAsync(string userEmail, string tagName)
+    {
+        var user = await _userRepository.GetAsync(userEmail, trackChanges: true);
+        if (user == null)
+        {
+            throw new InvalidParameterException("No user with the given email exists");
+        }
+        
+        await _userRepository.LoadRelationShipsAsync(user);
+
+        var tag = _tagRepository.Get(user, tagName);
+        if (tag == null)
+        {
+            throw new InvalidParameterException("A tag with the given doesnt exist");
+        }
+
+
+        _tagRepository.DeleteTag(tag);
         await _tagRepository.SaveChangesAsync();
     }
 }
