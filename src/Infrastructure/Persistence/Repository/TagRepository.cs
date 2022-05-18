@@ -21,8 +21,18 @@ public class TagRepository : ITagRepository
         return await _context.SaveChangesAsync();
     }
 
-    public bool AlreadyExists(User user, TagInDto tagIn)
+    public bool Exists(User user, TagInDto tagIn)
     {
         return user.Tags.Any(tag => tag.Name == tagIn.Name);
+    }
+
+    public Tag Get(User user, string name)
+    {
+        return user.Tags.SingleOrDefault(tag => tag.Name == name);
+    }
+
+    public void DeleteTag(Tag tag)
+    {
+        _context.Remove(tag);
     }
 }

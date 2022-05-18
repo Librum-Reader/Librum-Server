@@ -6,5 +6,7 @@ namespace Application.Common.Interfaces.Repositories;
 public interface ITagRepository
 {
     public Task<int> SaveChangesAsync();
-    public bool AlreadyExists(User user, TagInDto tagIn);
+    public bool Exists(User user, TagInDto tagIn);
+    public Tag Get(User user, string name);
+    void DeleteTag(Tag tag);
 }
