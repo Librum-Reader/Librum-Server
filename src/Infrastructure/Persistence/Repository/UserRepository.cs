@@ -36,5 +36,6 @@ public class UserRepository : IUserRepository
     public async Task LoadRelationShipsAsync(User user)
     {
         await _context.Entry(user).Collection(p => p.Books).LoadAsync();
+        await _context.Entry(user).Collection(p => p.Tags).LoadAsync();
     }
 }

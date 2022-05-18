@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using Application.Common.DTOs.Books;
-using Application.Common.Enums;
 using Application.Common.Exceptions;
 using Application.Common.Extensions;
 using Application.Common.Interfaces.Repositories;
@@ -8,7 +7,6 @@ using Application.Common.Interfaces.Services;
 using Application.Common.RequestParameters;
 using AutoMapper;
 using Domain.Entities;
-using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.v1;

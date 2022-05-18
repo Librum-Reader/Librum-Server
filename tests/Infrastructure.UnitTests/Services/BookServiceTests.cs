@@ -95,7 +95,4 @@ public class BookServiceTests
         // Assert
         await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.CreateBookAsync("JohnDoe@gmail.com", new BookInDto()));
     }
-    
-    // [Fact]
-    // public async Task GetBooksAsync_
 }
