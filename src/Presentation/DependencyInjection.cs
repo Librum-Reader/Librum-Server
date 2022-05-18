@@ -10,7 +10,6 @@ using Infrastructure.Services.v1;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 
@@ -27,6 +26,8 @@ public static class DependencyInjection
         services.AddScoped<IAuthenticationManager, AuthenticationManager>();
         services.AddScoped<IBookService, BookService>();
         services.AddScoped<IBookRepository, BookRepository>();
+        services.AddScoped<ITagService, TagService>();
+        services.AddScoped<ITagRepository, TagRepository>();
         services.AddLogging();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddDbContext<DataContext>(options =>

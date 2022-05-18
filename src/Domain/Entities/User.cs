@@ -1,3 +1,4 @@
+using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,4 +28,6 @@ public class User : IdentityUser
 
     
     public ICollection<Book> Books { get; set; }
+
+    public ICollection<Tag> Tags { get; set; }
 }

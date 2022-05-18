@@ -1,9 +1,6 @@
 using Application.Common.Interfaces.Services;
 using Application.Common.Middleware;
-using AutoMapper;
-using Domain.Entities;
 using Infrastructure.Persistence;
-using Microsoft.AspNetCore.Identity;
 using Presentation;
 
 
