@@ -59,7 +59,7 @@ public class TagService : ITagService
         var tag = _tagRepository.Get(user, tagName);
         if (tag == null)
         {
-            throw new InvalidParameterException("A tag with the given doesnt exist");
+            throw new InvalidParameterException("No tag with the given name exists");
         }
 
 
