@@ -16,12 +16,15 @@ public class BookService : IBookService
     private readonly IMapper _mapper;
     private readonly IBookRepository _bookRepository;
     private readonly IUserRepository _userRepository;
+    private readonly ITagRepository _tagRepository;
 
-    public BookService(IMapper mapper, IBookRepository bookRepository, IUserRepository userRepository)
+    public BookService(IMapper mapper, IBookRepository bookRepository, 
+        IUserRepository userRepository, ITagRepository tagRepository)
     {
         _mapper = mapper;
         _bookRepository = bookRepository;
         _userRepository = userRepository;
+        _tagRepository = tagRepository;
     }
 
 
@@ -56,9 +59,7 @@ public class BookService : IBookService
 
         var books = _bookRepository.GetBooks(user.Id);
         await _bookRepository.LoadRelationShipsAsync(books);
-
-        Stopwatch sw = new Stopwatch();
-        sw.Start();
+        
 
         var result = books
             .FilterByTags(bookRequestParameter.Tag)
@@ -69,11 +70,40 @@ public class BookService : IBookService
             .SortByBestMatch(bookRequestParameter.SearchString.ToLower())
             .SortByCategories(bookRequestParameter.SortBy, bookRequestParameter.SearchString)
             .PaginateBooks(bookRequestParameter.PageNumber, bookRequestParameter.PageSize);
-        
-        sw.Stop();
-        Console.WriteLine("--- BENCHMARK --- " + sw.ElapsedMilliseconds + " ms");
-        
-        
+
+
         return await result.Select(book => _mapper.Map<BookOutDto>(book)).ToListAsync();
+    }
+
+    public async Task AddTagsToBookAsync(string email, string bookTitle, IEnumerable<string> tagNames)
+    {
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        if (user == null)
+        {
+            throw new InvalidParameterException("No user with the given email exists");
+        }
+
+        await _userRepository.LoadRelationShipsAsync(user);
+        
+        var book = user.Books.SingleOrDefault(book => book.Title == bookTitle);
+        if (book == null)
+        {
+            throw new InvalidParameterException("No book with the given name exists");
+        }
+
+        await _bookRepository.LoadRelationShipsAsync(book);
+        
+        foreach (var tagName in tagNames)
+        {
+            var tag = user.Tags.SingleOrDefault(tag => tag.Name == tagName);
+            if (tag == null)
+            {
+                throw new InvalidParameterException("No tag called " + tagName + " exists");
+            }
+            
+            book.Tags.Add(tag);
+        }
+
+        await _bookRepository.SaveChangesAsync();
     }
 }

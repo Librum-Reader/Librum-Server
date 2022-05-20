@@ -36,11 +36,12 @@ public class Book
 
     [Required]
     public DateTime LastOpened { get; set; }
-    
-    
+
+
+    public ICollection<Tag> Tags { get; set; }
     
     public ICollection<Author> Authors { get; set; }
-    
+
     public string UserId { get; set; }
     public User User { get; set; }
 }

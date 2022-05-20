@@ -34,13 +34,15 @@ public class TagServiceTests
     public async Task CreateTagAsync_ShouldCallSaveChanges_WhenUserExistsAndTagUnique()
     {
         // Arrange
+        var user = new User
+        {
+            Tags = new List<Tag>()
+        };
+        
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(new User { Tags = new List<Tag>() });
+            .ReturnsAsync(user);
 
         _userRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<User>()));
-        
-        _tagRepositoryMock.Setup(x => x.Exists(new User(), new TagInDto()))
-            .Returns(false);
 
         _tagRepositoryMock.Setup(x => x.SaveChangesAsync())
             .ReturnsAsync(1);
@@ -60,9 +62,6 @@ public class TagServiceTests
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(() => null);
 
-        _tagRepositoryMock.Setup(x => x.Exists(new User(), new TagInDto()))
-            .Returns(false);
-        
 
         // Assert
         await Assert.ThrowsAsync<InvalidParameterException>(() => _tagService.CreateTagAsync("JohnDoe@gmail.com", new TagInDto()));
@@ -72,31 +71,45 @@ public class TagServiceTests
     public async Task CreateTagAsync_ShouldThrow_WhenTagNameAlreadyExists()
     {
         // Arrange
+        const string tagName = "TagOne";
+        var user = new User
+        {
+            Tags = new List<Tag>
+            {
+                new Tag { Name = tagName }
+            }
+        };
+        
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(() => null);
+            .ReturnsAsync(user);
         
         _userRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<User>()));
         
-        _tagRepositoryMock.Setup(x => x.Exists(new User(), new TagInDto()))
-            .Returns(true);
+        
 
         
         // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => _tagService.CreateTagAsync("JohnDoe@gmail.com", new TagInDto()));
+        await Assert.ThrowsAsync<InvalidParameterException>(() => 
+            _tagService.CreateTagAsync("JohnDoe@gmail.com", new TagInDto { Name = tagName}));
     }
     
     [Fact]
     public async Task DeleteTagAsync_ShouldCallSaveChangesAsync_WhenUserExistsAndTagExists()
     {
-        // Arrange
+        // 
+        var user = new User
+        {
+            Tags = new List<Tag>
+            {
+                new Tag { Name = "MyTag" }
+            }
+        };
+        
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(new User { Tags = new List<Tag>() });
+            .ReturnsAsync(user);
         
         _userRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<User>()));
-        
-        _tagRepositoryMock.Setup(x => x.Get(It.IsAny<User>(), It.IsAny<string>()))
-            .Returns(() => new Tag());
-        
+
         _tagRepositoryMock.Setup(x => x.SaveChangesAsync())
             .ReturnsAsync(1);
         
@@ -124,14 +137,11 @@ public class TagServiceTests
     {
         // Arrange
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(new User());
+            .ReturnsAsync(new User { Tags = new List<Tag>() });
 
         _userRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<User>()));
-        
-        _tagRepositoryMock.Setup(x => x.Get(It.IsAny<User>(), It.IsAny<string>()))
-            .Returns(() => null);
-        
-        
+
+
         // Assert
         await Assert.ThrowsAsync<InvalidParameterException>(() => _tagService.DeleteTagAsync("JohnDoe@gmail.com", "MyTag"));
     }

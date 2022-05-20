@@ -20,6 +20,7 @@ public class BookServiceTests
 {
     private readonly Mock<IBookRepository> _bookRepositoryMock = new Mock<IBookRepository>();
     private readonly Mock<IUserRepository> _userRepositoryMock = new Mock<IUserRepository>();
+    private readonly Mock<ITagRepository> _tagRepositoryMock = new Mock<ITagRepository>();
     private readonly IMapper _mapper;
     private readonly IBookService _bookService;
     
@@ -30,7 +31,8 @@ public class BookServiceTests
             { new BookAutoMapperProfile(), new AuthorAutoMappingProfile() }));
         _mapper = new Mapper(mapperConfig);
 
-        _bookService = new BookService(_mapper, _bookRepositoryMock.Object, _userRepositoryMock.Object);
+        _bookService = new BookService(_mapper, _bookRepositoryMock.Object, 
+            _userRepositoryMock.Object, _tagRepositoryMock.Object);
     }
 
 
@@ -94,5 +96,97 @@ public class BookServiceTests
 
         // Assert
         await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.CreateBookAsync("JohnDoe@gmail.com", new BookInDto()));
+    }
+
+    [Fact]
+    public async Task AddTagsToBookAsync_ShouldCallSaveChangesAsync_WhenUserAndTagExist()
+    {
+        // Arrange
+        const string firstTagName = "TagOne";
+        const string secondTagName = "TagTwo";
+        
+        const string bookName = "SomeBook";
+        var user = new User
+        {
+            Books = new List<Book>
+            {
+                new Book { Title = bookName, Tags = new List<Tag>() }
+            },
+            Tags = new List<Tag>
+            {
+                new Tag { Name = firstTagName },
+                new Tag { Name = secondTagName }
+            }
+        };
+        
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(user);
+
+        _userRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<User>()));
+
+        _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
+            .ReturnsAsync(1);
+
+        
+        // Act
+        await _bookService.AddTagsToBookAsync("JohnDoe@gmail.com", bookName, 
+            new List<string> { firstTagName, secondTagName });
+
+        // Assert
+        _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
+    }
+    
+    [Fact]
+    public async Task AddTagsToBookAsync_ShouldThrow_WhenUserDoesNotExist()
+    {
+        // Arrange
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(() => null);
+        
+        
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() => 
+            _bookService.AddTagsToBookAsync("JohnDoe@gmail.com", "SomeBook", new List<string>()));
+    }
+    
+    [Fact]
+    public async Task AddTagsToBookAsync_ShouldThrow_WhenBookDoesNotExist()
+    {
+        // Arrange
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(new User { Books = new List<Book>() });
+        
+        _userRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<User>()));
+        
+
+
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() => 
+            _bookService.AddTagsToBookAsync("JohnDoe@gmail.com", "SomeBook", new List<string> { "MyTag" }));
+    }
+    
+    [Fact]
+    public async Task AddTagsToBookAsync_ShouldThrow_WhenTagDoesNotExist()
+    {
+        // Arrange
+        const string bookName = "SomeBook";
+        var user = new User
+        {
+            Books = new List<Book>
+            {
+                new Book { Title = "SomeBook", Tags = new List<Tag>() }
+            },
+            Tags = new List<Tag>()
+        };
+        
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(user);
+        
+        _userRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<User>()));
+
+
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() => 
+            _bookService.AddTagsToBookAsync("JohnDoe@gmail.com", bookName, new List<string>{ "TagOne", "TagTwo" }));
     }
 }

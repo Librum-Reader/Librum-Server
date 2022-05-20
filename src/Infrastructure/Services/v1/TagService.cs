@@ -34,7 +34,7 @@ public class TagService : ITagService
 
         await _userRepository.LoadRelationShipsAsync(user);
         
-        if (_tagRepository.Exists(user, tagIn))
+        if (user.Tags.Any(tag => tag.Name == tagIn.Name))
         {
             throw new InvalidParameterException("A tag with the given name already exists");
         }
@@ -56,7 +56,7 @@ public class TagService : ITagService
         
         await _userRepository.LoadRelationShipsAsync(user);
 
-        var tag = _tagRepository.Get(user, tagName);
+        var tag = user.Tags.SingleOrDefault(tag => tag.Name == tagName);
         if (tag == null)
         {
             throw new InvalidParameterException("No tag with the given name exists");

@@ -7,4 +7,5 @@ public interface IBookService
 {
     public Task CreateBookAsync(string email, BookInDto bookInDto);
     Task<IList<BookOutDto>> GetBooksAsync(string email, BookRequestParameter bookRequestParameter);
+    public Task AddTagsToBookAsync(string email, string bookTitle, IEnumerable<string> tagNames);
 }

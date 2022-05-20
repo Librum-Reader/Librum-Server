@@ -64,4 +64,25 @@ public class BookController : ControllerBase
             return BadRequest(e.Message);
         }
     }
+    
+    [HttpPost("tag/{bookTitle}")]
+    public async Task<ActionResult> AddTag([FromBody] IEnumerable<string> tagNames, string bookTitle)
+    {
+        if (tagNames == null && string.IsNullOrEmpty(bookTitle))
+        {
+            _logger.LogWarning("Adding tags to book failed: Invalid data");
+            return BadRequest("The provided data is invalid");
+        }
+
+        try
+        {
+            await _bookService.AddTagsToBookAsync(HttpContext.User.Identity!.Name, bookTitle, tagNames);
+            return Ok();
+        }
+        catch (InvalidParameterException e)
+        {
+            _logger.LogWarning("Adding tags to book failed: {ErrorMessage}", e.Message);
+            return BadRequest(e.Message);
+        }
+    }
 }
