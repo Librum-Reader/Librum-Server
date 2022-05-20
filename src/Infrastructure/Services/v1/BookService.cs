@@ -106,4 +106,34 @@ public class BookService : IBookService
 
         await _bookRepository.SaveChangesAsync();
     }
+
+    public async Task RemoveTagFromBookAsync(string email, string bookTitle, string tagName)
+    {
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        if (user == null)
+        {
+            throw new InvalidParameterException("No user with the given email exists");
+        }
+
+        await _userRepository.LoadRelationShipsAsync(user);
+
+        var book = user.Books.SingleOrDefault(book => book.Title == bookTitle);
+        if (book == null)
+        {
+            throw new InvalidParameterException("No book with the given title exists");
+        }
+
+        await _bookRepository.LoadRelationShipsAsync(book);
+
+        var tag = book.Tags.SingleOrDefault(tag => tag.Name == tagName);
+        if (tag == null)
+        {
+            throw new InvalidParameterException("No tag with the given name exists");
+        }
+
+
+        book.Tags.Remove(tag);
+        
+        await _bookRepository.SaveChangesAsync();
+    }
 }

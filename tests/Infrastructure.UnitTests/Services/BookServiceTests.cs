@@ -23,15 +23,15 @@ public class BookServiceTests
     private readonly Mock<ITagRepository> _tagRepositoryMock = new Mock<ITagRepository>();
     private readonly IMapper _mapper;
     private readonly IBookService _bookService;
-    
-    
+
+
     public BookServiceTests()
     {
-        var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfiles(new List<Profile> 
+        var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfiles(new List<Profile>
             { new BookAutoMapperProfile(), new AuthorAutoMappingProfile() }));
         _mapper = new Mapper(mapperConfig);
 
-        _bookService = new BookService(_mapper, _bookRepositoryMock.Object, 
+        _bookService = new BookService(_mapper, _bookRepositoryMock.Object,
             _userRepositoryMock.Object, _tagRepositoryMock.Object);
     }
 
@@ -49,7 +49,7 @@ public class BookServiceTests
             CurrentPage = 2,
             Authors = new Collection<AuthorInDto>()
         };
-        
+
         for (int i = 0; i < 14; ++i)
         {
             bookDto.Authors.Add(new AuthorInDto { FirstName = "Someone", LastName = "SomeonesLastName" });
@@ -59,7 +59,7 @@ public class BookServiceTests
             .ReturnsAsync(new User { Books = new Collection<Book>() });
 
         _userRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<User>()));
-        
+
         _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
             .ReturnsAsync(1);
 
@@ -77,10 +77,11 @@ public class BookServiceTests
         // Arrange
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(() => null);
-        
+
 
         // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.CreateBookAsync("JohnDoe@gmail.com", new BookInDto()));
+        await Assert.ThrowsAsync<InvalidParameterException>(() =>
+            _bookService.CreateBookAsync("JohnDoe@gmail.com", new BookInDto()));
     }
 
     [Fact]
@@ -89,22 +90,23 @@ public class BookServiceTests
         // Arrange
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new User());
-        
+
         _bookRepositoryMock.Setup(x => x.BookAlreadyExists(It.IsAny<string>()))
             .ReturnsAsync(true);
-        
+
 
         // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.CreateBookAsync("JohnDoe@gmail.com", new BookInDto()));
+        await Assert.ThrowsAsync<InvalidParameterException>(() =>
+            _bookService.CreateBookAsync("JohnDoe@gmail.com", new BookInDto()));
     }
 
     [Fact]
-    public async Task AddTagsToBookAsync_ShouldCallSaveChangesAsync_WhenUserAndTagExist()
+    public async Task AddTagsToBookAsync_ShouldCallSaveChangesAsync_WhenDataIsValid()
     {
         // Arrange
         const string firstTagName = "TagOne";
         const string secondTagName = "TagTwo";
-        
+
         const string bookName = "SomeBook";
         var user = new User
         {
@@ -118,7 +120,7 @@ public class BookServiceTests
                 new Tag { Name = secondTagName }
             }
         };
-        
+
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(user);
 
@@ -127,44 +129,43 @@ public class BookServiceTests
         _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
             .ReturnsAsync(1);
 
-        
+
         // Act
-        await _bookService.AddTagsToBookAsync("JohnDoe@gmail.com", bookName, 
+        await _bookService.AddTagsToBookAsync("JohnDoe@gmail.com", bookName,
             new List<string> { firstTagName, secondTagName });
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
-    
+
     [Fact]
     public async Task AddTagsToBookAsync_ShouldThrow_WhenUserDoesNotExist()
     {
         // Arrange
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(() => null);
-        
-        
+
+
         // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => 
+        await Assert.ThrowsAsync<InvalidParameterException>(() =>
             _bookService.AddTagsToBookAsync("JohnDoe@gmail.com", "SomeBook", new List<string>()));
     }
-    
+
     [Fact]
     public async Task AddTagsToBookAsync_ShouldThrow_WhenBookDoesNotExist()
     {
         // Arrange
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new User { Books = new List<Book>() });
-        
+
         _userRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<User>()));
-        
 
 
         // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => 
+        await Assert.ThrowsAsync<InvalidParameterException>(() =>
             _bookService.AddTagsToBookAsync("JohnDoe@gmail.com", "SomeBook", new List<string> { "MyTag" }));
     }
-    
+
     [Fact]
     public async Task AddTagsToBookAsync_ShouldThrow_WhenTagDoesNotExist()
     {
@@ -178,15 +179,103 @@ public class BookServiceTests
             },
             Tags = new List<Tag>()
         };
+
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(user);
+
+        _userRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<User>()));
+
+
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() =>
+            _bookService.AddTagsToBookAsync("JohnDoe@gmail.com", bookName, new List<string> { "TagOne", "TagTwo" }));
+    }
+
+    [Fact]
+    public async Task RemoveTagFromBookAsync_ShouldCallSaveChangesAsync_WhenDataIsValid()
+    {
+        // Arrange
+        const string tagName = "TagOne";
+        var user = new User
+        {
+            Books = new List<Book>
+            {
+                new Book
+                {
+                    Title = "SomeBook",
+                    Tags = new List<Tag>
+                    {
+                        new Tag { Name = tagName }
+                    }
+                },
+            }
+        };
         
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(user);
+
+        _userRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<User>()));
+
+
+        // Act
+        await _bookService.RemoveTagFromBookAsync("JohnDoe@gmail.com", "SomeBook", tagName);
+
+        // Assert
+        _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
+    }
+
+    [Fact]
+    public async Task RemoveTagFromBookAsync_ShouldThrow_WhenUserDoesNotExist()
+    {
+        // Arrange
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(() => null);
+
+
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() =>
+            _bookService.RemoveTagFromBookAsync("JohnDoe@gmail.com", "SomeBook", "TagOne"));
+    }
+
+    [Fact]
+    public async Task RemoveTagFromBookAsync_ShouldThrow_WhenBookDoesNotExist()
+    {
+        // Arrange
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(new User { Books = new List<Book>() });
         
         _userRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<User>()));
 
 
         // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => 
-            _bookService.AddTagsToBookAsync("JohnDoe@gmail.com", bookName, new List<string>{ "TagOne", "TagTwo" }));
+        await Assert.ThrowsAsync<InvalidParameterException>(() =>
+            _bookService.RemoveTagFromBookAsync("JohnDoe@gmail.com", "SomeBook", "TagOne"));
+    }
+    
+    [Fact]
+    public async Task RemoveTagFromBookAsync_ShouldThrow_WhenTagDoesNotExist()
+    {
+        // Arrange
+        var user = new User
+        {
+            Books = new List<Book>
+            {
+                new Book
+                {
+                    Title = "SomeBook",
+                    Tags = new List<Tag>()
+                },
+            }
+        };
+        
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(new User { Books = new List<Book>() });
+        
+        _userRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<User>()));
+
+
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() =>
+            _bookService.RemoveTagFromBookAsync("JohnDoe@gmail.com", "SomeBook", "TagOne"));
     }
 }

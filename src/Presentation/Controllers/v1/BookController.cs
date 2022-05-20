@@ -85,4 +85,25 @@ public class BookController : ControllerBase
             return BadRequest(e.Message);
         }
     }
+    
+    [HttpDelete("tag/{bookTitle}/{tagName}")]
+    public async Task<ActionResult> AddTag(string bookTitle, string tagName)
+    {
+        if (string.IsNullOrEmpty(tagName) && string.IsNullOrEmpty(bookTitle))
+        {
+            _logger.LogWarning("Removing tags from book failed: Invalid data");
+            return BadRequest("The provided data is invalid");
+        }
+
+        try
+        {
+            await _bookService.RemoveTagFromBookAsync(HttpContext.User.Identity!.Name, bookTitle, tagName);
+            return Ok();
+        }
+        catch (InvalidParameterException e)
+        {
+            _logger.LogWarning("Removing tags from book failed: {ErrorMessage}", e.Message);
+            return BadRequest(e.Message);
+        }
+    }
 }
