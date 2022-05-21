@@ -4,6 +4,7 @@ using Application.Common.DTOs.Users;
 using Application.Common.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Enums;
 
 namespace Infrastructure.Persistence;
 
@@ -60,7 +61,7 @@ public static class DataContextSeeding
                     }
                 },
                 Pages = 1200,
-                Format = "PDF",
+                Format = BookFormats.PDF,
                 CurrentPage = 2
             },
             new BookInDto
@@ -76,7 +77,7 @@ public static class DataContextSeeding
                     }
                 },
                 Pages = 409,
-                Format = "EPUB",
+                Format = BookFormats.Mobi,
                 CurrentPage = 211
             },
             new BookInDto
@@ -92,7 +93,7 @@ public static class DataContextSeeding
                     }
                 },
                 Pages = 931200,
-                Format = "Mobi",
+                Format = BookFormats.EPUB,
                 CurrentPage = 1234
             }
         };

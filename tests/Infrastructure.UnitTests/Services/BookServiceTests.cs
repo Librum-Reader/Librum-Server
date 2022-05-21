@@ -4,14 +4,13 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
-using Application.Common.Enums;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Mappings;
-using Application.Common.RequestParameters;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Enums;
 using Infrastructure.Services.v1;
 using Moq;
 using Xunit;
@@ -46,7 +45,7 @@ public partial class BookServiceTests
         {
             Title = "Some book",
             ReleaseDate = DateTime.Now,
-            Format = "PDF",
+            Format = BookFormats.PDF,
             Pages = 1200,
             CurrentPage = 2,
             Authors = new Collection<AuthorInDto>()

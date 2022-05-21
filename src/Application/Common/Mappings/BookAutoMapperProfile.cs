@@ -13,6 +13,7 @@ public class BookAutoMapperProfile : Profile
             .ForMember(dest => dest.CreationDate, temp => temp.MapFrom(src => DateTime.Now))
             .ForMember(dest => dest.LastOpened, temp => temp.MapFrom(src => DateTime.Now));
 
-        CreateMap<Book, BookOutDto>();
+        CreateMap<Book, BookOutDto>()
+            .ForMember(dest => dest.Format, temp => temp.MapFrom(src => src.Format.ToString()));
     }
 }

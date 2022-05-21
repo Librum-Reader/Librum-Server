@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Application.Common.DTOs.Authors;
+using Domain.Enums;
 
 namespace Application.Common.DTOs.Books;
 
@@ -16,8 +17,7 @@ public class BookInDto
     [Range(0, int.MaxValue)]
     public int Pages { get; set; }
     
-    [MaxLength(40, ErrorMessage = "The provided book format name is too long")]
-    public string Format { get; set; }
+    public BookFormats Format { get; set; }
     
     [Required]
     [Range(0, int.MaxValue)]

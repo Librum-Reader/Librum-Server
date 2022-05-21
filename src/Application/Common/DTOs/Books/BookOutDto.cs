@@ -1,4 +1,5 @@
 using Application.Common.DTOs.Authors;
+using Domain.Enums;
 
 namespace Application.Common.DTOs.Books;
 
