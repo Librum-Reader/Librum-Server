@@ -11,6 +11,6 @@ public class AuthorInDto
 
     [Required]
     [MinLength(2, ErrorMessage = "The provided lastname is too short")]
-    [MaxLength(50, ErrorMessage = "The provided last is too long")]
+    [MaxLength(50, ErrorMessage = "The provided lastname is too long")]
     public string LastName { get; set; }
 }
