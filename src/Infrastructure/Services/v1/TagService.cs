@@ -64,6 +64,7 @@ public class TagService : ITagService
 
 
         _tagRepository.DeleteTag(tag);
+        
         await _tagRepository.SaveChangesAsync();
     }
 }

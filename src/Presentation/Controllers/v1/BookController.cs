@@ -65,10 +65,10 @@ public class BookController : ControllerBase
         }
     }
     
-    [HttpPost("tag/{bookTitle}")]
+    [HttpPost("tags/{bookTitle}")]
     public async Task<ActionResult> AddTag([FromBody] IEnumerable<string> tagNames, string bookTitle)
     {
-        if (tagNames == null && string.IsNullOrEmpty(bookTitle))
+        if (tagNames == null || string.IsNullOrEmpty(bookTitle))
         {
             _logger.LogWarning("Adding tags to book failed: Invalid data");
             return BadRequest("The provided data is invalid");
@@ -86,10 +86,10 @@ public class BookController : ControllerBase
         }
     }
     
-    [HttpDelete("tag/{bookTitle}/{tagName}")]
+    [HttpDelete("tags/{bookTitle}/{tagName}")]
     public async Task<ActionResult> AddTag(string bookTitle, string tagName)
     {
-        if (string.IsNullOrEmpty(tagName) && string.IsNullOrEmpty(bookTitle))
+        if (string.IsNullOrEmpty(tagName) || string.IsNullOrEmpty(bookTitle))
         {
             _logger.LogWarning("Removing tags from book failed: Invalid data");
             return BadRequest("The provided data is invalid");

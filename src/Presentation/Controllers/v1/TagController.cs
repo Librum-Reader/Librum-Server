@@ -46,6 +46,12 @@ public class TagController : ControllerBase
     [HttpDelete("{tagName}")]
     public async Task<ActionResult> DeleteTag(string tagName)
     {
+        if (string.IsNullOrEmpty(tagName))
+        {
+            _logger.LogWarning("Deleting tag failed: The provided tag name is invalid");
+            return BadRequest("The provided data is invalid");
+        }
+        
         try
         {
             await _tagService.DeleteTagAsync(HttpContext.User.Identity!.Name, tagName);
@@ -53,7 +59,7 @@ public class TagController : ControllerBase
         }
         catch (InvalidParameterException e)
         {
-            _logger.LogWarning("Creating tag failed: {ErrorMessage}", e.Message);
+            _logger.LogWarning("Deleting tag failed: {ErrorMessage}", e.Message);
             return BadRequest(e.Message);
         }
     }

@@ -4,10 +4,12 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
+using Application.Common.Enums;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Mappings;
+using Application.Common.RequestParameters;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Services.v1;
@@ -16,7 +18,7 @@ using Xunit;
 
 namespace Infrastructure.UnitTests.Services;
 
-public class BookServiceTests
+public partial class BookServiceTests
 {
     private readonly Mock<IBookRepository> _bookRepositoryMock = new Mock<IBookRepository>();
     private readonly Mock<IUserRepository> _userRepositoryMock = new Mock<IUserRepository>();
@@ -269,7 +271,7 @@ public class BookServiceTests
         };
         
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(new User { Books = new List<Book>() });
+            .ReturnsAsync(user);
         
         _userRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<User>()));
 
