@@ -51,13 +51,15 @@ public class UserService : IUserService
         {
             throw new InvalidParameterException("No user with the given email exists");
         }
+
+        ValidatePatchData(patchDoc);
         
         var userToPatch = _mapper.Map<UserForUpdateDto>(user);
         
         patchDoc.ApplyTo(userToPatch, controllerBase.ModelState);
         controllerBase.TryValidateModel(controllerBase.ModelState);
 
-        if (!controllerBase.ModelState.IsValid)
+        if (!controllerBase.ModelState.IsValid || !userToPatch.DataIsValid)
         {
             throw new InvalidParameterException("The provided data is invalid");
         }
@@ -65,5 +67,10 @@ public class UserService : IUserService
         _mapper.Map(userToPatch, user);
 
         await _userRepository.SaveChangesAsync();
+    }
+
+    private void ValidatePatchData(JsonPatchDocument<UserForUpdateDto> patchDoc)
+    {
+        // patchDoc.
     }
 }
