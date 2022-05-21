@@ -28,6 +28,7 @@ public static class DependencyInjection
         services.AddScoped<IBookRepository, BookRepository>();
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<ITagRepository, TagRepository>();
+        
         services.AddLogging();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddDbContext<DataContext>(options =>
@@ -43,7 +44,7 @@ public static class DependencyInjection
     {
         var builder = services.AddIdentityCore<User>(opt =>
         {
-            opt.Password.RequireDigit = false;
+            opt.Password.RequireDigit = true;
             opt.Password.RequireNonAlphanumeric = false;
             opt.Password.RequiredLength = 6;
             opt.User.RequireUniqueEmail = true;

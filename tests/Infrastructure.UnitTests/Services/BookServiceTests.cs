@@ -22,7 +22,6 @@ public partial class BookServiceTests
     private readonly Mock<IBookRepository> _bookRepositoryMock = new Mock<IBookRepository>();
     private readonly Mock<IUserRepository> _userRepositoryMock = new Mock<IUserRepository>();
     private readonly Mock<ITagRepository> _tagRepositoryMock = new Mock<ITagRepository>();
-    private readonly IMapper _mapper;
     private readonly IBookService _bookService;
 
 
@@ -30,9 +29,9 @@ public partial class BookServiceTests
     {
         var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfiles(new List<Profile>
             { new BookAutoMapperProfile(), new AuthorAutoMappingProfile() }));
-        _mapper = new Mapper(mapperConfig);
+        var mapper = new Mapper(mapperConfig);
 
-        _bookService = new BookService(_mapper, _bookRepositoryMock.Object,
+        _bookService = new BookService(mapper, _bookRepositoryMock.Object,
             _userRepositoryMock.Object);
     }
 
@@ -178,7 +177,7 @@ public partial class BookServiceTests
         {
             Books = new List<Book>
             {
-                new Book { Title = "SomeBook", Tags = new List<Tag>() }
+                new Book { Title = bookName, Tags = new List<Tag>() }
             },
             Tags = new List<Tag>()
         };
@@ -197,13 +196,15 @@ public partial class BookServiceTests
     {
         // Arrange
         const string tagName = "TagOne";
+        const string bookTitle = "SomeBook";
+
         var user = new User
         {
             Books = new List<Book>
             {
                 new Book
                 {
-                    Title = "SomeBook",
+                    Title = bookTitle,
                     Tags = new List<Tag>
                     {
                         new Tag { Name = tagName }
@@ -217,7 +218,7 @@ public partial class BookServiceTests
         
 
         // Act
-        await _bookService.RemoveTagFromBookAsync("JohnDoe@gmail.com", "SomeBook", tagName);
+        await _bookService.RemoveTagFromBookAsync("JohnDoe@gmail.com", bookTitle, tagName);
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
@@ -253,13 +254,15 @@ public partial class BookServiceTests
     public async Task RemoveTagFromBookAsync_ShouldThrow_WhenTagDoesNotExist()
     {
         // Arrange
+        const string bookTitle = "SomeBook";
+        
         var user = new User
         {
             Books = new List<Book>
             {
                 new Book
                 {
-                    Title = "SomeBook",
+                    Title = bookTitle,
                     Tags = new List<Tag>()
                 },
             }
@@ -271,6 +274,6 @@ public partial class BookServiceTests
 
         // Assert
         await Assert.ThrowsAsync<InvalidParameterException>(() =>
-            _bookService.RemoveTagFromBookAsync("JohnDoe@gmail.com", "SomeBook", "TagOne"));
+            _bookService.RemoveTagFromBookAsync("JohnDoe@gmail.com", bookTitle, "TagOne"));
     }
 }

@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Application.Common.DTOs;
 using Application.Common.DTOs.Users;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces;
@@ -19,16 +17,15 @@ public class AuthenticationServiceTests
 {
     private readonly Mock<UserManager<User>> _userManagerMock = TestHelpers.MockUserManager<User>();
     private readonly Mock<IAuthenticationManager> _authenticationManagerMock = new Mock<IAuthenticationManager>();
-    private readonly IMapper _mapper;
     private readonly AuthenticationService _authenticationService;
     
     
     public AuthenticationServiceTests()
     {
         var mapperConfig = new MapperConfiguration(cfg => { cfg.AddProfile<UserAutoMapperProfile>(); });
-        _mapper = new Mapper(mapperConfig);
+        var mapper = new Mapper(mapperConfig);
 
-        _authenticationService = new AuthenticationService(_mapper, _authenticationManagerMock.Object, _userManagerMock.Object);
+        _authenticationService = new AuthenticationService(mapper, _authenticationManagerMock.Object, _userManagerMock.Object);
     }
 
 
@@ -51,7 +48,7 @@ public class AuthenticationServiceTests
             .ReturnsAsync(token);
 
         // Act
-        string result = await _authenticationService.LoginUserAsync(loginDto);
+        var result = await _authenticationService.LoginUserAsync(loginDto);
 
         // Assert
         Assert.Equal(token, result);
@@ -79,7 +76,7 @@ public class AuthenticationServiceTests
     public async Task RegisterUserAsync_ShouldThrow_WhenUserAlreadyExists()
     {
         // Arrange
-        RegisterDto registerDto = new RegisterDto
+        var registerDto = new RegisterDto
         {
             Email = "JohnDoe@gmail.com",
             FirstName = "John",

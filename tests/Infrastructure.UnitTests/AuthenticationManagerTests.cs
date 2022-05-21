@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Threading.Tasks;
-using Application.Common.DTOs;
 using Application.Common.DTOs.Users;
 using Domain.Entities;
 using Infrastructure.JWT;
@@ -48,7 +46,7 @@ public class AuthenticationManagerTests
     {
         // Arrange
         _userManagerMock.Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
-            .ReturnsAsync(() => null);
+            .ReturnsAsync(() => null!);
 
         _userManagerMock.Setup(x => x.CheckPasswordAsync(It.IsAny<User>(), It.IsAny<string>()))
             .ReturnsAsync(true);
@@ -118,7 +116,7 @@ public class AuthenticationManagerTests
         
         
         // Act
-        string result = await _authenticationManager.CreateTokenAsync(loginDto);
+        var result = await _authenticationManager.CreateTokenAsync(loginDto);
 
         // Assert
         Assert.NotEmpty(result);

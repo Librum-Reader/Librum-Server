@@ -17,16 +17,15 @@ public class TagServiceTests
 {
     private readonly Mock<ITagRepository> _tagRepositoryMock = new Mock<ITagRepository>();
     private readonly Mock<IUserRepository> _userRepositoryMock = new Mock<IUserRepository>();
-    private readonly IMapper _mapper;
     private readonly ITagService _tagService;
     
     
     public TagServiceTests()
     {
         var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<TagAutoMapperProfile>());
-        _mapper = new Mapper(mapperConfig);
+        var mapper = new Mapper(mapperConfig);
 
-        _tagService = new TagService(_mapper, _tagRepositoryMock.Object, _userRepositoryMock.Object);
+        _tagService = new TagService(mapper, _tagRepositoryMock.Object, _userRepositoryMock.Object);
     }
 
 
@@ -91,12 +90,14 @@ public class TagServiceTests
     [Fact]
     public async Task DeleteTagAsync_ShouldCallSaveChangesAsync_WhenUserExistsAndTagExists()
     {
-        // 
+        // Arrange
+        const string tagName = "MyTag";
+        
         var user = new User
         {
             Tags = new List<Tag>
             {
-                new Tag { Name = "MyTag" }
+                new Tag { Name = tagName }
             }
         };
         
@@ -107,7 +108,7 @@ public class TagServiceTests
             .ReturnsAsync(1);
         
         // Act
-        await _tagService.DeleteTagAsync("JohnDoe@gmail.com", "MyTag");
+        await _tagService.DeleteTagAsync("JohnDoe@gmail.com", tagName);
         
         // Assert
         _tagRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);

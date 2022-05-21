@@ -36,9 +36,11 @@ public class UserServiceTests
     public async Task GetUserAsync_ShouldReturnUser_WhenUserExists()
     {
         // Arrange
+        const string userEmail = "johnDoe@gmail.com";
+        
         var user = new User
         {
-            Email = "johnDoe@gmail.com",
+            Email = userEmail,
             AccountCreation = DateTime.Now,
             FirstName = "John",
             LastName = "Doe"
@@ -49,7 +51,7 @@ public class UserServiceTests
         
         
         // Act
-        var result = await _userService.GetUserAsync("johnDoe@gmail.com");
+        var result = await _userService.GetUserAsync(userEmail);
         
         // Assert
         Assert.Equal(JsonConvert.SerializeObject(_mapper.Map<UserOutDto>(user)), JsonConvert.SerializeObject(result));
@@ -71,9 +73,11 @@ public class UserServiceTests
     public async Task DeleteUserAsync_ShouldDeleteUser_WhenUserExists()
     {
         // Arrange
+        const string userEmail = "johnDoe@gmail.com";
+        
         var user = new User
         {
-            Email = "johnDoe@gmail.com",
+            Email = userEmail,
             AccountCreation = DateTime.Now,
             FirstName = "John",
             LastName = "Doe"
@@ -84,7 +88,7 @@ public class UserServiceTests
 
         
         // Act
-        await _userService.DeleteUserAsync(user.Email);
+        await _userService.DeleteUserAsync(userEmail);
 
         // Assert
         _userRepositoryMock.Verify(x => x.Delete(It.IsAny<User>()), Times.Once);
@@ -95,9 +99,11 @@ public class UserServiceTests
     public async Task DeleteUserAsync_ShouldThrow_WhenUserDoesNotExist()
     {
         // Arrange
+        const string userEmail = "johnDoe@gmail.com";
+        
         var user = new User
         {
-            Email = "johnDoe@gmail.com",
+            Email = userEmail,
             AccountCreation = DateTime.Now,
             FirstName = "John",
             LastName = "Doe"
@@ -105,7 +111,7 @@ public class UserServiceTests
         
 
         // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => _userService.DeleteUserAsync(user.Email));
+        await Assert.ThrowsAsync<InvalidParameterException>(() => _userService.DeleteUserAsync(userEmail));
     }
 
     [Fact]
