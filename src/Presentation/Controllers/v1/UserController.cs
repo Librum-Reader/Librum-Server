@@ -1,11 +1,9 @@
-using Application.Common.DTOs;
 using Application.Common.DTOs.Users;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Presentation.Controllers.v1;
 

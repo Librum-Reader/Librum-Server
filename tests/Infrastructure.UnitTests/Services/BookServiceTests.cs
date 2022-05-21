@@ -33,7 +33,7 @@ public partial class BookServiceTests
         _mapper = new Mapper(mapperConfig);
 
         _bookService = new BookService(_mapper, _bookRepositoryMock.Object,
-            _userRepositoryMock.Object, _tagRepositoryMock.Object);
+            _userRepositoryMock.Object);
     }
 
 

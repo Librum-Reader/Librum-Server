@@ -1,4 +1,3 @@
-using Application.Common.DTOs;
 using Application.Common.DTOs.Users;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces.Services;
@@ -56,7 +55,8 @@ public class AuthenticationController : ControllerBase
 
         try
         {
-            return await _authenticationService.LoginUserAsync(loginDto);
+            var result = await _authenticationService.LoginUserAsync(loginDto);
+            return Ok(result);
         }
         catch (InvalidParameterException e)
         {

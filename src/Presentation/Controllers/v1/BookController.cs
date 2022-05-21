@@ -60,7 +60,7 @@ public class BookController : ControllerBase
         }
         catch (InvalidParameterException e)
         {
-            _logger.LogWarning("Creating book failed: {ErrorMessage}", e.Message);
+            _logger.LogWarning("Getting books failed: {ErrorMessage}", e.Message);
             return BadRequest(e.Message);
         }
     }

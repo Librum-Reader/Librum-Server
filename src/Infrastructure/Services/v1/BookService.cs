@@ -15,15 +15,13 @@ public class BookService : IBookService
     private readonly IMapper _mapper;
     private readonly IBookRepository _bookRepository;
     private readonly IUserRepository _userRepository;
-    private readonly ITagRepository _tagRepository;
 
     public BookService(IMapper mapper, IBookRepository bookRepository, 
-        IUserRepository userRepository, ITagRepository tagRepository)
+        IUserRepository userRepository)
     {
         _mapper = mapper;
         _bookRepository = bookRepository;
         _userRepository = userRepository;
-        _tagRepository = tagRepository;
     }
 
 
@@ -31,7 +29,7 @@ public class BookService : IBookService
     {
         var user = await CheckIfUserExistsAsync(email, trackChanges: true);
 
-        if (user.Books.Any(book => book.Title == bookInDto.Title))
+        if (BookExists(user, bookInDto.Title))
         {
             throw new InvalidParameterException("A book with this title already exists");
         }
@@ -42,6 +40,9 @@ public class BookService : IBookService
 
         await _bookRepository.SaveChangesAsync();
     }
+    
+    private bool BookExists(User user, string bookName) => user.Books.Any(book => book.Title == bookName);
+    
 
     public async Task<IList<BookOutDto>> GetBooksAsync(string email, BookRequestParameter bookRequestParameter)
     {
@@ -74,22 +75,28 @@ public class BookService : IBookService
         {
             throw new InvalidParameterException("No book with this name exists");
         }
-
         await _bookRepository.LoadRelationShipsAsync(book);
         
         foreach (var tagName in tagNames)
         {
-            var tag = user.Tags.SingleOrDefault(tag => tag.Name == tagName);
-            if (tag == null)
-            {
-                throw new InvalidParameterException("No tag called " + tagName + " exists");
-            }
-            
+            var tag = GetTagIfDoesNotExist(user, tagName);
             book.Tags.Add(tag);
         }
 
         await _bookRepository.SaveChangesAsync();
     }
+
+    private Tag GetTagIfDoesNotExist(User user, string tagName)
+    {
+        var tag = user.Tags.SingleOrDefault(tag => tag.Name == tagName);
+        if (tag == null)
+        {
+            throw new InvalidParameterException("No tag called " + tagName + " exists");
+        }
+
+        return tag;
+    }
+    
 
     public async Task RemoveTagFromBookAsync(string email, string bookTitle, string tagName)
     {

@@ -30,7 +30,7 @@ public class TagService : ITagService
         
         if (user.Tags.Any(tag => tag.Name == tagIn.Name))
         {
-            throw new InvalidParameterException("A tag with the given name already exists");
+            throw new InvalidParameterException("A tag with this name already exists");
         }
 
         
@@ -47,7 +47,7 @@ public class TagService : ITagService
         var tag = user.Tags.SingleOrDefault(tag => tag.Name == tagName);
         if (tag == null)
         {
-            throw new InvalidParameterException("No tag with the given name exists");
+            throw new InvalidParameterException("No tag with this name exists");
         }
 
 
