@@ -1,6 +1,4 @@
-using System.Diagnostics;
 using Application.Common.Interfaces.Repositories;
-using Application.Common.RequestParameters;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,11 +32,6 @@ public class BookRepository : IBookRepository
         {
             await LoadRelationShipsAsync(book);
         }
-    }
-
-    public async Task<bool> BookAlreadyExists(string title)
-    {
-        return await _context.Books.AnyAsync(book => book.Title == title);
     }
 
     public IQueryable<Book> GetBooks(string userId)

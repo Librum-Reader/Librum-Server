@@ -29,7 +29,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("TagsTagId");
 
-                    b.ToTable("BookTag");
+                    b.ToTable("BookTag", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Author", b =>
@@ -55,7 +55,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("BookId");
 
-                    b.ToTable("Author");
+                    b.ToTable("Author", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Book", b =>
@@ -75,7 +75,6 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Format")
-                        .HasMaxLength(40)
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("LastOpened")
@@ -103,7 +102,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Books");
+                    b.ToTable("Books", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Tag", b =>
@@ -124,7 +123,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Tag");
+                    b.ToTable("Tag", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>

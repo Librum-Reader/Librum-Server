@@ -11,13 +11,28 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220517131359_AddedFullnameToAuthor")]
-    partial class AddedFullnameToAuthor
+    [Migration("20220521193450_Test")]
+    partial class Test
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.5");
+
+            modelBuilder.Entity("BookTag", b =>
+                {
+                    b.Property<Guid>("BooksBookId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("TagsTagId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("BooksBookId", "TagsTagId");
+
+                    b.HasIndex("TagsTagId");
+
+                    b.ToTable("BookTag");
+                });
 
             modelBuilder.Entity("Domain.Entities.Author", b =>
                 {
@@ -61,9 +76,8 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Format")
-                        .HasMaxLength(40)
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Format")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("LastOpened")
                         .HasColumnType("TEXT");
@@ -91,6 +105,27 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Books");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Tag", b =>
+                {
+                    b.Property<Guid>("TagId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("TagId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Tag");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -302,6 +337,21 @@ namespace Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("BookTag", b =>
+                {
+                    b.HasOne("Domain.Entities.Book", null)
+                        .WithMany()
+                        .HasForeignKey("BooksBookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsTagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.Entities.Author", b =>
                 {
                     b.HasOne("Domain.Entities.Book", "Book")
@@ -320,6 +370,15 @@ namespace Infrastructure.Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Tag", b =>
+                {
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany("Tags")
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -383,6 +442,8 @@ namespace Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Domain.Entities.User", b =>
                 {
                     b.Navigation("Books");
+
+                    b.Navigation("Tags");
                 });
 #pragma warning restore 612, 618
         }

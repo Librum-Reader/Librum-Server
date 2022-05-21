@@ -81,7 +81,7 @@ public class SortDataProvider : TheoryData<Collection<Book>, Collection<Book>, B
 
         var descendantlyByTitleSortedRequest = new BookRequestParameter()
         {
-            SortBy = BookSortOptions.TitleLexicDec
+            SortBy = BookSortOptions.TitleLexicDesc
         };
 
         Add(descendantlyByTitleSortedResult, descendantlyByTitleSortedData, descendantlyByTitleSortedRequest);
@@ -173,7 +173,7 @@ public class SortDataProvider : TheoryData<Collection<Book>, Collection<Book>, B
 
         var descendantlyByAuthorSortedRequest = new BookRequestParameter()
         {
-            SortBy = BookSortOptions.AuthorLexicDec
+            SortBy = BookSortOptions.AuthorLexicDesc
         };
 
         Add(descendantlyByAuthorSortedResult, descendantlyByAuthorSortedData, descendantlyByAuthorSortedRequest);
@@ -445,11 +445,11 @@ public partial class BookServiceTests
         // Arrange
         var books = new Collection<Book>
         {
-            new Book { Title = "A", Format = BookFormats.PDF },
+            new Book { Title = "A", Format = BookFormats.Pdf },
             new Book { Title = "B", Format = BookFormats.Mobi },
-            new Book { Title = "C", Format = BookFormats.PDF },
-            new Book { Title = "D", Format = BookFormats.EPUB },
-            new Book { Title = "E", Format = BookFormats.EPUB }
+            new Book { Title = "C", Format = BookFormats.Pdf },
+            new Book { Title = "D", Format = BookFormats.Epub },
+            new Book { Title = "E", Format = BookFormats.Epub }
         };
 
         var expectedResult = new Collection<Book>
@@ -470,7 +470,7 @@ public partial class BookServiceTests
         // Act
         var actualResult = await _bookService.GetBooksAsync(It.IsAny<string>(), new BookRequestParameter
         {
-            Format = BookFormats.PDF
+            Format = BookFormats.Pdf
         });
 
         // Assert

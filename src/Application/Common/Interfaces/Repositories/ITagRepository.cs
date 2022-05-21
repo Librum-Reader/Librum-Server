@@ -6,5 +6,5 @@ namespace Application.Common.Interfaces.Repositories;
 public interface ITagRepository
 {
     public Task<int> SaveChangesAsync();
-    void DeleteTag(Tag tag);
+    void Delete(Tag tag);
 }

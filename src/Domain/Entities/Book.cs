@@ -21,7 +21,7 @@ public class Book
     [Range(0, int.MaxValue)]
     public int Pages { get; set; }
 
-    [MaxLength(40, ErrorMessage = "The provided book format is too long")]
+    [Required]
     public BookFormats Format { get; set; }
     
     [Required]
@@ -36,8 +36,9 @@ public class Book
 
     [Required]
     public DateTime LastOpened { get; set; }
-
-
+    
+    
+    
     public ICollection<Tag> Tags { get; set; }
     
     public ICollection<Author> Authors { get; set; }

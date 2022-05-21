@@ -7,7 +7,7 @@ public enum BookSortOptions
     RecentlyAdded,
     Percentage,
     TitleLexicAsc,
-    TitleLexicDec,
+    TitleLexicDesc,
     AuthorLexicAsc,
-    AuthorLexicDec
+    AuthorLexicDesc
 }

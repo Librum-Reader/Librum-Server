@@ -87,7 +87,7 @@ public class UserServiceTests
         await _userService.DeleteUserAsync(user.Email);
 
         // Assert
-        _userRepositoryMock.Verify(x => x.DeleteAsync(It.IsAny<User>()), Times.Once);
+        _userRepositoryMock.Verify(x => x.Delete(It.IsAny<User>()), Times.Once);
         _userRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
     
@@ -112,6 +112,11 @@ public class UserServiceTests
     public async Task PatchUserAsync_ShouldUpdateUser_WhenUserExistsAndDataIsValid()
     {
         // Arrange
+        var patchDoc = new JsonPatchDocument<UserForUpdateDto>();
+        patchDoc.Add(t => t.FirstName, "John");
+        patchDoc.Add(t => t.LastName, "Doe");
+        patchDoc.Add(t => t.Email, "JohnDoe@gmail.com");
+        
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new User());
         
@@ -122,7 +127,7 @@ public class UserServiceTests
             .ReturnsAsync(1);
         
         // Act
-        await _userService.PatchUserAsync("JohnDoe@gmail.com", new JsonPatchDocument<UserForUpdateDto>(), _controllerBaseMock.Object);
+        await _userService.PatchUserAsync("JohnDoe@gmail.com", patchDoc, _controllerBaseMock.Object);
 
         // Assert
         _userRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);

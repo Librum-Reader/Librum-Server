@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Application.Common.DTOs;
 using Application.Common.DTOs.Users;
 using Application.Common.Interfaces;
 using Domain.Entities;
@@ -26,7 +25,7 @@ public class AuthenticationManager : IAuthenticationManager
     
     public async Task<bool> UserExistsAsync(string email, string password)
     {
-        User user = await _userManager.FindByEmailAsync(email);
+        var user = await _userManager.FindByEmailAsync(email);
 
         return (user != null && await _userManager.CheckPasswordAsync(user, password));
     }
@@ -52,7 +51,9 @@ public class AuthenticationManager : IAuthenticationManager
     {
         var user = await _userManager.FindByEmailAsync(loginDto?.Email);
         if (user == null)
+        {
             throw new ArgumentException("Getting claims failed: User does not exist");
+        }
 
         var claims = new List<Claim>
         {
@@ -60,7 +61,7 @@ public class AuthenticationManager : IAuthenticationManager
         };
 
         IEnumerable<string> roles = await _userManager.GetRolesAsync(user);
-        foreach (string role in roles)
+        foreach (var role in roles)
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
         }

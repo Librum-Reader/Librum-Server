@@ -3,7 +3,7 @@ namespace Domain.Enums;
 public enum BookFormats
 {
     None,
-    PDF,
-    EPUB,
+    Pdf,
+    Epub,
     Mobi
 }

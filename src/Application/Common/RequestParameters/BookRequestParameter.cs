@@ -1,3 +1,4 @@
+using Application.Common.DTOs.Tags;
 using Application.Common.Enums;
 using Domain.Enums;
 
@@ -12,8 +13,8 @@ public class BookRequestParameter
     private string _searchString = "";
     public string SearchString
     {
-        get => _searchString.ToLower();
-        set => _searchString = value;
+        get => _searchString;
+        set => _searchString = value.ToLower();
     }
 
     public BookSortOptions SortBy { get; set; } = BookSortOptions.Nothing;
@@ -21,13 +22,13 @@ public class BookRequestParameter
     private string _author = "";
     public string Author
     {
-        get => _author.ToLower();
-        set => _author = value;
+        get => _author;
+        set => _author = value.ToLower();
     }
 
     public string TimePassedAsString
     {
-        private get => throw new NotImplementedException();
+        private get => throw new MemberAccessException();
         set => TimePassed = TimeSpan.Parse(value);
     }
 
@@ -39,9 +40,5 @@ public class BookRequestParameter
     
     public bool Unread { get; set; }
 
-    public bool OnlyBooks { get; set; }
-
-    public bool OnlyFiles { get; set; }
-    
-    public string Tag { get; set; }
+    public TagInDto Tag { get; set; }
 }

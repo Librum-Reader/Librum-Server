@@ -53,15 +53,11 @@ public static class QueryableExtensions
 
     public static IQueryable<Book> FilterByFormat(this IQueryable<Book> books, BookFormats format)
     {
-        if (format == BookFormats.None)
-        {
-            return books;
-        }
-
-        return books.Where(book => book.Format == format);
+        return (format == BookFormats.None) ? books : books.Where(book => book.Format == format);
     }
 
-    public static IQueryable<Book> FilterByOptions(this IQueryable<Book> books, BookRequestParameter bookRequestParameter)
+    public static IQueryable<Book> FilterByOptions(this IQueryable<Book> books,
+        BookRequestParameter bookRequestParameter)
     {
         if (bookRequestParameter.Read)
             books = books.Where(book => book.CurrentPage == book.Pages);
@@ -85,7 +81,8 @@ public static class QueryableExtensions
             .Take(pageSize);
     }
 
-    public static IQueryable<Book> SortByCategories(this IQueryable<Book> books, BookSortOptions sortOption, string sortString)
+    public static IQueryable<Book> SortByCategories(this IQueryable<Book> books, 
+        BookSortOptions sortOption, string sortString)
     {
         // Dont sort by categories, when sorting by a search string
         if (sortString.Length !> 0)
@@ -100,12 +97,12 @@ public static class QueryableExtensions
             BookSortOptions.RecentlyAdded => books.OrderByDescending(book => book.CreationDate),
             BookSortOptions.Percentage => books.OrderByDescending(book => ((double)book.CurrentPage / book.Pages)),
             BookSortOptions.TitleLexicAsc => books.OrderBy(book => book.Title),
-            BookSortOptions.TitleLexicDec => books.OrderByDescending(book => book.Title),
+            BookSortOptions.TitleLexicDesc => books.OrderByDescending(book => book.Title),
             BookSortOptions.AuthorLexicAsc => books
-                .OrderBy(book => String.IsNullOrEmpty(book.Authors.First().FirstName))  // Move books without authors to the end
+                .OrderBy(book => String.IsNullOrEmpty(book.Authors.First().FirstName))
                 .ThenBy(book => book.Authors.First().FirstName)
                 .ThenBy(book => book.Authors.FirstOrDefault().LastName),
-            BookSortOptions.AuthorLexicDec => books
+            BookSortOptions.AuthorLexicDesc => books
                 .OrderByDescending(book => book.Authors.First().FirstName)
                 .ThenByDescending(book => book.Authors.FirstOrDefault().LastName),
             _ => throw new InvalidParameterException("Selected a not supported 'SortBy' value")

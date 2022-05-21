@@ -11,13 +11,28 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220518191831_AddedTagEntity")]
-    partial class AddedTagEntity
+    [Migration("20220521193322_ChangedUserRequirements")]
+    partial class ChangedUserRequirements
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.5");
+
+            modelBuilder.Entity("BookTag", b =>
+                {
+                    b.Property<Guid>("BooksBookId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("TagsTagId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("BooksBookId", "TagsTagId");
+
+                    b.HasIndex("TagsTagId");
+
+                    b.ToTable("BookTag");
+                });
 
             modelBuilder.Entity("Domain.Entities.Author", b =>
                 {
@@ -62,7 +77,6 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Format")
-                        .HasMaxLength(40)
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("LastOpened")
@@ -321,6 +335,21 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("BookTag", b =>
+                {
+                    b.HasOne("Domain.Entities.Book", null)
+                        .WithMany()
+                        .HasForeignKey("BooksBookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsTagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Entities.Author", b =>

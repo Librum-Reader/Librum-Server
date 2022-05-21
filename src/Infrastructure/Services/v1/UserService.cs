@@ -40,7 +40,7 @@ public class UserService : IUserService
             throw new InvalidParameterException("No user with the given email exists");
         }
 
-        await _userRepository.DeleteAsync(user);
+        _userRepository.Delete(user);
         await _userRepository.SaveChangesAsync();
     }
 
@@ -51,8 +51,6 @@ public class UserService : IUserService
         {
             throw new InvalidParameterException("No user with the given email exists");
         }
-
-        ValidatePatchData(patchDoc);
         
         var userToPatch = _mapper.Map<UserForUpdateDto>(user);
         
@@ -67,10 +65,5 @@ public class UserService : IUserService
         _mapper.Map(userToPatch, user);
 
         await _userRepository.SaveChangesAsync();
-    }
-
-    private void ValidatePatchData(JsonPatchDocument<UserForUpdateDto> patchDoc)
-    {
-        // patchDoc.
     }
 }

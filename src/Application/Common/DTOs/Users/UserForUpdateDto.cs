@@ -10,5 +10,5 @@ public class UserForUpdateDto
     
     public string Email { get; set; }
 
-    public bool DataIsValid => Email.Length >= 6 && LastName.Length > 2 && FirstName.Length > 2;
+    public bool DataIsValid => Email?.Length >= 6 && LastName?.Length > 2 && FirstName?.Length > 2;
 }

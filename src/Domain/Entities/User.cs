@@ -23,7 +23,8 @@ public class User : IdentityUser
     [MaxLength(50, ErrorMessage = "The email is too long")]
     public override string Email { get; set; }
 
-    [Required] public DateTime AccountCreation { get; set; }
+    [Required]
+    public DateTime AccountCreation { get; set; }
 
 
     

@@ -18,24 +18,18 @@ public class UserRepository : IUserRepository
     public async Task<User> GetAsync(string email, bool trackChanges)
     {
         return trackChanges
-            ? await _context.Users.SingleOrDefaultAsync(user => user.Email == email)
+            ? await _context.Users.Include(user => user.Books).Include(user => user.Tags)
+                .SingleOrDefaultAsync(user => user.Email == email)
             : await _context.Users.AsNoTracking().SingleOrDefaultAsync(user => user.Email == email);
     }
 
-    public async Task DeleteAsync(User user)
+    public void Delete(User user)
     {
-        await LoadRelationShipsAsync(user);
         _context.Users.Remove(user);
     }
 
     public async Task<int> SaveChangesAsync()
     {
         return await _context.SaveChangesAsync();
-    }
-
-    public async Task LoadRelationShipsAsync(User user)
-    {
-        await _context.Entry(user).Collection(p => p.Books).LoadAsync();
-        await _context.Entry(user).Collection(p => p.Tags).LoadAsync();
     }
 }

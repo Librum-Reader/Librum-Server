@@ -24,15 +24,9 @@ public class TagService : ITagService
     }
 
 
-    public async Task CreateTagAsync(string userEmail, TagInDto tagIn)
+    public async Task CreateTagAsync(string email, TagInDto tagIn)
     {
-        var user = await _userRepository.GetAsync(userEmail, trackChanges: true);
-        if (user == null)
-        {
-            throw new InvalidParameterException("No user with the given email exists");
-        }
-
-        await _userRepository.LoadRelationShipsAsync(user);
+        var user = await CheckIfUserExistsAsync(email, trackChanges: true);
         
         if (user.Tags.Any(tag => tag.Name == tagIn.Name))
         {
@@ -46,15 +40,9 @@ public class TagService : ITagService
         await _tagRepository.SaveChangesAsync();
     }
 
-    public async Task DeleteTagAsync(string userEmail, string tagName)
+    public async Task DeleteTagAsync(string email, string tagName)
     {
-        var user = await _userRepository.GetAsync(userEmail, trackChanges: true);
-        if (user == null)
-        {
-            throw new InvalidParameterException("No user with the given email exists");
-        }
-        
-        await _userRepository.LoadRelationShipsAsync(user);
+        var user = await CheckIfUserExistsAsync(email, trackChanges: true);
 
         var tag = user.Tags.SingleOrDefault(tag => tag.Name == tagName);
         if (tag == null)
@@ -63,8 +51,19 @@ public class TagService : ITagService
         }
 
 
-        _tagRepository.DeleteTag(tag);
+        _tagRepository.Delete(tag);
         
         await _tagRepository.SaveChangesAsync();
+    }
+    
+    private async Task<User> CheckIfUserExistsAsync(string email, bool trackChanges)
+    {
+        var user = await _userRepository.GetAsync(email, trackChanges);
+        if (user == null)
+        {
+            throw new InvalidParameterException("No user with this email exists");
+        }
+
+        return user;
     }
 }
