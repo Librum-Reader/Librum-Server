@@ -1,3 +1,4 @@
+using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces.Services;
@@ -88,7 +89,7 @@ public class BookController : ControllerBase
     }
     
     [HttpDelete("tags/{bookTitle}/{tagName}")]
-    public async Task<ActionResult> AddTag(string bookTitle, string tagName)
+    public async Task<ActionResult> RemoveTagFromBook(string bookTitle, string tagName)
     {
         if (string.IsNullOrEmpty(tagName) || string.IsNullOrEmpty(bookTitle))
         {
@@ -109,7 +110,7 @@ public class BookController : ControllerBase
     }
     
     [HttpDelete]
-    public async Task<ActionResult> AddTag([FromBody] ICollection<string> bookTitles)
+    public async Task<ActionResult> DeleteBooks([FromBody] ICollection<string> bookTitles)
     {
         if (bookTitles.Count == 0)
         {
@@ -141,6 +142,27 @@ public class BookController : ControllerBase
         catch (InvalidParameterException e)
         {
             _logger.LogWarning("Patching book failed: {ErrorMessage}", e.Message);
+            return BadRequest(e.Message);
+        }
+    }
+    
+    [HttpPost("author/{bookTitle}")]
+    public async Task<ActionResult> AddAuthorToBook([FromBody] AuthorInDto authorInDto, string bookTitle)
+    {
+        if (authorInDto == null)
+        {
+            _logger.LogWarning("Adding author to book failed: the author dto is null");
+            return BadRequest("The provided data is invalid");
+        }
+
+        try
+        {
+            await _bookService.AddAuthorToBookAsync(HttpContext.User.Identity!.Name, bookTitle, authorInDto);
+            return Ok();
+        }
+        catch (InvalidParameterException e)
+        {
+            _logger.LogWarning("Adding author to book failed: {ErrorMessage}", e.Message);
             return BadRequest(e.Message);
         }
     }

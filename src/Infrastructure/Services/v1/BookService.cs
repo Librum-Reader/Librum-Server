@@ -1,3 +1,4 @@
+using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
 using Application.Common.Extensions;
@@ -129,7 +130,7 @@ public class BookService : IBookService
 
         foreach (var bookTitle in bookTitles)
         {
-            var book = GetBookIfExists(user, bookTitle);
+            var book = await GetBookIfExistsAsync(user, bookTitle);
             _bookRepository.DeleteBook(book);
         }
 
@@ -163,7 +164,17 @@ public class BookService : IBookService
         await _bookRepository.SaveChangesAsync();
     }
 
-    private Book GetBookIfExists(User user, string bookTitle)
+    public async Task AddAuthorToBookAsync(string email, string bookTitle, AuthorInDto author)
+    {
+        var user = await CheckIfUserExistsAsync(email, trackChanges: true);
+        var book = await GetBookIfExistsAsync(user, bookTitle);
+
+        book.Authors.Add(_mapper.Map<Author>(author));
+        
+        await _bookRepository.SaveChangesAsync();
+    }
+
+    private async Task<Book> GetBookIfExistsAsync(User user, string bookTitle)
     {
         var book = user.Books.SingleOrDefault(book => book.Title == bookTitle);
         if (book == null)
@@ -171,6 +182,7 @@ public class BookService : IBookService
             throw new InvalidParameterException("No book with the title \"" + bookTitle + "\" found");
         }
 
+        await _bookRepository.LoadRelationShipsAsync(book);
         return book;
     }
 

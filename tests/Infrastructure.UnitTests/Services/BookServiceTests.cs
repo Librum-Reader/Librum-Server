@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
@@ -439,5 +440,66 @@ public partial class BookServiceTests
         // Assert
         await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.PatchBookAsync("JohnDoe@gmail.com",
             new JsonPatchDocument<BookForUpdateDto>(), bookTitle, _controllerBaseMock.Object));
+    }
+
+    [Fact]
+    public async Task AddAuthorToBookAsync_ShouldCallSaveChangesAsync_WhenDataIsValid()
+    {
+        // Arrange
+        var authorToAdd = new AuthorInDto
+        {
+            FirstName = "SomeAuthor",
+            LastName = "ALastName"
+        };
+
+        const string bookTitle = "SomeBook";
+        
+        var user = new User
+        {
+            Books = new List<Book>
+            {
+                new Book { Title = bookTitle, Authors = new List<Author>() },
+                new Book { Title = "AnotherBook", Authors = new List<Author>() }
+            }
+        };
+        
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(user);
+
+        _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
+            .ReturnsAsync(1);
+
+
+        // Act
+        await _bookService.AddAuthorToBookAsync("JohnDoe@gmail.com", bookTitle, authorToAdd);
+
+        // Assert
+        _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
+    }
+    
+    [Fact]
+    public async Task AddAuthorToBookAsync_ShouldThrow_WhenUserDoesNotExist()
+    {
+        // Arrange
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(() => null);
+
+
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() => 
+            _bookService.AddAuthorToBookAsync("JohnDoe@gmail.com", "SomeBook", new AuthorInDto()));
+    }
+    
+    [Fact]
+    public async Task AddAuthorToBookAsync_ShouldThrow_WhenBookDoesNotExist()
+    {
+        // Arrange
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(new User { Books = new List<Book>() } );
+
+
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() => 
+            _bookService.AddAuthorToBookAsync("JohnDoe@gmail.com", "SomeBook", new AuthorInDto()));
     }
 }
