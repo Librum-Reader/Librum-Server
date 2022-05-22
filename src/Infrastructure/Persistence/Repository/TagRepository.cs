@@ -1,5 +1,3 @@
-using System.Collections.Specialized;
-using Application.Common.DTOs.Tags;
 using Application.Common.Interfaces.Repositories;
 using Domain.Entities;
 
@@ -23,6 +21,6 @@ public class TagRepository : ITagRepository
 
     public void Delete(Tag tag)
     {
-        _context.Remove(tag);
+        _context.Tags.Remove(tag);
     }
 }

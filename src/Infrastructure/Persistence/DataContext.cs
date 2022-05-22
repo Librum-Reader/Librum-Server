@@ -8,6 +8,8 @@ namespace Infrastructure.Persistence;
 public class DataContext : IdentityDbContext<User>
 {
     public DbSet<Book> Books { get; set; }
+    public DbSet<Tag> Tags { get; set; }
+    public DbSet<Author> Authors { get; set; }
 
 
     public DataContext(DbContextOptions<DataContext> options) :

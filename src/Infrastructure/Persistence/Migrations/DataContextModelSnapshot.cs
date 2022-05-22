@@ -29,7 +29,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("TagsTagId");
 
-                    b.ToTable("BookTag", (string)null);
+                    b.ToTable("BookTag");
                 });
 
             modelBuilder.Entity("Domain.Entities.Author", b =>
@@ -55,7 +55,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("BookId");
 
-                    b.ToTable("Author", (string)null);
+                    b.ToTable("Authors");
                 });
 
             modelBuilder.Entity("Domain.Entities.Book", b =>
@@ -74,8 +74,9 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Format")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Format")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("LastOpened")
                         .HasColumnType("TEXT");
@@ -102,7 +103,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Books", (string)null);
+                    b.ToTable("Books");
                 });
 
             modelBuilder.Entity("Domain.Entities.Tag", b =>
@@ -117,13 +118,14 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("TagId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Tag", (string)null);
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -376,7 +378,9 @@ namespace Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("Tags")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

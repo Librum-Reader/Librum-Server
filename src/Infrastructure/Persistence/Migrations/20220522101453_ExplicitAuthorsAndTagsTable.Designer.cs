@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220521193450_Test")]
-    partial class Test
+    [Migration("20220522101453_ExplicitAuthorsAndTagsTable")]
+    partial class ExplicitAuthorsAndTagsTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -57,7 +57,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("BookId");
 
-                    b.ToTable("Author");
+                    b.ToTable("Authors");
                 });
 
             modelBuilder.Entity("Domain.Entities.Book", b =>
@@ -76,8 +76,9 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Format")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Format")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("LastOpened")
                         .HasColumnType("TEXT");
@@ -125,7 +126,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Tag");
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
