@@ -10,5 +10,6 @@ public class AuthorAutoMappingProfile : Profile
     {
         CreateMap<AuthorInDto, Author>();
         CreateMap<Author, AuthorOutDto>();
+        CreateMap<AuthorForRemovalDto, Author>();
     }
 }

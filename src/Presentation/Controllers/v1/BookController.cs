@@ -166,4 +166,25 @@ public class BookController : ControllerBase
             return BadRequest(e.Message);
         }
     }
+    
+    [HttpDelete("author/{bookTitle}")]
+    public async Task<ActionResult> RemoveAuthorFromBook([FromBody] AuthorForRemovalDto author, string bookTitle)
+    {
+        if (author == null)
+        {
+            _logger.LogWarning("Removing author from book failed: the author dto is null");
+            return BadRequest("The provided data is invalid");
+        }
+
+        try
+        {
+            await _bookService.RemoveAuthorFromBookAsync(HttpContext.User.Identity!.Name, bookTitle, author);
+            return Ok();
+        }
+        catch (InvalidParameterException e)
+        {
+            _logger.LogWarning("Removing author from book failed: {ErrorMessage}", e.Message);
+            return BadRequest(e.Message);
+        }
+    }
 }

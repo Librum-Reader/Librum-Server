@@ -17,5 +17,6 @@ public interface IBookService
     Task PatchBookAsync(string email, JsonPatchDocument<BookForUpdateDto> patchDoc, string bookTitle,
         ControllerBase controllerBase);
     
-    Task AddAuthorToBookAsync(string email, string bookTitle, AuthorInDto author);
+    Task AddAuthorToBookAsync(string email, string bookTitle, AuthorInDto authorToAdd);
+    Task RemoveAuthorFromBookAsync(string email, string bookTitle, AuthorForRemovalDto authorToRemove);
 }

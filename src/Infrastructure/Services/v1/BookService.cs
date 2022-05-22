@@ -164,16 +164,34 @@ public class BookService : IBookService
         await _bookRepository.SaveChangesAsync();
     }
 
-    public async Task AddAuthorToBookAsync(string email, string bookTitle, AuthorInDto author)
+    public async Task AddAuthorToBookAsync(string email, string bookTitle, AuthorInDto authorToAdd)
     {
         var user = await CheckIfUserExistsAsync(email, trackChanges: true);
         var book = await GetBookIfExistsAsync(user, bookTitle);
 
-        book.Authors.Add(_mapper.Map<Author>(author));
+        book.Authors.Add(_mapper.Map<Author>(authorToAdd));
         
         await _bookRepository.SaveChangesAsync();
     }
 
+    public async Task RemoveAuthorFromBookAsync(string email, string bookTitle, AuthorForRemovalDto authorToRemove)
+    {
+        var user = await CheckIfUserExistsAsync(email, trackChanges: true);
+        var book = await GetBookIfExistsAsync(user, bookTitle);
+
+        var author = book.Authors.SingleOrDefault(author => 
+            author.FirstName == authorToRemove.FirstName && author.LastName == authorToRemove.LastName);
+        if (author == null)
+        {
+            throw new InvalidParameterException("No author with this name exists");
+        }
+        
+        book.Authors.Remove(author);
+        
+        await _bookRepository.SaveChangesAsync();
+    }
+
+    
     private async Task<Book> GetBookIfExistsAsync(User user, string bookTitle)
     {
         var book = user.Books.SingleOrDefault(book => book.Title == bookTitle);
