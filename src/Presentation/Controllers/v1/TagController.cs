@@ -63,4 +63,19 @@ public class TagController : ControllerBase
             return BadRequest(e.Message);
         }
     }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<TagOutDto>>> GetTags()
+    {
+        try
+        {
+            var result = await _tagService.GetTagsAsync(HttpContext.User.Identity!.Name);
+            return Ok(result);
+        }
+        catch (InvalidParameterException e)
+        {
+            _logger.LogWarning("Getting tags failed: {ErrorMessage}", e.Message);
+            return BadRequest(e.Message);
+        }
+    }
 }

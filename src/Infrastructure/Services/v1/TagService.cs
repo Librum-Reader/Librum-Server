@@ -4,7 +4,6 @@ using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
-using Microsoft.Extensions.Logging;
 
 
 namespace Infrastructure.Services.v1;
@@ -55,7 +54,14 @@ public class TagService : ITagService
         
         await _tagRepository.SaveChangesAsync();
     }
-    
+
+    public async Task<IEnumerable<TagOutDto>> GetTagsAsync(string email)
+    {
+        var user = await CheckIfUserExistsAsync(email, trackChanges: true);
+
+        return user.Tags.Select(tag => _mapper.Map<TagOutDto>(tag));
+    }
+
     private async Task<User> CheckIfUserExistsAsync(string email, bool trackChanges)
     {
         var user = await _userRepository.GetAsync(email, trackChanges);

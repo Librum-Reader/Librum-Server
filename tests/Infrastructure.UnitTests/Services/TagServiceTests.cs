@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Application.Common.DTOs.Tags;
 using Application.Common.Exceptions;
@@ -136,5 +137,34 @@ public class TagServiceTests
 
         // Assert
         await Assert.ThrowsAsync<InvalidParameterException>(() => _tagService.DeleteTagAsync("JohnDoe@gmail.com", "MyTag"));
+    }
+    
+    [Fact]
+    public async Task GetTagsAsync_ShouldReturnsAllTags_WhenDataIsValid()
+    {
+        // Arrange
+        var tagNames = new string[] { "FirstTag", "SecondTag", "ThirdTag" };
+        
+        var user = new User
+        {
+            Tags = new List<Tag>
+            {
+                new Tag { Name = tagNames[0] },
+                new Tag { Name = tagNames[1] },
+                new Tag { Name = tagNames[2] }
+            }
+        };
+        
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(user);
+        
+        // Act
+        var result = await _tagService.GetTagsAsync("JohnDoe@gmail.com");
+
+        // Assert
+        for(int i = 0; i < tagNames.Length; ++i)
+        {
+            Assert.Equal(tagNames[i], result.ElementAt(i).Name);
+        }
     }
 }

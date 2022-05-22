@@ -51,7 +51,7 @@ public class BookService : IBookService
         await _bookRepository.LoadRelationShipsAsync(books);
         
 
-        var result = books
+        var processedBooks = books
             .FilterByTags(bookRequestParameter.Tag?.Name)
             .FilterByAuthor(bookRequestParameter.Author.ToLower())
             .FilterByTimeSinceAdded(bookRequestParameter.TimePassed)
@@ -61,8 +61,9 @@ public class BookService : IBookService
             .SortByCategories(bookRequestParameter.SortBy, bookRequestParameter.SearchString)
             .PaginateBooks(bookRequestParameter.PageNumber, bookRequestParameter.PageSize);
 
+        // var a = books.SelectMany(book => book.Tags).OrderBy(x => x.Name);
         
-        return await result.Select(book => _mapper.Map<BookOutDto>(book)).ToListAsync();
+        return await processedBooks.Select(book => _mapper.Map<BookOutDto>(book)).ToListAsync();
     }
 
     public async Task AddTagsToBookAsync(string email, string bookTitle, IEnumerable<string> tagNames)
