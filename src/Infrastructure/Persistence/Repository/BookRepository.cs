@@ -37,4 +37,9 @@ public class BookRepository : IBookRepository
     {
         return _context.Books.Where(book => book.UserId == userId);
     }
+
+    public void DeleteBook(Book book)
+    {
+        _context.Remove(book);
+    }
 }

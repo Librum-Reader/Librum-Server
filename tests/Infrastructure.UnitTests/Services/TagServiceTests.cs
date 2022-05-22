@@ -167,4 +167,16 @@ public class TagServiceTests
             Assert.Equal(tagNames[i], result.ElementAt(i).Name);
         }
     }
+    
+    [Fact]
+    public async Task GetTagsAsync_ShouldThrow_WhenUserDoesNotExist()
+    {
+        // Arrange
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(() => null);
+        
+        
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() => _tagService.GetTagsAsync("JohnDoe@gmail.com"));
+    }
 }

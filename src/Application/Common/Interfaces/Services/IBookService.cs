@@ -9,4 +9,5 @@ public interface IBookService
     Task<IList<BookOutDto>> GetBooksAsync(string email, BookRequestParameter bookRequestParameter);
     Task AddTagsToBookAsync(string email, string bookTitle, IEnumerable<string> tagNames);
     Task RemoveTagFromBookAsync(string email, string bookTitle, string tagName);
+    Task DeleteBooksAsync(string email, IEnumerable<string> bookTitles);
 }

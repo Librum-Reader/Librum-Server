@@ -9,4 +9,5 @@ public interface IBookRepository
     public Task LoadRelationShipsAsync(Book book);
     public Task LoadRelationShipsAsync(IEnumerable<Book> books);
     public IQueryable<Book> GetBooks(string userId);
+    void DeleteBook(Book book);
 }

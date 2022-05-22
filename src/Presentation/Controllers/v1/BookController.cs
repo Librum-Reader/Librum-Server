@@ -1,3 +1,4 @@
+using System.Collections;
 using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces.Services;
@@ -103,6 +104,27 @@ public class BookController : ControllerBase
         catch (InvalidParameterException e)
         {
             _logger.LogWarning("Removing tags from book failed: {ErrorMessage}", e.Message);
+            return BadRequest(e.Message);
+        }
+    }
+    
+    [HttpDelete]
+    public async Task<ActionResult> AddTag([FromBody] ICollection<string> bookTitles)
+    {
+        if (bookTitles.Count == 0)
+        {
+            _logger.LogWarning("Deleting books failed: the book list is null");
+            return BadRequest("The provided data is invalid");
+        }
+
+        try
+        {
+            await _bookService.DeleteBooksAsync(HttpContext.User.Identity!.Name, bookTitles);
+            return NoContent();
+        }
+        catch (InvalidParameterException e)
+        {
+            _logger.LogWarning("Deleting books failed: {ErrorMessage}", e.Message);
             return BadRequest(e.Message);
         }
     }

@@ -276,4 +276,71 @@ public partial class BookServiceTests
         await Assert.ThrowsAsync<InvalidParameterException>(() =>
             _bookService.RemoveTagFromBookAsync("JohnDoe@gmail.com", bookTitle, "TagOne"));
     }
+
+    [Fact]
+    public async Task DeleteBooks_ShouldCallSaveChangesAsync_WhenDataIsValid()
+    {
+        // Arrange
+        var bookNames = new string[] { "FirstBook", "SecondBook", "ThirdBook" };
+        
+        var user = new User
+        {
+            Books = new List<Book>
+            {
+                new Book { Title = "FirstBook" },
+                new Book { Title = "SecondBook" },
+                new Book { Title = "ThirdBook" }
+            }
+        };
+        
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(user);
+
+        
+        
+        // Act
+        await _bookService.DeleteBooksAsync("JohnDoe@gmail.com", 
+            new List<string> { bookNames[0], bookNames[1], bookNames[2] });
+
+        // Assert
+        _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
+    }
+    
+    [Fact]
+    public async Task DeleteBooks_ShouldThrow_WhenUserDoesNotExist()
+    {
+        // Arrange
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(() => null);
+
+        
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() => 
+            _bookService.DeleteBooksAsync("JohnDoe@gmail.com", new List<string>()));
+    }
+    
+    [Fact]
+    public async Task DeleteBooks_ShouldThrow_WhenABookDoesNotExist()
+    {
+        // Arrange
+        var bookNames = new string[] { "FirstBook", "SecondBook", "ThirdBook" };
+        
+        var user = new User
+        {
+            Books = new List<Book>
+            {
+                new Book { Title = "FirstBook" },
+                new Book { Title = "SecondBook" },
+                new Book { Title = "ThirdBook" }
+            }
+        };
+        
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(user);
+
+        
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.DeleteBooksAsync("JohnDoe@gmail.com", 
+            new List<string> { bookNames[0], "ANotExistentBook", bookNames[2] }));
+    }
 }

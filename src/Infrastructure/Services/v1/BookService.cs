@@ -121,6 +121,30 @@ public class BookService : IBookService
         await _bookRepository.SaveChangesAsync();
     }
 
+    public async Task DeleteBooksAsync(string email, IEnumerable<string> bookTitles)
+    {
+        var user = await CheckIfUserExistsAsync(email, trackChanges: true);
+
+        foreach (var bookTitle in bookTitles)
+        {
+            var book = GetBookIfExists(user, bookTitle);
+            _bookRepository.DeleteBook(book);
+        }
+
+        await _bookRepository.SaveChangesAsync();
+    }
+
+    private Book GetBookIfExists(User user, string bookTitle)
+    {
+        var book = user.Books.SingleOrDefault(book => book.Title == bookTitle);
+        if (book == null)
+        {
+            throw new InvalidParameterException("No book with the title \"" + bookTitle + "\" found");
+        }
+
+        return book;
+    }
+
     private async Task<User> CheckIfUserExistsAsync(string email, bool trackChanges)
     {
         var user = await _userRepository.GetAsync(email, trackChanges);
