@@ -51,9 +51,9 @@ public static class QueryableExtensions
             .Where(book => book.CreationDate >= lastAcceptedTime);
     }
 
-    public static IQueryable<Book> FilterByFormat(this IQueryable<Book> books, BookFormats format)
+    public static IQueryable<Book> FilterByFormat(this IQueryable<Book> books, BookFormat format)
     {
-        return (format == BookFormats.None) ? books : books.Where(book => book.Format == format);
+        return (format == BookFormat.None) ? books : books.Where(book => book.Format == format);
     }
 
     public static IQueryable<Book> FilterByOptions(this IQueryable<Book> books,

@@ -61,7 +61,7 @@ public static class DataContextSeeding
                     }
                 },
                 Pages = 1200,
-                Format = BookFormats.Pdf,
+                Format = BookFormat.Pdf,
                 CurrentPage = 2
             },
             new BookInDto
@@ -77,7 +77,7 @@ public static class DataContextSeeding
                     }
                 },
                 Pages = 409,
-                Format = BookFormats.Mobi,
+                Format = BookFormat.Mobi,
                 CurrentPage = 211
             },
             new BookInDto
@@ -93,7 +93,7 @@ public static class DataContextSeeding
                     }
                 },
                 Pages = 931200,
-                Format = BookFormats.Epub,
+                Format = BookFormat.Epub,
                 CurrentPage = 1234
             }
         };

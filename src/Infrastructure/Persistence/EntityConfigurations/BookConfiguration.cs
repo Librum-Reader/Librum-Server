@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -14,6 +15,14 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
             fromDb => DateTime.SpecifyKind(fromDb, DateTimeKind.Utc)
         );
 
+        var bookFormatConverter = new ValueConverter<BookFormat, string>(
+            toDb => toDb.ToString(),
+            fromDb => (BookFormat)Enum.Parse(typeof(BookFormat), fromDb)
+        );
+
+        builder.Property(x => x.Format)
+            .HasConversion(bookFormatConverter);
+        
         builder.Property(x => x.CreationDate)
             .HasConversion(utcConverter);
         

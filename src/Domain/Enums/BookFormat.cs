@@ -1,6 +1,6 @@
 namespace Domain.Enums;
 
-public enum BookFormats
+public enum BookFormat
 {
     None,
     Pdf,

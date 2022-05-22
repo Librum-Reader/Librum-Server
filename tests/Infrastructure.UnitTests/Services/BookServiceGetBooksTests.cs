@@ -445,11 +445,11 @@ public partial class BookServiceTests
         // Arrange
         var books = new Collection<Book>
         {
-            new Book { Title = "A", Format = BookFormats.Pdf },
-            new Book { Title = "B", Format = BookFormats.Mobi },
-            new Book { Title = "C", Format = BookFormats.Pdf },
-            new Book { Title = "D", Format = BookFormats.Epub },
-            new Book { Title = "E", Format = BookFormats.Epub }
+            new Book { Title = "A", Format = BookFormat.Pdf },
+            new Book { Title = "B", Format = BookFormat.Mobi },
+            new Book { Title = "C", Format = BookFormat.Pdf },
+            new Book { Title = "D", Format = BookFormat.Epub },
+            new Book { Title = "E", Format = BookFormat.Epub }
         };
 
         var expectedResult = new Collection<Book>
@@ -470,7 +470,7 @@ public partial class BookServiceTests
         // Act
         var actualResult = await _bookService.GetBooksAsync(It.IsAny<string>(), new BookRequestParameter
         {
-            Format = BookFormats.Pdf
+            Format = BookFormat.Pdf
         });
 
         // Assert

@@ -17,7 +17,7 @@ public class BookInDto
     [Range(0, int.MaxValue)]
     public int Pages { get; set; }
     
-    public BookFormats Format { get; set; }
+    public BookFormat Format { get; set; }
     
     public byte[] Data { get; set; }
     

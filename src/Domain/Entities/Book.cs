@@ -22,7 +22,7 @@ public class Book
     public int Pages { get; set; }
 
     [Required]
-    public BookFormats Format { get; set; }
+    public BookFormat Format { get; set; }
     
     [Required]
     public string DataLink { get; set; }

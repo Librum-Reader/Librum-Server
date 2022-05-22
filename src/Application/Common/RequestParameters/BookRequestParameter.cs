@@ -34,7 +34,7 @@ public class BookRequestParameter
 
     public TimeSpan TimePassed { get; private set; }
 
-    public BookFormats Format { get; set; }
+    public BookFormat Format { get; set; }
 
     public bool Read { get; set; }
     

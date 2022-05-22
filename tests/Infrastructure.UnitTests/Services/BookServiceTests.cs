@@ -44,7 +44,7 @@ public partial class BookServiceTests
         {
             Title = "Some book",
             ReleaseDate = DateTime.Now,
-            Format = BookFormats.Pdf,
+            Format = BookFormat.Pdf,
             Pages = 1200,
             CurrentPage = 2,
             Authors = new Collection<AuthorInDto>()
