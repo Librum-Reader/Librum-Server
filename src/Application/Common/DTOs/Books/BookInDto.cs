@@ -18,8 +18,7 @@ public class BookInDto
     public int Pages { get; set; }
     
     public BookFormats Format { get; set; }
-
-    [Required]
+    
     public byte[] Data { get; set; }
     
     [Required]
