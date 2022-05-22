@@ -1,5 +1,5 @@
 using Application.Common.DTOs.Authors;
-using Domain.Enums;
+using Application.Common.DTOs.Tags;
 
 namespace Application.Common.DTOs.Books;
 
@@ -15,5 +15,13 @@ public class BookOutDto
 
     public int CurrentPage { get; set; }
     
-    public IList<AuthorOutDto> Authors { get; set; }
+    public DateTime CreationDate { get; set; }
+
+    public DateTime LastOpened { get; set; }
+    
+    
+    
+    public ICollection<AuthorOutDto> Authors { get; set; }
+    
+    public ICollection<TagOutDto> Tags { get; set; }
 }
