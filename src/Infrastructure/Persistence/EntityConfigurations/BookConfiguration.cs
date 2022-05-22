@@ -5,23 +5,19 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infrastructure.Persistence.EntityConfigurations;
 
-public class UserConfiguration : IEntityTypeConfiguration<User>
+public class BookConfiguration : IEntityTypeConfiguration<Book>
 {
-    public void Configure(EntityTypeBuilder<User> builder)
+    public void Configure(EntityTypeBuilder<Book> builder)
     {
         var utcConverter = new ValueConverter<DateTime, DateTime>(
             toDb => toDb,
             fromDb => DateTime.SpecifyKind(fromDb, DateTimeKind.Utc)
         );
 
-        builder.Property(x => x.AccountCreation)
+        builder.Property(x => x.CreationDate)
             .HasConversion(utcConverter);
         
-        builder
-            .HasMany(x => x.Books)
-            .WithOne(x => x.User)
-            .HasForeignKey(x => x.UserId)
-            .IsRequired()
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.Property(x => x.LastOpened)
+            .HasConversion(utcConverter);
     }
 }

@@ -43,7 +43,6 @@ public class BookService : IBookService
     
     private bool BookExists(User user, string bookName) => user.Books.Any(book => book.Title == bookName);
     
-
     public async Task<IList<BookOutDto>> GetBooksAsync(string email, BookRequestParameter bookRequestParameter)
     {
         var user = await CheckIfUserExistsAsync(email, trackChanges: false);
@@ -62,7 +61,7 @@ public class BookService : IBookService
             .SortByCategories(bookRequestParameter.SortBy, bookRequestParameter.SearchString)
             .PaginateBooks(bookRequestParameter.PageNumber, bookRequestParameter.PageSize);
 
-
+        
         return await result.Select(book => _mapper.Map<BookOutDto>(book)).ToListAsync();
     }
 
@@ -96,7 +95,6 @@ public class BookService : IBookService
 
         return tag;
     }
-    
 
     public async Task RemoveTagFromBookAsync(string email, string bookTitle, string tagName)
     {
