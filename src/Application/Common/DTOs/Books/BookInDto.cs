@@ -26,4 +26,7 @@ public class BookInDto
     public int CurrentPage { get; set; }
     
     public IList<AuthorInDto> Authors { get; set; }
+
+    public bool IsValid => CurrentPage <= Pages && 
+                           Authors.Count() == Authors.DistinctBy(x => new { x.FirstName, x.LastName }).Count();
 }

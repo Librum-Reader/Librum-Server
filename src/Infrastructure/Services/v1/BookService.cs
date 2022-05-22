@@ -37,6 +37,10 @@ public class BookService : IBookService
             throw new InvalidParameterException("A book with this title already exists");
         }
 
+        if (!bookInDto.IsValid)
+        {
+            throw new InvalidParameterException("The provided data is invalid");
+        }
 
         var book = _mapper.Map<Book>(bookInDto);
         user.Books.Add(book);
@@ -168,6 +172,12 @@ public class BookService : IBookService
     {
         var user = await CheckIfUserExistsAsync(email, trackChanges: true);
         var book = await GetBookIfExistsAsync(user, bookTitle);
+
+        if (book.Authors.Any(author =>
+                author.FirstName == authorToAdd.FirstName && author.LastName == authorToAdd.LastName))
+        {
+            throw new InvalidParameterException("An author with this name already exists");
+        }
 
         book.Authors.Add(_mapper.Map<Author>(authorToAdd));
         

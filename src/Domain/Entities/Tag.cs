@@ -1,8 +1,9 @@
-using System.Collections;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Domain.Entities;
 
+[Index(nameof(Name), IsUnique = true)]
 public class Tag
 {
     [Key]
