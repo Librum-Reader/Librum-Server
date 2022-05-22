@@ -15,5 +15,8 @@ public class BookAutoMapperProfile : Profile
 
         CreateMap<Book, BookOutDto>()
             .ForMember(dest => dest.Format, temp => temp.MapFrom(src => src.Format.ToString()));
+
+        CreateMap<Book, BookForUpdateDto>()
+            .ReverseMap();
     }
 }

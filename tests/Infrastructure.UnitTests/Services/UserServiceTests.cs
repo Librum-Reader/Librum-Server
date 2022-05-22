@@ -115,13 +115,13 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async Task PatchUserAsync_ShouldUpdateUser_WhenUserExistsAndDataIsValid()
+    public async Task PatchUserAsync_ShouldCallSaveChangesAsync_WhenUserExistsAndDataIsValid()
     {
         // Arrange
         var patchDoc = new JsonPatchDocument<UserForUpdateDto>();
-        patchDoc.Add(t => t.FirstName, "John");
-        patchDoc.Add(t => t.LastName, "Doe");
-        patchDoc.Add(t => t.Email, "JohnDoe@gmail.com");
+        patchDoc.Add(x => x.FirstName, "John");
+        patchDoc.Add(x => x.LastName, "Doe");
+        patchDoc.Add(x => x.Email, "JohnDoe@gmail.com");
         
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new User());

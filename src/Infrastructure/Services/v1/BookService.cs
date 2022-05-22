@@ -6,6 +6,8 @@ using Application.Common.Interfaces.Services;
 using Application.Common.RequestParameters;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services.v1;
@@ -130,6 +132,33 @@ public class BookService : IBookService
             var book = GetBookIfExists(user, bookTitle);
             _bookRepository.DeleteBook(book);
         }
+
+        await _bookRepository.SaveChangesAsync();
+    }
+
+    public async Task PatchBookAsync(string email, JsonPatchDocument<BookForUpdateDto> patchDoc, string bookTitle,
+        ControllerBase controllerBase)
+    {
+        var user = await CheckIfUserExistsAsync(email, trackChanges: true);
+
+        var book = user.Books.SingleOrDefault(book => book.Title == bookTitle);
+        if (book == null)
+        {
+            throw new InvalidParameterException("No book with this title exists");
+        }
+
+        var bookToPatch = _mapper.Map<BookForUpdateDto>(book);
+        
+        
+        patchDoc.ApplyTo(bookToPatch, controllerBase.ModelState);
+        controllerBase.TryValidateModel(controllerBase.ModelState);
+
+        if (!controllerBase.ModelState.IsValid || !bookToPatch.DataIsValid)
+        {
+            throw new InvalidParameterException("The provided data is invalid");
+        }
+
+        _mapper.Map(bookToPatch, book);
 
         await _bookRepository.SaveChangesAsync();
     }

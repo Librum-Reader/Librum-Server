@@ -12,6 +12,9 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.Services.v1;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Moq;
 using Xunit;
 
@@ -21,7 +24,7 @@ public partial class BookServiceTests
 {
     private readonly Mock<IBookRepository> _bookRepositoryMock = new Mock<IBookRepository>();
     private readonly Mock<IUserRepository> _userRepositoryMock = new Mock<IUserRepository>();
-    private readonly Mock<ITagRepository> _tagRepositoryMock = new Mock<ITagRepository>();
+    private readonly Mock<ControllerBase> _controllerBaseMock = new Mock<ControllerBase>();
     private readonly IBookService _bookService;
 
 
@@ -342,5 +345,99 @@ public partial class BookServiceTests
         // Assert
         await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.DeleteBooksAsync("JohnDoe@gmail.com", 
             new List<string> { bookNames[0], "ANotExistentBook", bookNames[2] }));
+    }
+    
+    [Fact]
+    public async Task PatchBookAsync_ShouldCallSaveChangesAsync_WhenUserExistsAndDataIsValid()
+    {
+        // Arrange
+        const string bookTitle = "SomeBook";
+        
+        var user = new User
+        {
+            Books = new List<Book>
+            {
+                new Book { Title = bookTitle }
+            }
+        };
+        
+        var patchDoc = new JsonPatchDocument<BookForUpdateDto>();
+        patchDoc.Add(x => x.Title, "John");
+        patchDoc.Add(x => x.CurrentPage, 12);
+        patchDoc.Add(x => x.ReleaseDate, DateTime.Now);
+        patchDoc.Add(x => x.LastOpened, DateTime.Now);
+
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(user);
+        
+        _controllerBaseMock.Setup(x => x.TryValidateModel(It.IsAny<ModelStateDictionary>()))
+            .Returns(true);
+        
+        _userRepositoryMock.Setup(x => x.SaveChangesAsync())
+            .ReturnsAsync(1);
+        
+        // Act
+        await _bookService.PatchBookAsync("JohnDoe@gmail.com", patchDoc, bookTitle, _controllerBaseMock.Object);
+
+        // Assert
+        _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
+    }
+    
+    [Fact]
+    public async Task PatchBookAsync_ShouldThrow_WhenUserDoesNotExist()
+    {
+        // Arrange
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(() => null);
+
+        
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.PatchBookAsync("JohnDoe@gmail.com",
+            new JsonPatchDocument<BookForUpdateDto>(), "SomeBook", _controllerBaseMock.Object));
+    }
+    
+    [Fact]
+    public async Task PatchBookAsync_ShouldThrow_WhenBookDoesNotExist()
+    {
+        // Arrange
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(new User { Books = new List<Book>() });
+
+
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.PatchBookAsync("JohnDoe@gmail.com",
+            new JsonPatchDocument<BookForUpdateDto>(), "SomeBook", _controllerBaseMock.Object));
+    }
+    
+    [Fact]
+    public async Task PatchBookAsync_ShouldThrow_WhenApplyingToBookFails()
+    {
+        // Arrange
+        const string bookTitle = "SomeBook";
+        
+        var user = new User
+        {
+            Books = new List<Book>
+            {
+                new Book { Title = bookTitle }
+            }
+        };
+        
+        var patchDoc = new JsonPatchDocument<BookForUpdateDto>();
+        patchDoc.Add(x => x.Title, "John");
+        patchDoc.Add(x => x.CurrentPage, 12);
+        patchDoc.Add(x => x.ReleaseDate, DateTime.Now);
+        patchDoc.Add(x => x.LastOpened, DateTime.Now);
+
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(user);
+        
+        _controllerBaseMock.Setup(x => x.TryValidateModel(It.IsAny<ModelStateDictionary>()))
+            .Returns(false);
+
+
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.PatchBookAsync("JohnDoe@gmail.com",
+            new JsonPatchDocument<BookForUpdateDto>(), bookTitle, _controllerBaseMock.Object));
     }
 }

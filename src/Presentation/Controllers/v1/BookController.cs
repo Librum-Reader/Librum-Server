@@ -1,9 +1,9 @@
-using System.Collections;
 using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces.Services;
 using Application.Common.RequestParameters;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers.v1;
@@ -125,6 +125,22 @@ public class BookController : ControllerBase
         catch (InvalidParameterException e)
         {
             _logger.LogWarning("Deleting books failed: {ErrorMessage}", e.Message);
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpPatch("{bookTitle}")]
+    public async Task<ActionResult> PatchBookAsync([FromBody] JsonPatchDocument<BookForUpdateDto> patchDoc, 
+        string bookTitle)
+    {
+        try
+        {
+            await _bookService.PatchBookAsync(HttpContext.User.Identity!.Name, patchDoc, bookTitle, this);
+            return Ok();
+        }
+        catch (InvalidParameterException e)
+        {
+            _logger.LogWarning("Patching book failed: {ErrorMessage}", e.Message);
             return BadRequest(e.Message);
         }
     }
