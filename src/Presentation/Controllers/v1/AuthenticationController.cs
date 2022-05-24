@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Controllers.v1;
 
 [ApiController]
+[ApiVersion("1.0")]
 [Route("api")]
 public class AuthenticationController : ControllerBase
 {

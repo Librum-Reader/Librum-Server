@@ -51,13 +51,12 @@ public partial class BookServiceTests
             Format = BookFormat.Pdf,
             Pages = 1200,
             CurrentPage = 2,
-            Authors = new Collection<AuthorInDto>()
+            Authors = new Collection<AuthorInDto>
+            {
+                new AuthorInDto { FirstName = "Someone", LastName = "SomeonesLastName" },
+                new AuthorInDto { FirstName = "SomeoneElse", LastName = "Johnson" }
+            }
         };
-
-        for (int i = 0; i < 14; ++i)
-        {
-            bookDto.Authors.Add(new AuthorInDto { FirstName = "Someone", LastName = "SomeonesLastName" });
-        }
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new User { Books = new Collection<Book>() });

@@ -9,6 +9,8 @@ using Infrastructure.Persistence.Repository;
 using Infrastructure.Services.v1;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -28,6 +30,13 @@ public static class DependencyInjection
         services.AddScoped<IBookRepository, BookRepository>();
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<ITagRepository, TagRepository>();
+
+        services.AddApiVersioning(options =>
+        {
+            options.AssumeDefaultVersionWhenUnspecified = false;
+            options.DefaultApiVersion = ApiVersion.Default;
+            options.ApiVersionReader = new HeaderApiVersionReader("X-Version");
+        });
         
         services.AddLogging();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
