@@ -102,19 +102,7 @@ public class TagServiceTests
         // Assert
         _tagRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
-    
-    [Fact]
-    public async Task DeleteTagAsync_ShouldThrow_WhenTagDoesNotExist()
-    {
-        // Arrange
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(new User { Tags = new List<Tag>() });
-        
 
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => _tagService.DeleteTagAsync("JohnDoe@gmail.com", "MyTag"));
-    }
-    
     [Fact]
     public async Task GetTagsAsync_ShouldReturnsAllTags_WhenDataIsValid()
     {

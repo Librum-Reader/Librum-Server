@@ -1,3 +1,4 @@
+using Application.Common.ActionFilters;
 using Application.Common.DTOs.Tags;
 using Application.Common.Exceptions;
 using Application.Interfaces.Services;
@@ -45,6 +46,7 @@ public class TagController : ControllerBase
     }
     
     [HttpDelete("{tagName}")]
+    [ServiceFilter(typeof(ValidateTagExistsAttribute))]
     public async Task<ActionResult> DeleteTag(string tagName)
     {
         if (string.IsNullOrEmpty(tagName))

@@ -42,13 +42,7 @@ public class TagService : ITagService
     public async Task DeleteTagAsync(string email, string tagName)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
-
-        var tag = user.Tags.SingleOrDefault(tag => tag.Name == tagName);
-        if (tag == null)
-        {
-            throw new InvalidParameterException("No tag with this name exists");
-        }
-
+        var tag = user.Tags.Single(tag => tag.Name == tagName);
 
         _tagRepository.Delete(tag);
         
