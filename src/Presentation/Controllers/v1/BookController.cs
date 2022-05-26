@@ -30,9 +30,9 @@ public class BookController : ControllerBase
     [HttpPost("create")]
     public async Task<ActionResult> CreateBook([FromBody] BookInDto bookInDto)
     {
-        if (bookInDto == null)
+        if (bookInDto == null || !bookInDto.IsValid)
         {
-            _logger.LogWarning("Creating book failed: book input dto is null");
+            _logger.LogWarning("Creating book failed: data is invalid");
             return BadRequest("The provided data is invalid");
         }
 

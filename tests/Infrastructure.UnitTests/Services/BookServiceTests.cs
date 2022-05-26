@@ -61,6 +61,9 @@ public partial class BookServiceTests
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new User { Books = new Collection<Book>() });
 
+        _bookRepositoryMock.Setup(x => x.ExistsAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(false);
+        
         _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
             .ReturnsAsync(1);
 
@@ -85,11 +88,13 @@ public partial class BookServiceTests
                 new Book { Title = bookTitle }
             }
         };
-
-
+        
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(user);
 
+        _bookRepositoryMock.Setup(x => x.ExistsAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(true);
+        
 
         // Assert
         await Assert.ThrowsAsync<InvalidParameterException>(() =>
@@ -369,6 +374,44 @@ public partial class BookServiceTests
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
+    }
+    
+    [Fact]
+    public async Task AddAuthorToBookAsync_ShouldThrow_WhenAuthorAlreadyExists()
+    {
+        // Arrange
+        const string bookTitle = "SomeBook";
+        const string authorFirstName = "John";
+        const string authorLastName = "Doe";
+
+        var authorToAdd = new AuthorInDto
+        {
+            FirstName = authorFirstName,
+            LastName = authorLastName
+        };
+
+        var user = new User
+        {
+            Books = new List<Book>
+            {
+                new Book
+                {
+                    Title = bookTitle, Authors = new List<Author>
+                    {
+                        new Author { FirstName = authorFirstName, LastName = authorLastName }
+                    }
+                },
+                new Book { Title = "AnotherBook", Authors = new List<Author>() }
+            }
+        };
+
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(user);
+
+
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() =>
+            _bookService.AddAuthorToBookAsync("JohnDoe@gmail.com", bookTitle, authorToAdd));
     }
 
     [Fact]

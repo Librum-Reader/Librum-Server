@@ -31,15 +31,10 @@ public class BookService : IBookService
     public async Task CreateBookAsync(string email, BookInDto bookInDto)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
-
-        if (BookExists(user, bookInDto.Title))
+        
+        if (await _bookRepository.ExistsAsync(user.Id, bookInDto.Title))
         {
             throw new InvalidParameterException("A book with this title already exists");
-        }
-
-        if (!bookInDto.IsValid)
-        {
-            throw new InvalidParameterException("The provided data is invalid");
         }
 
         var book = _mapper.Map<Book>(bookInDto);
@@ -47,14 +42,12 @@ public class BookService : IBookService
 
         await _bookRepository.SaveChangesAsync();
     }
-    
-    private bool BookExists(User user, string bookName) => user.Books.Any(book => book.Title == bookName);
-    
+
     public async Task<IList<BookOutDto>> GetBooksAsync(string email, BookRequestParameter bookRequestParameter)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: false);
 
-        var books = _bookRepository.GetBooks(user.Id);
+        var books = _bookRepository.GetAllAsync(user.Id);
         await _bookRepository.LoadRelationShipsAsync(books);
         
 
@@ -75,7 +68,7 @@ public class BookService : IBookService
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
         
-        var book = user.Books.SingleOrDefault(book => book.Title == bookTitle);
+        var book = user.Books.Single(book => book.Title == bookTitle);
         await _bookRepository.LoadRelationShipsAsync(book);
         
         foreach (var tagName in tagNames)
@@ -87,7 +80,7 @@ public class BookService : IBookService
         await _bookRepository.SaveChangesAsync();
     }
 
-    private Tag GetTagIfDoesNotExist(User user, string tagName)
+    private static Tag GetTagIfDoesNotExist(User user, string tagName)
     {
         var tag = user.Tags.SingleOrDefault(tag => tag.Name == tagName);
         if (tag == null)
@@ -101,9 +94,8 @@ public class BookService : IBookService
     public async Task RemoveTagFromBookAsync(string email, string bookTitle, string tagName)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
-        var book = user.Books.SingleOrDefault(book => book.Title == bookTitle);
-        await _bookRepository.LoadRelationShipsAsync(book);
         
+        var book = user.Books.Single(book => book.Title == bookTitle);
         await _bookRepository.LoadRelationShipsAsync(book);
 
         var tag = book!.Tags.SingleOrDefault(tag => tag.Name == tagName);
@@ -141,7 +133,7 @@ public class BookService : IBookService
         ControllerBase controllerBase)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
-        var book = user.Books.SingleOrDefault(book => book.Title == bookTitle);
+        var book = user.Books.Single(book => book.Title == bookTitle);
 
         var bookToPatch = _mapper.Map<BookForUpdateDto>(book);
         
@@ -162,7 +154,8 @@ public class BookService : IBookService
     public async Task AddAuthorToBookAsync(string email, string bookTitle, AuthorInDto authorToAdd)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
-        var book = user.Books.SingleOrDefault(book => book.Title == bookTitle);
+        
+        var book = user.Books.Single(book => book.Title == bookTitle);
         await _bookRepository.LoadRelationShipsAsync(book);
 
         if (book!.Authors.Any(author =>
@@ -171,7 +164,8 @@ public class BookService : IBookService
             throw new InvalidParameterException("An author with this name already exists");
         }
 
-        book.Authors.Add(_mapper.Map<Author>(authorToAdd));
+        var author = _mapper.Map<Author>(authorToAdd);
+        book.Authors.Add(author);
         
         await _bookRepository.SaveChangesAsync();
     }
@@ -179,6 +173,7 @@ public class BookService : IBookService
     public async Task RemoveAuthorFromBookAsync(string email, string bookTitle, AuthorForRemovalDto authorToRemove)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
+        
         var book = user.Books.SingleOrDefault(book => book.Title == bookTitle);
         await _bookRepository.LoadRelationShipsAsync(book);
 

@@ -263,7 +263,7 @@ public partial class BookServiceTests
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new User());
 
-        _bookRepositoryMock.Setup(x => x.GetBooks(It.IsAny<string>()))
+        _bookRepositoryMock.Setup(x => x.GetAllAsync(It.IsAny<string>()))
             .Returns(data.BuildMock());
 
         _bookRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<Book>()));
@@ -307,7 +307,7 @@ public partial class BookServiceTests
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new User());
 
-        _bookRepositoryMock.Setup(x => x.GetBooks(It.IsAny<string>()))
+        _bookRepositoryMock.Setup(x => x.GetAllAsync(It.IsAny<string>()))
             .Returns(books.BuildMock());
 
         _bookRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<Book>()));
@@ -379,7 +379,7 @@ public partial class BookServiceTests
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new User());
 
-        _bookRepositoryMock.Setup(x => x.GetBooks(It.IsAny<string>()))
+        _bookRepositoryMock.Setup(x => x.GetAllAsync(It.IsAny<string>()))
             .Returns(books.BuildMock());
 
         _bookRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<Book>()));
@@ -420,7 +420,7 @@ public partial class BookServiceTests
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new User());
 
-        _bookRepositoryMock.Setup(x => x.GetBooks(It.IsAny<string>()))
+        _bookRepositoryMock.Setup(x => x.GetAllAsync(It.IsAny<string>()))
             .Returns(books.BuildMock());
 
         _bookRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<Book>()));
@@ -461,7 +461,7 @@ public partial class BookServiceTests
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new User());
 
-        _bookRepositoryMock.Setup(x => x.GetBooks(It.IsAny<string>()))
+        _bookRepositoryMock.Setup(x => x.GetAllAsync(It.IsAny<string>()))
             .Returns(books.BuildMock());
 
         _bookRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<Book>()));
@@ -503,7 +503,7 @@ public partial class BookServiceTests
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new User());
 
-        _bookRepositoryMock.Setup(x => x.GetBooks(It.IsAny<string>()))
+        _bookRepositoryMock.Setup(x => x.GetAllAsync(It.IsAny<string>()))
             .Returns(books.BuildMock());
 
         _bookRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<Book>()));
@@ -544,7 +544,7 @@ public partial class BookServiceTests
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new User());
 
-        _bookRepositoryMock.Setup(x => x.GetBooks(It.IsAny<string>()))
+        _bookRepositoryMock.Setup(x => x.GetAllAsync(It.IsAny<string>()))
             .Returns(books.BuildMock());
 
         _bookRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<Book>()));
@@ -596,7 +596,7 @@ public partial class BookServiceTests
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new User());
 
-        _bookRepositoryMock.Setup(x => x.GetBooks(It.IsAny<string>()))
+        _bookRepositoryMock.Setup(x => x.GetAllAsync(It.IsAny<string>()))
             .Returns(books.BuildMock());
 
         _bookRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<Book>()));
