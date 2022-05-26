@@ -1,5 +1,8 @@
+using System.Net;
+using Application.Common.DTOs;
 using Application.Common.Exceptions;
 using Application.Interfaces.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -31,7 +34,14 @@ public class ValidateBookExistsAttribute : IAsyncActionFilter
         if (!user.Books.Any(book => book.Title == bookTitle))
         {
             _logger.LogWarning("No book with this title exists");
-            context.Result = new BadRequestResult();
+            
+            context.HttpContext.Response.ContentType = "application/json";
+            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            
+            var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode, 
+                "No book with this title exists");
+
+            await context.HttpContext.Response.WriteAsync(response.ToString());
             return;
         }
         
