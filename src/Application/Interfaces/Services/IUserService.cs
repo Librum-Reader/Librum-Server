@@ -2,7 +2,7 @@ using Application.Common.DTOs.Users;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Application.Common.Interfaces.Services;
+namespace Application.Interfaces.Services;
 
 public interface IUserService
 {

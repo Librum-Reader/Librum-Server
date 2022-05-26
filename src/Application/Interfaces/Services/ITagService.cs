@@ -1,6 +1,6 @@
 using Application.Common.DTOs.Tags;
 
-namespace Application.Common.Interfaces.Services;
+namespace Application.Interfaces.Services;
 
 public interface ITagService
 {

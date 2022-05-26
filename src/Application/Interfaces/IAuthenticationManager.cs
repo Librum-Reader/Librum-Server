@@ -1,6 +1,6 @@
 using Application.Common.DTOs.Users;
 
-namespace Application.Common.Interfaces;
+namespace Application.Interfaces;
 
 public interface IAuthenticationManager
 {

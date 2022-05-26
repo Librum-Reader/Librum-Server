@@ -1,8 +1,9 @@
+using Application.Common.ActionFilters;
 using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
-using Application.Common.Interfaces.Services;
 using Application.Common.RequestParameters;
+using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -69,7 +70,8 @@ public class BookController : ControllerBase
     }
     
     [HttpPost("tags/{bookTitle}")]
-    public async Task<ActionResult> AddTag([FromBody] IEnumerable<string> tagNames, string bookTitle)
+    [ServiceFilter(typeof(ValidateBookExistsAttribute))]
+    public async Task<ActionResult> AddTags([FromBody] IEnumerable<string> tagNames, string bookTitle)
     {
         if (tagNames == null || string.IsNullOrEmpty(bookTitle))
         {
@@ -90,6 +92,7 @@ public class BookController : ControllerBase
     }
     
     [HttpDelete("tags/{bookTitle}/{tagName}")]
+    [ServiceFilter(typeof(ValidateBookExistsAttribute))]
     public async Task<ActionResult> RemoveTagFromBook(string bookTitle, string tagName)
     {
         if (string.IsNullOrEmpty(tagName) || string.IsNullOrEmpty(bookTitle))
@@ -132,6 +135,7 @@ public class BookController : ControllerBase
     }
 
     [HttpPatch("{bookTitle}")]
+    [ServiceFilter(typeof(ValidateBookExistsAttribute))]
     public async Task<ActionResult> PatchBookAsync([FromBody] JsonPatchDocument<BookForUpdateDto> patchDoc, 
         string bookTitle)
     {
@@ -148,6 +152,7 @@ public class BookController : ControllerBase
     }
     
     [HttpPost("author/{bookTitle}")]
+    [ServiceFilter(typeof(ValidateBookExistsAttribute))]
     public async Task<ActionResult> AddAuthorToBook([FromBody] AuthorInDto authorInDto, string bookTitle)
     {
         if (authorInDto == null)
@@ -169,6 +174,7 @@ public class BookController : ControllerBase
     }
     
     [HttpDelete("author/{bookTitle}")]
+    [ServiceFilter(typeof(ValidateBookExistsAttribute))]
     public async Task<ActionResult> RemoveAuthorFromBook([FromBody] AuthorForRemovalDto author, string bookTitle)
     {
         if (author == null)

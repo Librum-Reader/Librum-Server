@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
-using Application.Common.Interfaces.Repositories;
-using Application.Common.Interfaces.Services;
 using Application.Common.Mappings;
+using Application.Interfaces.Repositories;
+using Application.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Enums;
@@ -73,19 +73,6 @@ public partial class BookServiceTests
     }
 
     [Fact]
-    public async Task CreateBookAsync_ShouldThrow_WhenUserDoesNotExist()
-    {
-        // Arrange
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(() => null);
-
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() =>
-            _bookService.CreateBookAsync("JohnDoe@gmail.com", new BookInDto()));
-    }
-
-    [Fact]
     public async Task CreateBookAsync_ShouldThrow_WhenABookWithTheTitleAlreadyExists()
     {
         // Arrange
@@ -146,32 +133,6 @@ public partial class BookServiceTests
     }
 
     [Fact]
-    public async Task AddTagsToBookAsync_ShouldThrow_WhenUserDoesNotExist()
-    {
-        // Arrange
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(() => null);
-
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() =>
-            _bookService.AddTagsToBookAsync("JohnDoe@gmail.com", "SomeBook", new List<string>()));
-    }
-
-    [Fact]
-    public async Task AddTagsToBookAsync_ShouldThrow_WhenBookDoesNotExist()
-    {
-        // Arrange
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(new User { Books = new List<Book>() });
-
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() =>
-            _bookService.AddTagsToBookAsync("JohnDoe@gmail.com", "SomeBook", new List<string> { "MyTag" }));
-    }
-
-    [Fact]
     public async Task AddTagsToBookAsync_ShouldThrow_WhenTagDoesNotExist()
     {
         // Arrange
@@ -228,32 +189,6 @@ public partial class BookServiceTests
     }
 
     [Fact]
-    public async Task RemoveTagFromBookAsync_ShouldThrow_WhenUserDoesNotExist()
-    {
-        // Arrange
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(() => null);
-
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() =>
-            _bookService.RemoveTagFromBookAsync("JohnDoe@gmail.com", "SomeBook", "TagOne"));
-    }
-
-    [Fact]
-    public async Task RemoveTagFromBookAsync_ShouldThrow_WhenBookDoesNotExist()
-    {
-        // Arrange
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(new User { Books = new List<Book>() });
-
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() =>
-            _bookService.RemoveTagFromBookAsync("JohnDoe@gmail.com", "SomeBook", "TagOne"));
-    }
-
-    [Fact]
     public async Task RemoveTagFromBookAsync_ShouldThrow_WhenTagDoesNotExist()
     {
         // Arrange
@@ -306,19 +241,6 @@ public partial class BookServiceTests
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
-    }
-
-    [Fact]
-    public async Task DeleteBooks_ShouldThrow_WhenUserDoesNotExist()
-    {
-        // Arrange
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(() => null);
-
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() =>
-            _bookService.DeleteBooksAsync("JohnDoe@gmail.com", new List<string>()));
     }
 
     [Fact]
@@ -380,32 +302,6 @@ public partial class BookServiceTests
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
-    }
-
-    [Fact]
-    public async Task PatchBookAsync_ShouldThrow_WhenUserDoesNotExist()
-    {
-        // Arrange
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(() => null);
-
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.PatchBookAsync("JohnDoe@gmail.com",
-            new JsonPatchDocument<BookForUpdateDto>(), "SomeBook", _controllerBaseMock.Object));
-    }
-
-    [Fact]
-    public async Task PatchBookAsync_ShouldThrow_WhenBookDoesNotExist()
-    {
-        // Arrange
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(new User { Books = new List<Book>() });
-
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.PatchBookAsync("JohnDoe@gmail.com",
-            new JsonPatchDocument<BookForUpdateDto>(), "SomeBook", _controllerBaseMock.Object));
     }
 
     [Fact]
@@ -476,32 +372,6 @@ public partial class BookServiceTests
     }
 
     [Fact]
-    public async Task AddAuthorToBookAsync_ShouldThrow_WhenUserDoesNotExist()
-    {
-        // Arrange
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(() => null);
-
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() =>
-            _bookService.AddAuthorToBookAsync("JohnDoe@gmail.com", "SomeBook", new AuthorInDto()));
-    }
-
-    [Fact]
-    public async Task AddAuthorToBookAsync_ShouldThrow_WhenBookDoesNotExist()
-    {
-        // Arrange
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(new User { Books = new List<Book>() });
-
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() =>
-            _bookService.AddAuthorToBookAsync("JohnDoe@gmail.com", "SomeBook", new AuthorInDto()));
-    }
-
-    [Fact]
     public async Task RemoveAuthorFromBookAsync_ShouldCallSaveChangesAsync_WhenDataIsValid()
     {
         // Arrange
@@ -544,32 +414,6 @@ public partial class BookServiceTests
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
 
-    [Fact]
-    public async Task RemoveAuthorFromBookAsync_ShouldThrow_WhenUserDoesNotExist()
-    {
-        // Arrange
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(() => null);
-
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() =>
-            _bookService.RemoveAuthorFromBookAsync("JohnDoe@gmail.com", "SomeBook", new AuthorForRemovalDto()));
-    }
-    
-    [Fact]
-    public async Task RemoveAuthorFromBookAsync_ShouldThrow_WhenBookDoesNotExist()
-    {
-        // Arrange
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(new User { Books = new List<Book>() });
-
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() =>
-            _bookService.RemoveAuthorFromBookAsync("JohnDoe@gmail.com", "SomeBook", new AuthorForRemovalDto()));
-    }
-    
     [Fact]
     public async Task RemoveAuthorFromBookAsync_ShouldThrow_WhenAuthorDoesNotExist()
     {

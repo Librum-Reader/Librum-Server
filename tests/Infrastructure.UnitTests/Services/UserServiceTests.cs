@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Application.Common.DTOs;
 using Application.Common.DTOs.Users;
 using Application.Common.Exceptions;
-using Application.Common.Interfaces.Repositories;
 using Application.Common.Mappings;
+using Application.Interfaces.Repositories;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Services.v1;
@@ -56,18 +56,6 @@ public class UserServiceTests
         // Assert
         Assert.Equal(JsonConvert.SerializeObject(_mapper.Map<UserOutDto>(user)), JsonConvert.SerializeObject(result));
     }
-    
-    [Fact]
-    public async Task GetUserAsync_ShouldThrow_WhenUserDoesNotExist()
-    {
-        // Arrange
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), false))
-            .ReturnsAsync(() => null);
-
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => _userService.GetUserAsync("johnDoe@gmail.com"));
-    }
 
     [Fact]
     public async Task DeleteUserAsync_ShouldDeleteUser_WhenUserExists()
@@ -94,25 +82,6 @@ public class UserServiceTests
         _userRepositoryMock.Verify(x => x.Delete(It.IsAny<User>()), Times.Once);
         _userRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
-    
-    [Fact]
-    public async Task DeleteUserAsync_ShouldThrow_WhenUserDoesNotExist()
-    {
-        // Arrange
-        const string userEmail = "johnDoe@gmail.com";
-        
-        var user = new User
-        {
-            Email = userEmail,
-            AccountCreation = DateTime.Now,
-            FirstName = "John",
-            LastName = "Doe"
-        };
-        
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => _userService.DeleteUserAsync(userEmail));
-    }
 
     [Fact]
     public async Task PatchUserAsync_ShouldCallSaveChangesAsync_WhenUserExistsAndDataIsValid()
@@ -138,20 +107,7 @@ public class UserServiceTests
         // Assert
         _userRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
-    
-    [Fact]
-    public async Task PatchUserAsync_ShouldThrow_WhenTheUserDoesNotExist()
-    {
-        // Arrange
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(() => null);
-        
 
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(
-            () => _userService.PatchUserAsync("JohnDoe@gmail.com", new JsonPatchDocument<UserForUpdateDto>(), _controllerBaseMock.Object));
-    }
-    
     [Fact]
     public async Task PatchUserAsync_ShouldThrow_WhenThePatchDataIsWrong()
     {

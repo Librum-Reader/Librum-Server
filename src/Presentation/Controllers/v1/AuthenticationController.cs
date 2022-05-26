@@ -1,6 +1,6 @@
 using Application.Common.DTOs.Users;
 using Application.Common.Exceptions;
-using Application.Common.Interfaces.Services;
+using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

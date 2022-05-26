@@ -1,10 +1,10 @@
 using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
-using Application.Common.Extensions;
-using Application.Common.Interfaces.Repositories;
-using Application.Common.Interfaces.Services;
 using Application.Common.RequestParameters;
+using Application.Extensions;
+using Application.Interfaces.Repositories;
+using Application.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.JsonPatch;
@@ -30,7 +30,7 @@ public class BookService : IBookService
 
     public async Task CreateBookAsync(string email, BookInDto bookInDto)
     {
-        var user = await CheckIfUserExistsAsync(email, trackChanges: true);
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
 
         if (BookExists(user, bookInDto.Title))
         {
@@ -52,7 +52,7 @@ public class BookService : IBookService
     
     public async Task<IList<BookOutDto>> GetBooksAsync(string email, BookRequestParameter bookRequestParameter)
     {
-        var user = await CheckIfUserExistsAsync(email, trackChanges: false);
+        var user = await _userRepository.GetAsync(email, trackChanges: false);
 
         var books = _bookRepository.GetBooks(user.Id);
         await _bookRepository.LoadRelationShipsAsync(books);
@@ -67,27 +67,21 @@ public class BookService : IBookService
             .SortByBestMatch(bookRequestParameter.SearchString.ToLower())
             .SortByCategories(bookRequestParameter.SortBy, bookRequestParameter.SearchString)
             .PaginateBooks(bookRequestParameter.PageNumber, bookRequestParameter.PageSize);
-
-        // var a = books.SelectMany(book => book.Tags).OrderBy(x => x.Name);
         
         return await processedBooks.Select(book => _mapper.Map<BookOutDto>(book)).ToListAsync();
     }
 
     public async Task AddTagsToBookAsync(string email, string bookTitle, IEnumerable<string> tagNames)
     {
-        var user = await CheckIfUserExistsAsync(email, trackChanges: true);
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
         
         var book = user.Books.SingleOrDefault(book => book.Title == bookTitle);
-        if (book == null)
-        {
-            throw new InvalidParameterException("No book with this name exists");
-        }
         await _bookRepository.LoadRelationShipsAsync(book);
         
         foreach (var tagName in tagNames)
         {
             var tag = GetTagIfDoesNotExist(user, tagName);
-            book.Tags.Add(tag);
+            book!.Tags.Add(tag);
         }
 
         await _bookRepository.SaveChangesAsync();
@@ -106,17 +100,13 @@ public class BookService : IBookService
 
     public async Task RemoveTagFromBookAsync(string email, string bookTitle, string tagName)
     {
-        var user = await CheckIfUserExistsAsync(email, trackChanges: true);
-
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
         var book = user.Books.SingleOrDefault(book => book.Title == bookTitle);
-        if (book == null)
-        {
-            throw new InvalidParameterException("No book with this title exists");
-        }
-
+        await _bookRepository.LoadRelationShipsAsync(book);
+        
         await _bookRepository.LoadRelationShipsAsync(book);
 
-        var tag = book.Tags.SingleOrDefault(tag => tag.Name == tagName);
+        var tag = book!.Tags.SingleOrDefault(tag => tag.Name == tagName);
         if (tag == null)
         {
             throw new InvalidParameterException("No tag with this name exists");
@@ -130,31 +120,32 @@ public class BookService : IBookService
 
     public async Task DeleteBooksAsync(string email, IEnumerable<string> bookTitles)
     {
-        var user = await CheckIfUserExistsAsync(email, trackChanges: true);
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
 
         foreach (var bookTitle in bookTitles)
         {
-            var book = await GetBookIfExistsAsync(user, bookTitle);
+            var book = user.Books.SingleOrDefault(book => book.Title == bookTitle);
+            if (book == null)
+            {
+                throw new InvalidParameterException("No book with this title exists");
+            }
+            await _bookRepository.LoadRelationShipsAsync(book);
+            
             _bookRepository.DeleteBook(book);
         }
 
         await _bookRepository.SaveChangesAsync();
     }
-
+    
     public async Task PatchBookAsync(string email, JsonPatchDocument<BookForUpdateDto> patchDoc, string bookTitle,
         ControllerBase controllerBase)
     {
-        var user = await CheckIfUserExistsAsync(email, trackChanges: true);
-
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
         var book = user.Books.SingleOrDefault(book => book.Title == bookTitle);
-        if (book == null)
-        {
-            throw new InvalidParameterException("No book with this title exists");
-        }
 
         var bookToPatch = _mapper.Map<BookForUpdateDto>(book);
         
-        
+
         patchDoc.ApplyTo(bookToPatch, controllerBase.ModelState);
         controllerBase.TryValidateModel(controllerBase.ModelState);
 
@@ -170,10 +161,11 @@ public class BookService : IBookService
 
     public async Task AddAuthorToBookAsync(string email, string bookTitle, AuthorInDto authorToAdd)
     {
-        var user = await CheckIfUserExistsAsync(email, trackChanges: true);
-        var book = await GetBookIfExistsAsync(user, bookTitle);
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        var book = user.Books.SingleOrDefault(book => book.Title == bookTitle);
+        await _bookRepository.LoadRelationShipsAsync(book);
 
-        if (book.Authors.Any(author =>
+        if (book!.Authors.Any(author =>
                 author.FirstName == authorToAdd.FirstName && author.LastName == authorToAdd.LastName))
         {
             throw new InvalidParameterException("An author with this name already exists");
@@ -186,10 +178,11 @@ public class BookService : IBookService
 
     public async Task RemoveAuthorFromBookAsync(string email, string bookTitle, AuthorForRemovalDto authorToRemove)
     {
-        var user = await CheckIfUserExistsAsync(email, trackChanges: true);
-        var book = await GetBookIfExistsAsync(user, bookTitle);
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        var book = user.Books.SingleOrDefault(book => book.Title == bookTitle);
+        await _bookRepository.LoadRelationShipsAsync(book);
 
-        var author = book.Authors.SingleOrDefault(author => 
+        var author = book!.Authors.SingleOrDefault(author => 
             author.FirstName == authorToRemove.FirstName && author.LastName == authorToRemove.LastName);
         if (author == null)
         {
@@ -199,29 +192,5 @@ public class BookService : IBookService
         book.Authors.Remove(author);
         
         await _bookRepository.SaveChangesAsync();
-    }
-
-    
-    private async Task<Book> GetBookIfExistsAsync(User user, string bookTitle)
-    {
-        var book = user.Books.SingleOrDefault(book => book.Title == bookTitle);
-        if (book == null)
-        {
-            throw new InvalidParameterException("No book with the title \"" + bookTitle + "\" found");
-        }
-
-        await _bookRepository.LoadRelationShipsAsync(book);
-        return book;
-    }
-
-    private async Task<User> CheckIfUserExistsAsync(string email, bool trackChanges)
-    {
-        var user = await _userRepository.GetAsync(email, trackChanges);
-        if (user == null)
-        {
-            throw new InvalidParameterException("No user with this email exists");
-        }
-
-        return user;
     }
 }

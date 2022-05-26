@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Application.Common.DTOs.Tags;
 using Application.Common.Exceptions;
-using Application.Common.Interfaces.Repositories;
-using Application.Common.Interfaces.Services;
 using Application.Common.Mappings;
+using Application.Interfaces.Repositories;
+using Application.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Services.v1;
@@ -53,19 +53,7 @@ public class TagServiceTests
         // Assert
         _tagRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
-    
-    [Fact]
-    public async Task CreateTagAsync_ShouldThrow_WhenUserDoesNotExist()
-    {
-        // Arrange
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(() => null);
 
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => _tagService.CreateTagAsync("JohnDoe@gmail.com", new TagInDto()));
-    }
-    
     [Fact]
     public async Task CreateTagAsync_ShouldThrow_WhenTagNameAlreadyExists()
     {
@@ -116,18 +104,6 @@ public class TagServiceTests
     }
     
     [Fact]
-    public async Task DeleteTagAsync_ShouldThrow_WhenUserDoesNotExist()
-    {
-        // Arrange
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(() => null);
-
-        
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => _tagService.DeleteTagAsync("JohnDoe@gmail.com", "MyTag"));
-    }
-    
-    [Fact]
     public async Task DeleteTagAsync_ShouldThrow_WhenTagDoesNotExist()
     {
         // Arrange
@@ -166,17 +142,5 @@ public class TagServiceTests
         {
             Assert.Equal(tagNames[i], result.ElementAt(i).Name);
         }
-    }
-    
-    [Fact]
-    public async Task GetTagsAsync_ShouldThrow_WhenUserDoesNotExist()
-    {
-        // Arrange
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(() => null);
-        
-        
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => _tagService.GetTagsAsync("JohnDoe@gmail.com"));
     }
 }

@@ -1,7 +1,7 @@
 using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
 using Application.Common.DTOs.Users;
-using Application.Common.Interfaces.Services;
+using Application.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Enums;

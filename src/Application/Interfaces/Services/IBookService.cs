@@ -1,11 +1,10 @@
 using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
 using Application.Common.RequestParameters;
-using Domain.Entities;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Application.Common.Interfaces.Services;
+namespace Application.Interfaces.Services;
 
 public interface IBookService
 {

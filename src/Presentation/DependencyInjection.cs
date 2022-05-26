@@ -1,7 +1,8 @@
 using System.Text;
-using Application.Common.Interfaces;
-using Application.Common.Interfaces.Repositories;
-using Application.Common.Interfaces.Services;
+using Application.Common.ActionFilters;
+using Application.Interfaces;
+using Application.Interfaces.Repositories;
+using Application.Interfaces.Services;
 using Domain.Entities;
 using Infrastructure.JWT;
 using Infrastructure.Persistence;
@@ -30,6 +31,8 @@ public static class DependencyInjection
         services.AddScoped<IBookRepository, BookRepository>();
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<ITagRepository, TagRepository>();
+
+        services.AddScoped<ValidateBookExistsAttribute>();
 
         services.AddApiVersioning(options =>
         {

@@ -1,12 +1,10 @@
-using Application.Common.DTOs;
 using Application.Common.DTOs.Users;
 using Application.Common.Exceptions;
-using Application.Common.Interfaces;
-using Application.Common.Interfaces.Services;
+using Application.Interfaces;
+using Application.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Infrastructure.Services.v1;
 

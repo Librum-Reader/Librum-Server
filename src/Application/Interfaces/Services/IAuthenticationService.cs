@@ -1,6 +1,6 @@
 using Application.Common.DTOs.Users;
 
-namespace Application.Common.Interfaces.Services;
+namespace Application.Interfaces.Services;
 
 public interface IAuthenticationService
 {

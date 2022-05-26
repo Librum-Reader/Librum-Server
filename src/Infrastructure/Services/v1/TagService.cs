@@ -1,7 +1,7 @@
 using Application.Common.DTOs.Tags;
 using Application.Common.Exceptions;
-using Application.Common.Interfaces.Repositories;
-using Application.Common.Interfaces.Services;
+using Application.Interfaces.Repositories;
+using Application.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
 
@@ -25,7 +25,7 @@ public class TagService : ITagService
 
     public async Task CreateTagAsync(string email, TagInDto tagIn)
     {
-        var user = await CheckIfUserExistsAsync(email, trackChanges: true);
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
         
         if (user.Tags.Any(tag => tag.Name == tagIn.Name))
         {
@@ -41,7 +41,7 @@ public class TagService : ITagService
 
     public async Task DeleteTagAsync(string email, string tagName)
     {
-        var user = await CheckIfUserExistsAsync(email, trackChanges: true);
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
 
         var tag = user.Tags.SingleOrDefault(tag => tag.Name == tagName);
         if (tag == null)
@@ -57,19 +57,8 @@ public class TagService : ITagService
 
     public async Task<IEnumerable<TagOutDto>> GetTagsAsync(string email)
     {
-        var user = await CheckIfUserExistsAsync(email, trackChanges: true);
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
 
         return user.Tags.Select(tag => _mapper.Map<TagOutDto>(tag));
-    }
-
-    private async Task<User> CheckIfUserExistsAsync(string email, bool trackChanges)
-    {
-        var user = await _userRepository.GetAsync(email, trackChanges);
-        if (user == null)
-        {
-            throw new InvalidParameterException("No user with this email exists");
-        }
-
-        return user;
     }
 }

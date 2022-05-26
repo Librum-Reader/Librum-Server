@@ -4,7 +4,7 @@ using Application.Common.RequestParameters;
 using Domain.Entities;
 using Domain.Enums;
 
-namespace Application.Common.Extensions;
+namespace Application.Extensions;
 
 public static class QueryableExtensions
 {

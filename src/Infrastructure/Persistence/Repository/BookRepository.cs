@@ -1,5 +1,6 @@
-using Application.Common.Interfaces.Repositories;
+using Application.Interfaces.Repositories;
 using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repository;
 
@@ -36,6 +37,16 @@ public class BookRepository : IBookRepository
     public IQueryable<Book> GetBooks(string userId)
     {
         return _context.Books.Where(book => book.UserId == userId);
+    }
+    
+    public async Task<Book> GetBook(string userId, string bookTitle, bool trackChanges)
+    {
+        return trackChanges
+            ? await _context.Books
+                .SingleOrDefaultAsync(book => book.UserId == userId && book.Title == bookTitle)
+            : await _context.Books
+                .AsNoTracking()
+                .SingleOrDefaultAsync(book => book.UserId == userId && book.Title == bookTitle);
     }
 
     public void DeleteBook(Book book)

@@ -1,7 +1,7 @@
 using Application.Common.DTOs.Users;
 using Application.Common.Exceptions;
-using Application.Common.Interfaces.Repositories;
-using Application.Common.Interfaces.Services;
+using Application.Interfaces.Repositories;
+using Application.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.JsonPatch;
@@ -24,14 +24,14 @@ public class UserService : IUserService
     
     public async Task<UserOutDto> GetUserAsync(string email)
     {
-        var user = await CheckIfUserExistsAsync(email, trackChanges: false);
-
+        var user = await _userRepository.GetAsync(email, trackChanges: false);
+        
         return _mapper.Map<UserOutDto>(user);
     }
 
     public async Task DeleteUserAsync(string email)
     {
-        var user = await CheckIfUserExistsAsync(email, trackChanges: true);
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
 
         _userRepository.Delete(user);
         await _userRepository.SaveChangesAsync();
@@ -39,7 +39,7 @@ public class UserService : IUserService
 
     public async Task PatchUserAsync(string email, JsonPatchDocument<UserForUpdateDto> patchDoc, ControllerBase controllerBase)
     {
-        var user = await CheckIfUserExistsAsync(email, trackChanges: true);
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
         
         var userToPatch = _mapper.Map<UserForUpdateDto>(user);
         
@@ -54,16 +54,5 @@ public class UserService : IUserService
         _mapper.Map(userToPatch, user);
 
         await _userRepository.SaveChangesAsync();
-    }
-    
-    private async Task<User> CheckIfUserExistsAsync(string email, bool trackChanges)
-    {
-        var user = await _userRepository.GetAsync(email, trackChanges);
-        if (user == null)
-        {
-            throw new InvalidParameterException("No user with this email exists");
-        }
-
-        return user;
     }
 }
