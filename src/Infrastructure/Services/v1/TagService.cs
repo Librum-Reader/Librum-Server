@@ -26,13 +26,7 @@ public class TagService : ITagService
     public async Task CreateTagAsync(string email, TagInDto tagIn)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
-        
-        if (user.Tags.Any(tag => tag.Name == tagIn.Name))
-        {
-            throw new InvalidParameterException("A tag with this name already exists");
-        }
 
-        
         var tag = _mapper.Map<Tag>(tagIn);
         user.Tags.Add(tag);
         

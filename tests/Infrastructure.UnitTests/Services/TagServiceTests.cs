@@ -55,28 +55,6 @@ public class TagServiceTests
     }
 
     [Fact]
-    public async Task CreateTagAsync_ShouldThrow_WhenTagNameAlreadyExists()
-    {
-        // Arrange
-        const string tagName = "TagOne";
-        var user = new User
-        {
-            Tags = new List<Tag>
-            {
-                new Tag { Name = tagName }
-            }
-        };
-        
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(user);
-
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => 
-            _tagService.CreateTagAsync("JohnDoe@gmail.com", new TagInDto { Name = tagName}));
-    }
-    
-    [Fact]
     public async Task DeleteTagAsync_ShouldCallSaveChangesAsync_WhenUserExistsAndTagExists()
     {
         // Arrange

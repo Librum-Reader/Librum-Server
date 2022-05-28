@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Controllers.v1;
 
 [Authorize]
+[ServiceFilter(typeof(ValidateUserExistsAttribute))]
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/[controller]")]
@@ -28,9 +29,10 @@ public class BookController : ControllerBase
 
 
     [HttpPost("create")]
+    [ServiceFilter(typeof(ValidateBookDoesNotExistAttribute))]
     public async Task<ActionResult> CreateBook([FromBody] BookInDto bookInDto)
     {
-        if (bookInDto == null || !bookInDto.IsValid)
+        if (!bookInDto.IsValid)
         {
             _logger.LogWarning("Creating book failed: data is invalid");
             return BadRequest("The provided data is invalid");
@@ -51,12 +53,6 @@ public class BookController : ControllerBase
     [HttpPost("get")]
     public async Task<ActionResult<IList<BookOutDto>>> GetBooks([FromBody] BookRequestParameter bookRequestParameter)
     {
-        if (bookRequestParameter == null)
-        {
-            _logger.LogWarning("Getting books failed: book request parameter is null");
-            return BadRequest("The provided data is invalid");
-        }
-
         try
         {
             var books = await _bookService.GetBooksAsync(HttpContext.User.Identity!.Name, bookRequestParameter);
@@ -71,6 +67,7 @@ public class BookController : ControllerBase
     
     [HttpPost("tags/{bookTitle}")]
     [ServiceFilter(typeof(ValidateBookExistsAttribute))]
+    [ServiceFilter(typeof(ValidateParameterIsValidAttribute))]
     public async Task<ActionResult> AddTags([FromBody] IEnumerable<string> tagNames, string bookTitle)
     {
         if (tagNames == null || string.IsNullOrEmpty(bookTitle))
@@ -93,6 +90,7 @@ public class BookController : ControllerBase
     
     [HttpDelete("tags/{bookTitle}/{tagName}")]
     [ServiceFilter(typeof(ValidateBookExistsAttribute))]
+    [ServiceFilter(typeof(ValidateBookHasTagAttribute))]
     public async Task<ActionResult> RemoveTagFromBook(string bookTitle, string tagName)
     {
         if (string.IsNullOrEmpty(tagName) || string.IsNullOrEmpty(bookTitle))

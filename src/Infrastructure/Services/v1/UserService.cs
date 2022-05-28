@@ -3,7 +3,6 @@ using Application.Common.Exceptions;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using AutoMapper;
-using Domain.Entities;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 

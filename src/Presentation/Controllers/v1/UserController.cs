@@ -10,6 +10,8 @@ namespace Presentation.Controllers.v1;
 
 
 [Authorize]
+[ServiceFilter(typeof(ValidateUserExistsAttribute))]
+[ServiceFilter(typeof(ValidateParameterIsValidAttribute))]
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/[controller]")]
@@ -31,7 +33,8 @@ public class UserController : ControllerBase
     {
         try
         {
-            return await _userService.GetUserAsync(HttpContext.User.Identity!.Name);
+            var user = await _userService.GetUserAsync(HttpContext.User.Identity!.Name);
+            return Ok(user);
         }
         catch (InvalidParameterException e)
         {

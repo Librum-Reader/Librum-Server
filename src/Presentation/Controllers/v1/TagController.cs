@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Controllers.v1;
 
 [Authorize]
+[ServiceFilter(typeof(ValidateUserExistsAttribute))]
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/[controller]")]
@@ -25,6 +26,7 @@ public class TagController : ControllerBase
 
 
     [HttpPost("create")]
+    [ServiceFilter(typeof(ValidateTagDoesNotExistAttribute))]
     public async Task<ActionResult> CreateTag([FromBody] TagInDto tagInDto)
     {
         if (tagInDto == null)

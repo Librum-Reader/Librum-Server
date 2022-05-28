@@ -31,11 +31,6 @@ public class BookService : IBookService
     public async Task CreateBookAsync(string email, BookInDto bookInDto)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
-        
-        if (await _bookRepository.ExistsAsync(user.Id, bookInDto.Title))
-        {
-            throw new InvalidParameterException("A book with this title already exists");
-        }
 
         var book = _mapper.Map<Book>(bookInDto);
         user.Books.Add(book);
@@ -74,7 +69,7 @@ public class BookService : IBookService
         foreach (var tagName in tagNames)
         {
             var tag = GetTagIfDoesNotExist(user, tagName);
-            book!.Tags.Add(tag);
+            book.Tags.Add(tag);
         }
 
         await _bookRepository.SaveChangesAsync();
@@ -98,15 +93,9 @@ public class BookService : IBookService
         var book = user.Books.Single(book => book.Title == bookTitle);
         await _bookRepository.LoadRelationShipsAsync(book);
 
-        var tag = book!.Tags.SingleOrDefault(tag => tag.Name == tagName);
-        if (tag == null)
-        {
-            throw new InvalidParameterException("No tag with this name exists");
-        }
-
+        var tag = book.Tags.SingleOrDefault(tag => tag.Name == tagName);
 
         book.Tags.Remove(tag);
-        
         await _bookRepository.SaveChangesAsync();
     }
 
@@ -185,7 +174,6 @@ public class BookService : IBookService
         }
         
         book.Authors.Remove(author);
-        
         await _bookRepository.SaveChangesAsync();
     }
 }

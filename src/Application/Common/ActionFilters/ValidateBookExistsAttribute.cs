@@ -24,7 +24,9 @@ public class ValidateBookExistsAttribute : IAsyncActionFilter
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         if (!context.ActionArguments.TryGetValue("bookTitle", out object bookTitleObject))
-            throw new InternalServerException("Action filter expected a parameter 'bookTitle' which does not exist");
+        {
+            throw new InternalServerException("Action filter: Expected parameter 'bookTitle' which not exist");
+        }
         
 
         var bookTitle = bookTitleObject.ToString();

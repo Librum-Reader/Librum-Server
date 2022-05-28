@@ -32,9 +32,14 @@ public static class DependencyInjection
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<ITagRepository, TagRepository>();
 
+        services.AddScoped<ValidateParameterIsValidAttribute>();
+        services.AddScoped<ValidateUserExistsAttribute>();
         services.AddScoped<ValidateBookExistsAttribute>();
+        services.AddScoped<ValidateBookDoesNotExistAttribute>();
         services.AddScoped<ValidateTagExistsAttribute>();
-
+        services.AddScoped<ValidateTagDoesNotExistAttribute>();
+        services.AddScoped<ValidateBookHasTagAttribute>();
+        
         services.AddApiVersioning(options =>
         {
             options.AssumeDefaultVersionWhenUnspecified = false;
