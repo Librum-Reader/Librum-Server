@@ -168,11 +168,7 @@ public class BookService : IBookService
 
         var author = book!.Authors.SingleOrDefault(author => 
             author.FirstName == authorToRemove.FirstName && author.LastName == authorToRemove.LastName);
-        if (author == null)
-        {
-            throw new InvalidParameterException("No author with this name exists");
-        }
-        
+
         book.Authors.Remove(author);
         await _bookRepository.SaveChangesAsync();
     }

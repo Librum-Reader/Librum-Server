@@ -125,17 +125,10 @@ public class BookController : ControllerBase
 
     [HttpDelete("author/{bookTitle}")]
     [ServiceFilter(typeof(ValidateBookExistsAttribute))]
-    public async Task<ActionResult> RemoveAuthorFromBook([FromBody] AuthorForRemovalDto author, string bookTitle)
+    [ServiceFilter(typeof(ValidateAuthorExistsAttribute))]
+    public async Task<ActionResult> RemoveAuthorFromBook([FromBody] AuthorForRemovalDto authorDto, string bookTitle)
     {
-        try
-        {
-            await _bookService.RemoveAuthorFromBookAsync(HttpContext.User.Identity!.Name, bookTitle, author);
-            return Ok();
-        }
-        catch (InvalidParameterException e)
-        {
-            _logger.LogWarning("Removing author from book failed: {ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
-        }
+        await _bookService.RemoveAuthorFromBookAsync(HttpContext.User.Identity!.Name, bookTitle, authorDto);
+        return Ok();
     }
 }
