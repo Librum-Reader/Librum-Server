@@ -1,6 +1,5 @@
 using System.Net;
 using Application.Common.DTOs;
-using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
 using Application.Interfaces.Repositories;
 using Microsoft.AspNetCore.Http;

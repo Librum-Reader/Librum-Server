@@ -26,12 +26,6 @@ public class AuthenticationController : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult> RegisterUser([FromBody] RegisterDto registerDto)
     {
-        if (registerDto == null)
-        {
-            _logger.LogWarning("User registration failed due to the register dto being null");
-            return BadRequest("The provided data was invalid");
-        }
-
         try
         {
             await _authenticationService.RegisterUserAsync(registerDto);
@@ -48,12 +42,6 @@ public class AuthenticationController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<string>> LoginUser([FromBody] LoginDto loginDto)
     {
-        if (loginDto == null)
-        {
-            _logger.LogWarning("User login failed due to the register dto being null");
-            return BadRequest("The provided data was invalid");
-        }
-
         try
         {
             var result = await _authenticationService.LoginUserAsync(loginDto);

@@ -10,6 +10,6 @@ public class BookForUpdateDto
     
     public DateTime LastOpened { get; set; }
     
-    public bool DataIsValid => Title.Length >= 4 && Title.Length <= 120 &&
-                               CurrentPage > 0 && CurrentPage < int.MaxValue;
+    public bool DataIsValid => Title.Length is >= 4 and <= 120 &&
+                               CurrentPage is > 0 and < int.MaxValue;
 }

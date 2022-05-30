@@ -30,12 +30,6 @@ public class TagController : ControllerBase
     [ServiceFilter(typeof(ValidateTagDoesNotExistAttribute))]
     public async Task<ActionResult> CreateTag([FromBody] TagInDto tagInDto)
     {
-        if (tagInDto == null)
-        {
-            _logger.LogWarning("Creating tag failed: The provided tag dto is null");
-            return BadRequest("The provided data is invalid");
-        }
-    
         try
         {
             await _tagService.CreateTagAsync(HttpContext.User.Identity!.Name, tagInDto);

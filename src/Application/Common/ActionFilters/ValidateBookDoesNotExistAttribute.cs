@@ -32,10 +32,8 @@ public class ValidateBookDoesNotExistAttribute : IAsyncActionFilter
         }
 
         
-        var bookTitle = bookInDto.Title;
-
         var user = await _userRepository.GetAsync(context.HttpContext.User.Identity!.Name, trackChanges: true);
-        if (user.Books.Any(book => book.Title == bookTitle))
+        if (user.Books.Any(book => book.Title == bookInDto.Title))
         {
             _logger.LogWarning("A book with this title already exists");
             

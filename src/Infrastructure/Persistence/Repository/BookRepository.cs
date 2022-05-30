@@ -38,16 +38,6 @@ public class BookRepository : IBookRepository
     {
         return _context.Books.Where(book => book.UserId == userId);
     }
-    
-    public async Task<Book> GetAsync(string userId, string bookTitle, bool trackChanges)
-    {
-        return trackChanges
-            ? await _context.Books
-                .SingleOrDefaultAsync(book => book.UserId == userId && book.Title == bookTitle)
-            : await _context.Books
-                .AsNoTracking()
-                .SingleOrDefaultAsync(book => book.UserId == userId && book.Title == bookTitle);
-    }
 
     public async Task<bool> ExistsAsync(string userId, string bookTitle)
     {

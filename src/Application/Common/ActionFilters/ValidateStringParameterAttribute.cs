@@ -21,8 +21,7 @@ public class ValidateStringParameterAttribute : IAsyncActionFilter
     {
         foreach (var arg in context.ActionArguments)
         {
-            if (arg.Value == null || arg.Value is string str &&
-                (string.IsNullOrWhiteSpace(str) || string.IsNullOrEmpty(str)))
+            if (arg.Value == null || IsInvalidString(arg.Value))
             {
                 _logger.LogWarning("The given string parameter was invalid");
             
@@ -38,5 +37,20 @@ public class ValidateStringParameterAttribute : IAsyncActionFilter
         }
         
         await next();
+    }
+
+    private bool IsInvalidString<T>(T value)
+    {
+        if (value is not string str)
+        {
+            return false;
+        }
+
+        if (string.IsNullOrEmpty(str) || string.IsNullOrWhiteSpace(str))
+        {
+            return true;
+        }
+
+        return false;
     }
 }
