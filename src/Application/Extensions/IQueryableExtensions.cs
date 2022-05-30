@@ -68,10 +68,9 @@ public static class QueryableExtensions
         return books;
     }
 
-    public static IQueryable<Book> FilterByTags(this IQueryable<Book> books, string tag)
+    public static IQueryable<Book> FilterByTags(this IQueryable<Book> books, string tagName)
     {
-        // TODO: Implement
-        return books;
+        return tagName == null ? books : books.Where(book => book.Tags.Any(tag => tag.Name == tagName));
     }
 
     public static IQueryable<Book> PaginateBooks(this IQueryable<Book> books, int pageNumber, int pageSize)
