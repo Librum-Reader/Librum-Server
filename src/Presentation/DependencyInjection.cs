@@ -40,6 +40,8 @@ public static class DependencyInjection
         services.AddScoped<ValidateTagDoesNotExistAttribute>();
         services.AddScoped<ValidateBookHasTagAttribute>();
         services.AddScoped<ValidateAuthorExistsAttribute>();
+        services.AddScoped<ValidateAuthorDoesNotExistAttribute>();
+
         
         services.AddApiVersioning(options =>
         {

@@ -109,18 +109,11 @@ public class BookController : ControllerBase
 
     [HttpPost("author/{bookTitle}")]
     [ServiceFilter(typeof(ValidateBookExistsAttribute))]
+    [ServiceFilter(typeof(ValidateAuthorDoesNotExistAttribute))]
     public async Task<ActionResult> AddAuthorToBook([FromBody] AuthorInDto authorInDto, string bookTitle)
     {
-        try
-        {
-            await _bookService.AddAuthorToBookAsync(HttpContext.User.Identity!.Name, bookTitle, authorInDto);
-            return Ok();
-        }
-        catch (InvalidParameterException e)
-        {
-            _logger.LogWarning("Adding author to book failed: {ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
-        }
+        await _bookService.AddAuthorToBookAsync(HttpContext.User.Identity!.Name, bookTitle, authorInDto);
+        return Ok();
     }
 
     [HttpDelete("author/{bookTitle}")]

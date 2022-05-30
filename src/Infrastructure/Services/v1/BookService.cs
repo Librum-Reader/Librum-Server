@@ -147,12 +147,6 @@ public class BookService : IBookService
         var book = user.Books.Single(book => book.Title == bookTitle);
         await _bookRepository.LoadRelationShipsAsync(book);
 
-        if (book!.Authors.Any(author =>
-                author.FirstName == authorToAdd.FirstName && author.LastName == authorToAdd.LastName))
-        {
-            throw new InvalidParameterException("An author with this name already exists");
-        }
-
         var author = _mapper.Map<Author>(authorToAdd);
         book.Authors.Add(author);
         
