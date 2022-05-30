@@ -11,7 +11,7 @@ namespace Presentation.Controllers.v1;
 
 [Authorize]
 [ServiceFilter(typeof(ValidateUserExistsAttribute))]
-[ServiceFilter(typeof(ValidateParameterIsValidAttribute))]
+[ServiceFilter(typeof(ValidateStringParameterAttribute))]
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/[controller]")]
@@ -46,12 +46,6 @@ public class UserController : ControllerBase
     [HttpPatch]
     public async Task<ActionResult> PatchUser([FromBody] JsonPatchDocument<UserForUpdateDto> patchDoc)
     {
-        if (patchDoc == null)
-        {
-            _logger.LogWarning("Patching user failed: The provided JsonPatchDocument is null");
-            return BadRequest("The provided data is invalid");
-        }
-    
         try
         {
             await _userService.PatchUserAsync(HttpContext.User.Identity!.Name, patchDoc, this);

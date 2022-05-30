@@ -9,6 +9,7 @@ namespace Presentation.Controllers.v1;
 
 [Authorize]
 [ServiceFilter(typeof(ValidateUserExistsAttribute))]
+[ServiceFilter(typeof(ValidateStringParameterAttribute))]
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/[controller]")]
@@ -51,12 +52,6 @@ public class TagController : ControllerBase
     [ServiceFilter(typeof(ValidateTagExistsAttribute))]
     public async Task<ActionResult> DeleteTag(string tagName)
     {
-        if (string.IsNullOrEmpty(tagName))
-        {
-            _logger.LogWarning("Deleting tag failed: The provided tag name is invalid");
-            return BadRequest("The provided data is invalid");
-        }
-        
         try
         {
             await _tagService.DeleteTagAsync(HttpContext.User.Identity!.Name, tagName);

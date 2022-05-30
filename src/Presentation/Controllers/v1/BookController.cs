@@ -12,6 +12,7 @@ namespace Presentation.Controllers.v1;
 
 [Authorize]
 [ServiceFilter(typeof(ValidateUserExistsAttribute))]
+[ServiceFilter(typeof(ValidateStringParameterAttribute))]
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/[controller]")]
@@ -67,15 +68,8 @@ public class BookController : ControllerBase
     
     [HttpPost("tags/{bookTitle}")]
     [ServiceFilter(typeof(ValidateBookExistsAttribute))]
-    [ServiceFilter(typeof(ValidateParameterIsValidAttribute))]
     public async Task<ActionResult> AddTags([FromBody] IEnumerable<string> tagNames, string bookTitle)
     {
-        if (tagNames == null || string.IsNullOrEmpty(bookTitle))
-        {
-            _logger.LogWarning("Adding tags to book failed: Invalid data");
-            return BadRequest("The provided data is invalid");
-        }
-
         try
         {
             await _bookService.AddTagsToBookAsync(HttpContext.User.Identity!.Name, bookTitle, tagNames);
@@ -93,12 +87,6 @@ public class BookController : ControllerBase
     [ServiceFilter(typeof(ValidateBookHasTagAttribute))]
     public async Task<ActionResult> RemoveTagFromBook(string bookTitle, string tagName)
     {
-        if (string.IsNullOrEmpty(tagName) || string.IsNullOrEmpty(bookTitle))
-        {
-            _logger.LogWarning("Removing tags from book failed: Invalid data");
-            return BadRequest("The provided data is invalid");
-        }
-
         try
         {
             await _bookService.RemoveTagFromBookAsync(HttpContext.User.Identity!.Name, bookTitle, tagName);
@@ -114,12 +102,6 @@ public class BookController : ControllerBase
     [HttpDelete]
     public async Task<ActionResult> DeleteBooks([FromBody] ICollection<string> bookTitles)
     {
-        if (bookTitles.Count == 0)
-        {
-            _logger.LogWarning("Deleting books failed: the book list is null");
-            return BadRequest("The provided data is invalid");
-        }
-
         try
         {
             await _bookService.DeleteBooksAsync(HttpContext.User.Identity!.Name, bookTitles);
@@ -153,12 +135,6 @@ public class BookController : ControllerBase
     [ServiceFilter(typeof(ValidateBookExistsAttribute))]
     public async Task<ActionResult> AddAuthorToBook([FromBody] AuthorInDto authorInDto, string bookTitle)
     {
-        if (authorInDto == null)
-        {
-            _logger.LogWarning("Adding author to book failed: the author dto is null");
-            return BadRequest("The provided data is invalid");
-        }
-
         try
         {
             await _bookService.AddAuthorToBookAsync(HttpContext.User.Identity!.Name, bookTitle, authorInDto);
@@ -175,12 +151,6 @@ public class BookController : ControllerBase
     [ServiceFilter(typeof(ValidateBookExistsAttribute))]
     public async Task<ActionResult> RemoveAuthorFromBook([FromBody] AuthorForRemovalDto author, string bookTitle)
     {
-        if (author == null)
-        {
-            _logger.LogWarning("Removing author from book failed: the author dto is null");
-            return BadRequest("The provided data is invalid");
-        }
-
         try
         {
             await _bookService.RemoveAuthorFromBookAsync(HttpContext.User.Identity!.Name, bookTitle, author);
