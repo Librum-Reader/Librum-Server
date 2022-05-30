@@ -105,7 +105,7 @@ public static class QueryableExtensions
             BookSortOptions.AuthorLexicDesc => books
                 .OrderByDescending(book => book.Authors.First().FirstName)
                 .ThenByDescending(book => book.Authors.FirstOrDefault().LastName),
-            _ => throw new InvalidParameterException("Selected a not supported 'SortBy' value")
+            _ => throw new InternalServerException("Selected a not supported 'SortBy' value")
         };
     }
 }

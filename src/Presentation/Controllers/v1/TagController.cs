@@ -30,46 +30,22 @@ public class TagController : ControllerBase
     [ServiceFilter(typeof(ValidateTagDoesNotExistAttribute))]
     public async Task<ActionResult> CreateTag([FromBody] TagInDto tagInDto)
     {
-        try
-        {
-            await _tagService.CreateTagAsync(HttpContext.User.Identity!.Name, tagInDto);
-            return StatusCode(201);
-        }
-        catch (InvalidParameterException e)
-        {
-            _logger.LogWarning("Creating tag failed: {ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
-        }
+        await _tagService.CreateTagAsync(HttpContext.User.Identity!.Name, tagInDto);
+        return StatusCode(201);
     }
     
     [HttpDelete("{tagName}")]
     [ServiceFilter(typeof(ValidateTagExistsAttribute))]
     public async Task<ActionResult> DeleteTag(string tagName)
     {
-        try
-        {
-            await _tagService.DeleteTagAsync(HttpContext.User.Identity!.Name, tagName);
-            return NoContent();
-        }
-        catch (InvalidParameterException e)
-        {
-            _logger.LogWarning("Deleting tag failed: {ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
-        }
+        await _tagService.DeleteTagAsync(HttpContext.User.Identity!.Name, tagName);
+        return NoContent();
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<TagOutDto>>> GetTags()
     {
-        try
-        {
-            var result = await _tagService.GetTagsAsync(HttpContext.User.Identity!.Name);
-            return Ok(result);
-        }
-        catch (InvalidParameterException e)
-        {
-            _logger.LogWarning("Getting tags failed: {ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
-        }
+        var result = await _tagService.GetTagsAsync(HttpContext.User.Identity!.Name);
+        return Ok(result);
     }
 }

@@ -39,33 +39,17 @@ public class BookController : ControllerBase
             return BadRequest("The provided data is invalid");
         }
 
-        try
-        {
-            await _bookService.CreateBookAsync(HttpContext.User.Identity!.Name, bookInDto);
-            return StatusCode(201);
-        }
-        catch (InvalidParameterException e)
-        {
-            _logger.LogWarning("Creating book failed: {ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
-        }
+        await _bookService.CreateBookAsync(HttpContext.User.Identity!.Name, bookInDto);
+        return StatusCode(201);
     }
 
     [HttpPost("get")]
     public async Task<ActionResult<IList<BookOutDto>>> GetBooks([FromBody] BookRequestParameter bookRequestParameter)
     {
-        try
-        {
-            var books = await _bookService.GetBooksAsync(HttpContext.User.Identity!.Name, bookRequestParameter);
-            return Ok(books);
-        }
-        catch (InvalidParameterException e)
-        {
-            _logger.LogWarning("Getting books failed: {ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
-        }
+        var books = await _bookService.GetBooksAsync(HttpContext.User.Identity!.Name, bookRequestParameter);
+        return Ok(books);
     }
-    
+
     [HttpPost("tags/{bookTitle}")]
     [ServiceFilter(typeof(ValidateBookExistsAttribute))]
     public async Task<ActionResult> AddTags([FromBody] IEnumerable<string> tagNames, string bookTitle)
@@ -81,24 +65,16 @@ public class BookController : ControllerBase
             return BadRequest(e.Message);
         }
     }
-    
+
     [HttpDelete("tags/{bookTitle}/{tagName}")]
     [ServiceFilter(typeof(ValidateBookExistsAttribute))]
     [ServiceFilter(typeof(ValidateBookHasTagAttribute))]
     public async Task<ActionResult> RemoveTagFromBook(string bookTitle, string tagName)
     {
-        try
-        {
-            await _bookService.RemoveTagFromBookAsync(HttpContext.User.Identity!.Name, bookTitle, tagName);
-            return Ok();
-        }
-        catch (InvalidParameterException e)
-        {
-            _logger.LogWarning("Removing tags from book failed: {ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
-        }
+        await _bookService.RemoveTagFromBookAsync(HttpContext.User.Identity!.Name, bookTitle, tagName);
+        return Ok();
     }
-    
+
     [HttpDelete]
     public async Task<ActionResult> DeleteBooks([FromBody] ICollection<string> bookTitles)
     {
@@ -116,7 +92,7 @@ public class BookController : ControllerBase
 
     [HttpPatch("{bookTitle}")]
     [ServiceFilter(typeof(ValidateBookExistsAttribute))]
-    public async Task<ActionResult> PatchBookAsync([FromBody] JsonPatchDocument<BookForUpdateDto> patchDoc, 
+    public async Task<ActionResult> PatchBook([FromBody] JsonPatchDocument<BookForUpdateDto> patchDoc,
         string bookTitle)
     {
         try
@@ -130,7 +106,7 @@ public class BookController : ControllerBase
             return BadRequest(e.Message);
         }
     }
-    
+
     [HttpPost("author/{bookTitle}")]
     [ServiceFilter(typeof(ValidateBookExistsAttribute))]
     public async Task<ActionResult> AddAuthorToBook([FromBody] AuthorInDto authorInDto, string bookTitle)
@@ -146,7 +122,7 @@ public class BookController : ControllerBase
             return BadRequest(e.Message);
         }
     }
-    
+
     [HttpDelete("author/{bookTitle}")]
     [ServiceFilter(typeof(ValidateBookExistsAttribute))]
     public async Task<ActionResult> RemoveAuthorFromBook([FromBody] AuthorForRemovalDto author, string bookTitle)

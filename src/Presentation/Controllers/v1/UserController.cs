@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers.v1;
 
-
 [Authorize]
 [ServiceFilter(typeof(ValidateUserExistsAttribute))]
 [ServiceFilter(typeof(ValidateStringParameterAttribute))]
@@ -26,21 +25,13 @@ public class UserController : ControllerBase
         _userService = userService;
         _logger = logger;
     }
-    
-    
+
+
     [HttpGet]
     public async Task<ActionResult<UserOutDto>> GetUser()
     {
-        try
-        {
-            var user = await _userService.GetUserAsync(HttpContext.User.Identity!.Name);
-            return Ok(user);
-        }
-        catch (InvalidParameterException e)
-        {
-            _logger.LogWarning("Getting user failed: {ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
-        }
+        var user = await _userService.GetUserAsync(HttpContext.User.Identity!.Name);
+        return Ok(user);
     }
 
     [HttpPatch]
@@ -57,19 +48,11 @@ public class UserController : ControllerBase
             return BadRequest(e.Message);
         }
     }
-    
+
     [HttpDelete]
     public async Task<ActionResult> DeleteUser()
     {
-        try
-        {
-            await _userService.DeleteUserAsync(HttpContext.User.Identity!.Name);
-            return NoContent();
-        }
-        catch (InvalidParameterException e)
-        {
-            _logger.LogWarning("Deleting user failed: {ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
-        }
+        await _userService.DeleteUserAsync(HttpContext.User.Identity!.Name);
+        return NoContent();
     }
 }
