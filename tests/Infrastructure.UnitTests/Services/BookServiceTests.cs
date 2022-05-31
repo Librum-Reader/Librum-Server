@@ -322,44 +322,6 @@ public partial class BookServiceTests
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
-    
-    [Fact]
-    public async Task AddAuthorToBookAsync_ShouldThrow_WhenAuthorAlreadyExists()
-    {
-        // Arrange
-        const string bookTitle = "SomeBook";
-        const string authorFirstName = "John";
-        const string authorLastName = "Doe";
-
-        var authorToAdd = new AuthorInDto
-        {
-            FirstName = authorFirstName,
-            LastName = authorLastName
-        };
-
-        var user = new User
-        {
-            Books = new List<Book>
-            {
-                new Book
-                {
-                    Title = bookTitle, Authors = new List<Author>
-                    {
-                        new Author { FirstName = authorFirstName, LastName = authorLastName }
-                    }
-                },
-                new Book { Title = "AnotherBook", Authors = new List<Author>() }
-            }
-        };
-
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(user);
-
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() =>
-            _bookService.AddAuthorToBookAsync("JohnDoe@gmail.com", bookTitle, authorToAdd));
-    }
 
     [Fact]
     public async Task RemoveAuthorFromBookAsync_ShouldCallSaveChangesAsync_WhenDataIsValid()
@@ -402,28 +364,5 @@ public partial class BookServiceTests
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
-    }
-
-    [Fact]
-    public async Task RemoveAuthorFromBookAsync_ShouldThrow_WhenAuthorDoesNotExist()
-    {
-        // Arrange
-        const string bookTitle = "SomeBook";
-        
-        var user = new User
-        {
-            Books = new List<Book>
-            {
-                new Book { Title = bookTitle, Authors = new List<Author>() }
-            }
-        };
-        
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(user);
-
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() =>
-            _bookService.RemoveAuthorFromBookAsync("JohnDoe@gmail.com", bookTitle, new AuthorForRemovalDto()));
     }
 }
