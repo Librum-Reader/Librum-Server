@@ -68,14 +68,15 @@ public class BookService : IBookService
         
         foreach (var tagName in tagNames)
         {
-            var tag = GetTagIfDoesNotExist(user, tagName);
+            var tag = GetTagIfExist(user, tagName);
+            CheckIfBookAlreadyHasTag(book, tagName);
             book.Tags.Add(tag);
         }
 
         await _bookRepository.SaveChangesAsync();
     }
 
-    private static Tag GetTagIfDoesNotExist(User user, string tagName)
+    private static Tag GetTagIfExist(User user, string tagName)
     {
         var tag = user.Tags.SingleOrDefault(tag => tag.Name == tagName);
         if (tag == null)
@@ -86,6 +87,14 @@ public class BookService : IBookService
         return tag;
     }
 
+    private static void CheckIfBookAlreadyHasTag(Book book, string tagName)
+    {
+        if (book.Tags.Any(tag => tag.Name == tagName))
+        {
+            throw new InvalidParameterException("The book already has the given tag");
+        }
+    }
+    
     public async Task RemoveTagFromBookAsync(string email, string bookTitle, string tagName)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
