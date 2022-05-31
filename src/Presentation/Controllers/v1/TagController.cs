@@ -27,7 +27,7 @@ public class TagController : ControllerBase
 
 
     [HttpPost("create")]
-    [ServiceFilter(typeof(ValidateTagDoesNotExistAttribute))]
+    [TypeFilter(typeof(ValidateTagExistenceAttribute), Arguments = new object[] { false })]
     public async Task<ActionResult> CreateTag([FromBody] TagInDto tagInDto)
     {
         await _tagService.CreateTagAsync(HttpContext.User.Identity!.Name, tagInDto);
@@ -35,7 +35,7 @@ public class TagController : ControllerBase
     }
     
     [HttpDelete("{tagName}")]
-    [ServiceFilter(typeof(ValidateTagExistsAttribute))]
+    [ServiceFilter(typeof(ValidateTagExistenceAttribute))]
     public async Task<ActionResult> DeleteTag(string tagName)
     {
         await _tagService.DeleteTagAsync(HttpContext.User.Identity!.Name, tagName);

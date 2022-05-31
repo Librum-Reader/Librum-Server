@@ -34,8 +34,7 @@ public static class DependencyInjection
 
         services.AddScoped<ValidateStringParameterAttribute>();
         services.AddScoped<ValidateUserExistsAttribute>();
-        services.AddScoped<ValidateTagExistsAttribute>();
-        services.AddScoped<ValidateTagDoesNotExistAttribute>();
+        services.AddScoped<ValidateTagExistenceAttribute>();
         services.AddScoped<ValidateBookHasTagAttribute>();
         services.AddScoped<ValidateAuthorExistsAttribute>();
         services.AddScoped<ValidateAuthorDoesNotExistAttribute>();
