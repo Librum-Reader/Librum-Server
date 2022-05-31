@@ -30,7 +30,7 @@ public class BookController : ControllerBase
 
 
     [HttpPost("create")]
-    [ServiceFilter(typeof(ValidateBookDoesNotExistAttribute))]
+    [TypeFilter(typeof(ValidateBookExistenceAttribute), Arguments = new object[] { false })]
     public async Task<ActionResult> CreateBook([FromBody] BookInDto bookInDto)
     {
         if (!bookInDto.IsValid)
@@ -51,7 +51,7 @@ public class BookController : ControllerBase
     }
 
     [HttpPost("tags/{bookTitle}")]
-    [ServiceFilter(typeof(ValidateBookExistsAttribute))]
+    [TypeFilter(typeof(ValidateBookExistenceAttribute))]
     public async Task<ActionResult> AddTags([FromBody] IEnumerable<string> tagNames, string bookTitle)
     {
         try
@@ -67,7 +67,7 @@ public class BookController : ControllerBase
     }
 
     [HttpDelete("tags/{bookTitle}/{tagName}")]
-    [ServiceFilter(typeof(ValidateBookExistsAttribute))]
+    [TypeFilter(typeof(ValidateBookExistenceAttribute))]
     [ServiceFilter(typeof(ValidateBookHasTagAttribute))]
     public async Task<ActionResult> RemoveTagFromBook(string bookTitle, string tagName)
     {
@@ -91,7 +91,7 @@ public class BookController : ControllerBase
     }
 
     [HttpPatch("{bookTitle}")]
-    [ServiceFilter(typeof(ValidateBookExistsAttribute))]
+    [TypeFilter(typeof(ValidateBookExistenceAttribute))]
     public async Task<ActionResult> PatchBook([FromBody] JsonPatchDocument<BookForUpdateDto> patchDoc,
         string bookTitle)
     {
@@ -108,7 +108,7 @@ public class BookController : ControllerBase
     }
 
     [HttpPost("author/{bookTitle}")]
-    [ServiceFilter(typeof(ValidateBookExistsAttribute))]
+    [TypeFilter(typeof(ValidateBookExistenceAttribute))]
     [ServiceFilter(typeof(ValidateAuthorDoesNotExistAttribute))]
     public async Task<ActionResult> AddAuthorToBook([FromBody] AuthorInDto authorInDto, string bookTitle)
     {
@@ -117,7 +117,7 @@ public class BookController : ControllerBase
     }
 
     [HttpDelete("author/{bookTitle}")]
-    [ServiceFilter(typeof(ValidateBookExistsAttribute))]
+    [TypeFilter(typeof(ValidateBookExistenceAttribute))]
     [ServiceFilter(typeof(ValidateAuthorExistsAttribute))]
     public async Task<ActionResult> RemoveAuthorFromBook([FromBody] AuthorForRemovalDto authorDto, string bookTitle)
     {
