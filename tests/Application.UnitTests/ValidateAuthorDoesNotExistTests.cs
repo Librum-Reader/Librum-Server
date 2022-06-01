@@ -22,7 +22,6 @@ public class ValidateAuthorDoesNotExistTests
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly Mock<IBookRepository> _bookRepositoryMock = new();
     private readonly Mock<ILogger<ValidateAuthorDoesNotExistAttribute>> _loggerMock = new();
-    private readonly Mock<Controller> _controllerMock = new();
 
     private readonly ValidateAuthorDoesNotExistAttribute _filterAttribute;
 
