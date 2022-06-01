@@ -41,7 +41,6 @@ public class ValidateAuthorExistsAttribute : IAsyncActionFilter
         }
         
         
-
         var user = await _userRepository.GetAsync(context.HttpContext.User.Identity!.Name, trackChanges: true);
         
         var bookTitle = bookTitleObject.ToString();
