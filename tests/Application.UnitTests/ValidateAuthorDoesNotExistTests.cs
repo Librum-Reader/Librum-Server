@@ -34,7 +34,7 @@ public class ValidateAuthorDoesNotExistTests
 
 
     [Fact]
-    public async Task ValidateAuthorDoesNotExist_ShouldReturnTrue_WhenAuthorDoesNotExist()
+    public async Task ValidateAuthorDoesNotExist_ShouldSucceed_WhenAuthorDoesNotExist()
     {
         // Arrange
         const string bookTitle = "SomeBook";
