@@ -97,7 +97,7 @@ public class ValidateAuthorDoesNotExistTests
     }
     
     [Fact]
-    public async Task ValidateAuthorDoesNotExist_ShouldThrow_WhenAuthorAlreadyExist()
+    public async Task ValidateAuthorDoesNotExist_ShouldThrow_WhenAuthorAlreadyExists()
     {
         // Arrange
         const string bookTitle = "SomeBook";
