@@ -33,6 +33,8 @@ public static class DependencyInjection
         services.AddScoped<ITagRepository, TagRepository>();
 
         services.AddScoped<ValidateStringParameterAttribute>();
+        services.AddScoped<ValidateBookExistsAttribute>();
+        services.AddScoped<ValidateBookDoesNotExistAttribute>();
         services.AddScoped<ValidateUserExistsAttribute>();
         services.AddScoped<ValidateTagExistenceAttribute>();
         services.AddScoped<ValidateBookHasTagAttribute>();

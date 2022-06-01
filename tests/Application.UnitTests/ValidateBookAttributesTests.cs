@@ -17,53 +17,37 @@ using Xunit;
 
 namespace Application.UnitTests;
 
-public class ValidateAuthorExistsTests
+public class ValidateBookAttributesTests
 {
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
-    private readonly Mock<IBookRepository> _bookRepositoryMock = new();
-    private readonly Mock<ILogger<ValidateAuthorExistsAttribute>> _loggerMock = new();
+    private readonly Mock<ILogger<ValidateBookExistsAttribute>> _bookExistsLoggerMock = new();
+    private readonly Mock<ILogger<ValidateBookDoesNotExistAttribute>> _bookDoesNotExistLoggerMock = new();
 
-    private readonly ValidateAuthorExistsAttribute _filterAttribute;
+    private readonly ValidateBookExistsAttribute _bookExistsFilterAttribute;
+    private readonly ValidateBookDoesNotExistAttribute _bookDoesNotExistFilterAttribute;
 
 
-    public ValidateAuthorExistsTests()
+    public ValidateBookAttributesTests()
     {
-        _filterAttribute = new ValidateAuthorExistsAttribute(
-            _userRepositoryMock.Object, _bookRepositoryMock.Object, _loggerMock.Object);
+        _bookExistsFilterAttribute = new ValidateBookExistsAttribute(_userRepositoryMock.Object, 
+            _bookExistsLoggerMock.Object);
+
+        _bookDoesNotExistFilterAttribute = new ValidateBookDoesNotExistAttribute(_userRepositoryMock.Object,
+            _bookDoesNotExistLoggerMock.Object);
     }
 
 
     [Fact]
-    public async Task ValidateAuthorExists_ShouldSucceed_WhenAuthorExists()
+    public async Task ValidateBookExists_ShouldSucceed_WhenBookExists()
     {
         // Arrange
         const string bookTitle = "SomeBook";
-        const string authorFirstName = "SomeAuthor";
-        const string authorLastName = "SomeLastName";
-
         var user = new User
         {
             Books = new List<Book>
             {
-                new Book
-                {
-                    Title = bookTitle,
-                    Authors = new List<Author>
-                    {
-                        new Author
-                        {
-                            FirstName = authorFirstName,
-                            LastName = authorLastName
-                        }
-                    }
-                }
+                new Book { Title = bookTitle }
             }
-        };
-
-        var authorInDto = new AuthorForRemovalDto()
-        {
-            FirstName = authorFirstName,
-            LastName = authorLastName
         };
 
         var modelState = new ModelStateDictionary();
@@ -83,7 +67,6 @@ public class ValidateAuthorExistsTests
             modelState
         );
 
-        executingContext.ActionArguments.Add("SomeDto", authorInDto);
         executingContext.ActionArguments.Add("bookTitle", bookTitle);
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
@@ -92,41 +75,22 @@ public class ValidateAuthorExistsTests
 
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _filterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+        await _bookExistsFilterAttribute.OnActionExecutionAsync(executingContext, async () => context);
 
         // Assert
         Assert.Equal(200, executingContext.HttpContext.Response.StatusCode);
     }
     
     [Fact]
-    public async Task ValidateAuthorDoesNotExist_ShouldThrow_WhenAuthorDoesNotExist()
+    public async Task ValidateBookExists_ShouldFail_WhenBookDoesNotExist()
     {
         // Arrange
-        const string bookTitle = "SomeBook";
-
         var user = new User
         {
             Books = new List<Book>
             {
-                new Book
-                {
-                    Title = bookTitle,
-                    Authors = new List<Author>
-                    {
-                        new Author
-                        {
-                            FirstName = "SomeFirstName",
-                            LastName = "SomeLastName"
-                        }
-                    }
-                }
+                new Book { Title = "SomeBookTitle" }
             }
-        };
-
-        var authorInDto = new AuthorForRemovalDto()
-        {
-            FirstName = "SomeOtherFirstName",
-            LastName = "SomeOtherLastName"
         };
 
         var modelState = new ModelStateDictionary();
@@ -146,7 +110,126 @@ public class ValidateAuthorExistsTests
             modelState
         );
 
-        executingContext.ActionArguments.Add("SomeDto", authorInDto);
+        executingContext.ActionArguments.Add("bookTitle", "AnotherBookTitle");
+
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(user);
+
+
+        // Act
+        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
+        await _bookExistsFilterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+
+        // Assert
+        Assert.Equal(400, executingContext.HttpContext.Response.StatusCode);
+    }
+    
+    [Fact]
+    public async Task ValidateBookExists_ShouldThrow_WhenNoBookTitleFound()
+    {
+        // Arrange
+        var modelState = new ModelStateDictionary();
+        var httpContextMock = new DefaultHttpContext();
+
+        var actionContext = new ActionContext(
+            httpContextMock,
+            Mock.Of<RouteData>(),
+            Mock.Of<ActionDescriptor>(),
+            modelState
+        );
+
+        var executingContext = new ActionExecutingContext(
+            actionContext,
+            new List<IFilterMetadata>(),
+            new Dictionary<string, object>()!,
+            modelState
+        );
+
+
+        // Act
+        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
+
+        // Assert
+        await Assert.ThrowsAsync<InternalServerException>(() => 
+            _bookExistsFilterAttribute.OnActionExecutionAsync(executingContext, async () => context));
+    }
+    
+    
+    
+    
+    [Fact]
+    public async Task ValidateBookDoesNotExist_ShouldSucceed_WhenBookDoesNotExists()
+    {
+        // Arrange
+        var user = new User
+        {
+            Books = new List<Book>
+            {
+                new Book { Title = "SomeBook" }
+            }
+        };
+
+        var modelState = new ModelStateDictionary();
+        var httpContextMock = new DefaultHttpContext();
+
+        var actionContext = new ActionContext(
+            httpContextMock,
+            Mock.Of<RouteData>(),
+            Mock.Of<ActionDescriptor>(),
+            modelState
+        );
+
+        var executingContext = new ActionExecutingContext(
+            actionContext,
+            new List<IFilterMetadata>(),
+            new Dictionary<string, object>()!,
+            modelState
+        );
+
+        executingContext.ActionArguments.Add("bookTitle", "SomeOtherBook");
+
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(user);
+
+
+        // Act
+        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
+        await _bookDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+
+        // Assert
+        Assert.Equal(200, executingContext.HttpContext.Response.StatusCode);
+    }
+    
+    [Fact]
+    public async Task ValidateBookDoesNotExist_ShouldFail_WhenBookExists()
+    {
+        // Arrange
+        const string bookTitle = "SomeBook";
+        var user = new User
+        {
+            Books = new List<Book>
+            {
+                new Book { Title = bookTitle }
+            }
+        };
+
+        var modelState = new ModelStateDictionary();
+        var httpContextMock = new DefaultHttpContext();
+
+        var actionContext = new ActionContext(
+            httpContextMock,
+            Mock.Of<RouteData>(),
+            Mock.Of<ActionDescriptor>(),
+            modelState
+        );
+
+        var executingContext = new ActionExecutingContext(
+            actionContext,
+            new List<IFilterMetadata>(),
+            new Dictionary<string, object>()!,
+            modelState
+        );
+
         executingContext.ActionArguments.Add("bookTitle", bookTitle);
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
@@ -155,52 +238,14 @@ public class ValidateAuthorExistsTests
 
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _filterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+        await _bookDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, async () => context);
 
         // Assert
         Assert.Equal(400, executingContext.HttpContext.Response.StatusCode);
     }
     
     [Fact]
-    public async Task ValidateAuthorExists_ShouldThrow_WhenNoDtoWasFound()
-    {
-        // Arrange
-        const string bookTitle = "SomeBook";
-
-        var modelState = new ModelStateDictionary();
-        var httpContextMock = new DefaultHttpContext();
-
-        var actionContext = new ActionContext(
-            httpContextMock,
-            Mock.Of<RouteData>(),
-            Mock.Of<ActionDescriptor>(),
-            modelState
-        );
-
-        var executingContext = new ActionExecutingContext(
-            actionContext,
-            new List<IFilterMetadata>(),
-            new Dictionary<string, object>()!,
-            modelState
-        );
-
-        executingContext.ActionArguments.Add("bookTitle", bookTitle);
-
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(new User());
-
-
-        // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-
-        // Assert
-        await Assert.ThrowsAsync<InternalServerException>(() => _filterAttribute
-            .OnActionExecutionAsync(executingContext, async () => context));
-    }
-    
-    
-    [Fact]
-    public async Task ValidateAuthorExists_ShouldThrow_WhenNoBookTitleWasFound()
+    public async Task ValidateBookDoesNotExist_ShouldThrow_WhenNoBookTitleFound()
     {
         // Arrange
         var modelState = new ModelStateDictionary();
@@ -219,18 +264,13 @@ public class ValidateAuthorExistsTests
             new Dictionary<string, object>()!,
             modelState
         );
-
-        executingContext.ActionArguments.Add("SomeDto", new AuthorForRemovalDto());
-
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(new User());
-
-
+        
+        
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
 
         // Assert
-        await Assert.ThrowsAsync<InternalServerException>(() => _filterAttribute
-            .OnActionExecutionAsync(executingContext, async () => context));
+        await Assert.ThrowsAsync<InternalServerException>(() => 
+            _bookDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, async () => context));
     }
 }

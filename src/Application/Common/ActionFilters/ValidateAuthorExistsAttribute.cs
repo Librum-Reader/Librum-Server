@@ -27,9 +27,11 @@ public class ValidateAuthorExistsAttribute : IAsyncActionFilter
     
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
+        
         var authorForRemovalDto = (AuthorForRemovalDto)context.ActionArguments
                                                               .SingleOrDefault(arg => arg.Key.Contains("Dto"))
                                                               .Value;
+        
         if (authorForRemovalDto == null)
         {
             throw new InternalServerException("Action filter: Expected parameter containing 'Dto' does not exist");
