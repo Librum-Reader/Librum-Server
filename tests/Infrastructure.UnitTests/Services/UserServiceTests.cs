@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Application.Common.DTOs;
 using Application.Common.DTOs.Users;
 using Application.Common.Exceptions;
 using Application.Common.Mappings;
