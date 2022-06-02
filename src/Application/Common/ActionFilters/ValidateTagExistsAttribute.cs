@@ -1,6 +1,5 @@
 using System.Net;
 using Application.Common.DTOs;
-using Application.Common.DTOs.Tags;
 using Application.Common.Exceptions;
 using Application.Interfaces.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -33,7 +32,7 @@ public class ValidateTagExistsAttribute : IAsyncActionFilter
         var tagName = tagNameObject.ToString();
 
 
-            var user = await _userRepository.GetAsync(context.HttpContext.User.Identity!.Name, trackChanges: true);
+        var user = await _userRepository.GetAsync(context.HttpContext.User.Identity!.Name, trackChanges: true);
         if (!user.Tags.Any(tag => tag.Name == tagName))
         {
             _logger.LogWarning("No tag with this name exists");

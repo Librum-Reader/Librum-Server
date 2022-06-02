@@ -29,7 +29,7 @@ public class ValidateTagDoesNotExistAttribute : IAsyncActionFilter
         var tagInDto = (TagInDto)context.ActionArguments.SingleOrDefault(arg => arg.Key.Contains("Dto")).Value;
         if (tagInDto == null)
         {
-            throw new InternalServerException("Action filter: Expected parameter 'tagName'");
+            throw new InternalServerException("Action filter: Expected parameter containing 'Dto'");
         }
         
         var tagName = tagInDto.Name.ToString();
