@@ -61,14 +61,6 @@ public class UserServiceTests
     {
         // Arrange
         const string userEmail = "johnDoe@gmail.com";
-        
-        var user = new User
-        {
-            Email = userEmail,
-            AccountCreation = DateTime.Now,
-            FirstName = "John",
-            LastName = "Doe"
-        };
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new User());

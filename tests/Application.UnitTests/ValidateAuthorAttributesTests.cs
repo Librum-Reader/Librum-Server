@@ -99,7 +99,7 @@ public class ValidateAuthorAttributesTests
 
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _authorExistsFilterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+        await _authorExistsFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(200, executingContext.HttpContext.Response.StatusCode);
@@ -162,7 +162,7 @@ public class ValidateAuthorAttributesTests
 
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _authorExistsFilterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+        await _authorExistsFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(400, executingContext.HttpContext.Response.StatusCode);
@@ -202,7 +202,7 @@ public class ValidateAuthorAttributesTests
 
         // Assert
         await Assert.ThrowsAsync<InternalServerException>(() => _authorExistsFilterAttribute
-            .OnActionExecutionAsync(executingContext, async () => context));
+            .OnActionExecutionAsync(executingContext, () => Task.FromResult(context)));
     }
     
     
@@ -238,7 +238,7 @@ public class ValidateAuthorAttributesTests
 
         // Assert
         await Assert.ThrowsAsync<InternalServerException>(() => _authorExistsFilterAttribute
-            .OnActionExecutionAsync(executingContext, async () => context));
+            .OnActionExecutionAsync(executingContext, () => Task.FromResult(context)));
     }
     
     
@@ -300,7 +300,8 @@ public class ValidateAuthorAttributesTests
 
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _authorDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+        await _authorDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, 
+            () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(200, executingContext.HttpContext.Response.StatusCode);
@@ -365,7 +366,7 @@ public class ValidateAuthorAttributesTests
 
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _authorDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+        await _authorDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(400, executingContext.HttpContext.Response.StatusCode);
@@ -405,7 +406,7 @@ public class ValidateAuthorAttributesTests
 
         // Assert
         await Assert.ThrowsAsync<InternalServerException>(() => _authorDoesNotExistFilterAttribute
-            .OnActionExecutionAsync(executingContext, async () => context));
+            .OnActionExecutionAsync(executingContext, () => Task.FromResult(context)));
     }
     
     [Fact]
@@ -440,6 +441,6 @@ public class ValidateAuthorAttributesTests
 
         // Assert
         await Assert.ThrowsAsync<InternalServerException>(() => _authorDoesNotExistFilterAttribute
-            .OnActionExecutionAsync(executingContext, async () => context));
+            .OnActionExecutionAsync(executingContext, () => Task.FromResult(context)));
     }
 }

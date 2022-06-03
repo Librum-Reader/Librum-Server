@@ -2,8 +2,6 @@ using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
 using Application.Common.DTOs.Users;
 using Application.Interfaces.Services;
-using AutoMapper;
-using Domain.Entities;
 using Domain.Enums;
 
 namespace Infrastructure.Persistence;

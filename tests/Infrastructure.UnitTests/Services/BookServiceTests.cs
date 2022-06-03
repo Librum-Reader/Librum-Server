@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
@@ -171,7 +170,7 @@ public partial class BookServiceTests
     public async Task DeleteBooks_ShouldCallSaveChangesAsync_WhenDataIsValid()
     {
         // Arrange
-        var bookNames = new string[] { "FirstBook", "SecondBook", "ThirdBook" };
+        var bookNames = new[] { "FirstBook", "SecondBook", "ThirdBook" };
 
         var user = new User
         {
@@ -199,7 +198,7 @@ public partial class BookServiceTests
     public async Task DeleteBooks_ShouldThrow_WhenABookDoesNotExist()
     {
         // Arrange
-        var bookNames = new string[] { "FirstBook", "SecondBook", "ThirdBook" };
+        var bookNames = new[] { "FirstBook", "SecondBook", "ThirdBook" };
 
         var user = new User
         {

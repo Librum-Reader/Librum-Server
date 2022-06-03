@@ -56,7 +56,7 @@ public class ValidateUserAttributeTests
 
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _filterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+        await _filterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(200, executingContext.HttpContext.Response.StatusCode);
@@ -89,7 +89,7 @@ public class ValidateUserAttributeTests
 
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _filterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+        await _filterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(401, executingContext.HttpContext.Response.StatusCode);

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application.Common.ActionFilters;
-using Application.Common.DTOs.Authors;
 using Application.Common.Exceptions;
 using Application.Interfaces.Repositories;
 using Domain.Entities;
@@ -82,7 +81,7 @@ public class ValidateBookAttributesTests
 
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _bookExistsFilterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+        await _bookExistsFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(200, executingContext.HttpContext.Response.StatusCode);
@@ -125,7 +124,7 @@ public class ValidateBookAttributesTests
 
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _bookExistsFilterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+        await _bookExistsFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(400, executingContext.HttpContext.Response.StatusCode);
@@ -158,7 +157,7 @@ public class ValidateBookAttributesTests
 
         // Assert
         await Assert.ThrowsAsync<InternalServerException>(() => 
-            _bookExistsFilterAttribute.OnActionExecutionAsync(executingContext, async () => context));
+            _bookExistsFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context)));
     }
     
     
@@ -201,7 +200,7 @@ public class ValidateBookAttributesTests
 
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _bookDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+        await _bookDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(200, executingContext.HttpContext.Response.StatusCode);
@@ -245,7 +244,7 @@ public class ValidateBookAttributesTests
 
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _bookDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+        await _bookDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(400, executingContext.HttpContext.Response.StatusCode);
@@ -278,7 +277,7 @@ public class ValidateBookAttributesTests
 
         // Assert
         await Assert.ThrowsAsync<InternalServerException>(() => 
-            _bookDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, async () => context));
+            _bookDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context)));
     }
 
 
@@ -333,7 +332,7 @@ public class ValidateBookAttributesTests
 
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _bookHasTagFilterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+        await _bookHasTagFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(200, executingContext.HttpContext.Response.StatusCode);
@@ -387,7 +386,7 @@ public class ValidateBookAttributesTests
 
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _bookHasTagFilterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+        await _bookHasTagFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(400, executingContext.HttpContext.Response.StatusCode);
@@ -420,7 +419,7 @@ public class ValidateBookAttributesTests
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
         await Assert.ThrowsAsync<InternalServerException>(() => 
-            _bookHasTagFilterAttribute.OnActionExecutionAsync(executingContext, async () => context));
+            _bookHasTagFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context)));
         
     }
     
@@ -451,7 +450,7 @@ public class ValidateBookAttributesTests
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
         await Assert.ThrowsAsync<InternalServerException>(() => 
-            _bookHasTagFilterAttribute.OnActionExecutionAsync(executingContext, async () => context));
+            _bookHasTagFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context)));
         
     }
 }

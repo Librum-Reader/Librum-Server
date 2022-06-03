@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using Application.Common.Enums;
 using Application.Common.RequestParameters;
 using Domain.Entities;
 using Domain.Enums;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 using MockQueryable.Moq;
 using Moq;
 using Xunit;

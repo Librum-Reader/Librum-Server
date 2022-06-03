@@ -18,7 +18,7 @@ public class Book
     public DateTime ReleaseDate { get; set; }
     
     [Required]
-    [Range(0, int.MaxValue)]
+    [Range(0, int.MaxValue, ErrorMessage = "The provided amount of pages are not in bound")]
     public int Pages { get; set; }
 
     [Required]
@@ -28,7 +28,7 @@ public class Book
     public string DataLink { get; set; }
     
     [Required]
-    [Range(0, int.MaxValue)]
+    [Range(0, int.MaxValue, ErrorMessage = "The provided amount of pages are not in bound")]
     public int CurrentPage { get; set; }
     
     [Required]

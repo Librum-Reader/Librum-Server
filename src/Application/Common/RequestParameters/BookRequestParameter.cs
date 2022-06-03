@@ -28,7 +28,6 @@ public class BookRequestParameter
 
     public string TimePassedAsString
     {
-        private get => throw new MemberAccessException();
         set => TimePassed = TimeSpan.Parse(value);
     }
 
@@ -40,5 +39,5 @@ public class BookRequestParameter
     
     public bool Unread { get; set; }
 
-    public TagInDto Tag { get; set; }
+    public TagInDto Tag { get; set; } = null;
 }

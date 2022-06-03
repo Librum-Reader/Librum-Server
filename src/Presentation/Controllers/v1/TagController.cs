@@ -1,6 +1,5 @@
 using Application.Common.ActionFilters;
 using Application.Common.DTOs.Tags;
-using Application.Common.Exceptions;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,13 +15,11 @@ namespace Presentation.Controllers.v1;
 public class TagController : ControllerBase
 {
     private readonly ITagService _tagService;
-    private readonly ILogger<TagController> _logger;
 
 
-    public TagController(ITagService tagService, ILogger<TagController> logger)
+    public TagController(ITagService tagService)
     {
         _tagService = tagService;
-        _logger = logger;
     }
 
 

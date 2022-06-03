@@ -75,7 +75,7 @@ public class ValidateTagAttributesTests
 
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _tagExistsFilterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+        await _tagExistsFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(200, executingContext.HttpContext.Response.StatusCode);
@@ -110,7 +110,7 @@ public class ValidateTagAttributesTests
 
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _tagExistsFilterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+        await _tagExistsFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(400, executingContext.HttpContext.Response.StatusCode);
@@ -146,7 +146,7 @@ public class ValidateTagAttributesTests
 
         // Assert
         await Assert.ThrowsAsync<InternalServerException>(() => 
-            _tagExistsFilterAttribute.OnActionExecutionAsync(executingContext, async () => context));
+            _tagExistsFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context)));
     }
     
     
@@ -189,7 +189,7 @@ public class ValidateTagAttributesTests
 
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _tagDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+        await _tagDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(200, executingContext.HttpContext.Response.StatusCode);
@@ -239,7 +239,7 @@ public class ValidateTagAttributesTests
 
         // Act
         var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _tagDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, async () => context);
+        await _tagDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(400, executingContext.HttpContext.Response.StatusCode);
@@ -275,6 +275,6 @@ public class ValidateTagAttributesTests
 
         // Assert
         await Assert.ThrowsAsync<InternalServerException>(() => 
-            _tagDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, async () => context));
+            _tagDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context)));
     }
 }

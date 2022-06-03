@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Common.DTOs.Tags;
-using Application.Common.Exceptions;
 using Application.Common.Mappings;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
@@ -85,7 +84,7 @@ public class TagServiceTests
     public async Task GetTagsAsync_ShouldReturnsAllTags_WhenDataIsValid()
     {
         // Arrange
-        var tagNames = new string[] { "FirstTag", "SecondTag", "ThirdTag" };
+        var tagNames = new[] { "FirstTag", "SecondTag", "ThirdTag" };
         
         var user = new User
         {
