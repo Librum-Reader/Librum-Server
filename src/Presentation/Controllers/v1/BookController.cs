@@ -107,7 +107,7 @@ public class BookController : ControllerBase
         }
     }
 
-    [HttpPost("author/{bookTitle}")]
+    [HttpPost("authors/{bookTitle}")]
     [ServiceFilter(typeof(ValidateBookExistsAttribute))]
     [ServiceFilter(typeof(ValidateAuthorDoesNotExistAttribute))]
     public async Task<ActionResult> AddAuthorToBook([FromBody] AuthorInDto authorInDto, string bookTitle)
@@ -116,7 +116,7 @@ public class BookController : ControllerBase
         return Ok();
     }
 
-    [HttpDelete("author/{bookTitle}")]
+    [HttpDelete("authors/{bookTitle}")]
     [ServiceFilter(typeof(ValidateBookExistsAttribute))]
     [ServiceFilter(typeof(ValidateAuthorExistsAttribute))]
     public async Task<ActionResult> RemoveAuthorFromBook([FromBody] AuthorForRemovalDto authorDto, string bookTitle)
