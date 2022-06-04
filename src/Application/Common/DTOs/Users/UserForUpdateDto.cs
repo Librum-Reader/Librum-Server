@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace Application.Common.DTOs.Users;
 
 public class UserForUpdateDto
@@ -8,9 +6,6 @@ public class UserForUpdateDto
     
     public string LastName { get; set; }
     
-    public string Email { get; set; }
-
-    public bool DataIsValid => Email.Length >= 6 && Email.Length <= 50 &&
-                               LastName.Length >= 2 && LastName.Length <= 50 &&
-                               FirstName.Length >= 2 && FirstName.Length <= 40;
+    public bool DataIsValid => LastName.Length is >= 2 and <= 50 && 
+                               FirstName.Length is >= 2 and <= 40;
 }

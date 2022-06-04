@@ -81,7 +81,6 @@ public class UserServiceTests
         var patchDoc = new JsonPatchDocument<UserForUpdateDto>();
         patchDoc.Add(x => x.FirstName, "John");
         patchDoc.Add(x => x.LastName, "Doe");
-        patchDoc.Add(x => x.Email, "JohnDoe@gmail.com");
         
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new User());
