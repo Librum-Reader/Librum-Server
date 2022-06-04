@@ -46,7 +46,7 @@ public static class QueryableExtensions
             return books;
         }
 
-        var lastAcceptedTime = DateTime.Now.Subtract(timePassed);
+        var lastAcceptedTime = DateTime.Now.Subtract(timePassed).ToUniversalTime();
         return books
             .Where(book => book.CreationDate >= lastAcceptedTime);
     }
