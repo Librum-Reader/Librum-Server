@@ -133,6 +133,41 @@ public partial class BookServiceTests
         await Assert.ThrowsAsync<InvalidParameterException>(() =>
             _bookService.AddTagsToBookAsync("JohnDoe@gmail.com", bookName, new List<string> { "TagOne", "TagTwo" }));
     }
+    
+    [Fact]
+    public async Task AddTagsToBookAsync_ShouldThrow_WhenBookAlreadyHasTag()
+    {
+        // Arrange
+        const string bookName = "SomeBook";
+        const string tagName = "SomeTag";
+        
+        var user = new User
+        {
+            Books = new List<Book>
+            {
+                new Book
+                {
+                    Title = bookName, 
+                    Tags = new List<Tag>
+                    {
+                        new Tag { Name = tagName }
+                    } 
+                }
+            },
+            Tags = new List<Tag>
+            {
+                new Tag { Name = tagName }
+            }
+        };
+        
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(user);
+
+
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() =>
+            _bookService.AddTagsToBookAsync("JohnDoe@gmail.com", bookName, new List<string> { tagName }));
+    }
 
     [Fact]
     public async Task RemoveTagFromBookAsync_ShouldCallSaveChangesAsync_WhenDataIsValid()
