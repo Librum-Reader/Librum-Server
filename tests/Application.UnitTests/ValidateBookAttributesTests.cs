@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application.Common.ActionFilters;
+using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
 using Application.Interfaces.Repositories;
 using Domain.Entities;
@@ -167,6 +168,11 @@ public class ValidateBookAttributesTests
     public async Task ValidateBookDoesNotExist_ShouldSucceed_WhenBookDoesNotExists()
     {
         // Arrange
+        var bookInDto = new BookInDto
+        {
+            Title = "SomeOtherBook"
+        };
+        
         var user = new User
         {
             Books = new List<Book>
@@ -192,7 +198,7 @@ public class ValidateBookAttributesTests
             modelState
         );
 
-        executingContext.ActionArguments.Add("bookTitle", "SomeOtherBook");
+        executingContext.ActionArguments.Add("SomeDto", bookInDto);
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(user);
@@ -211,6 +217,12 @@ public class ValidateBookAttributesTests
     {
         // Arrange
         const string bookTitle = "SomeBook";
+        
+        var bookInDto = new BookInDto
+        {
+            Title = bookTitle
+        };
+        
         var user = new User
         {
             Books = new List<Book>
@@ -236,7 +248,7 @@ public class ValidateBookAttributesTests
             modelState
         );
 
-        executingContext.ActionArguments.Add("bookTitle", bookTitle);
+        executingContext.ActionArguments.Add("someDto", bookInDto);
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(user);

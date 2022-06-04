@@ -1,5 +1,6 @@
 using System.Net;
 using Application.Common.DTOs;
+using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
 using Application.Interfaces.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -24,13 +25,14 @@ public class ValidateBookDoesNotExistAttribute : IAsyncActionFilter
     
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        if (!context.ActionArguments.TryGetValue("bookTitle", out object bookTitleObject))
+        var bookInDto = (BookInDto)context.ActionArguments.SingleOrDefault(arg => arg.Key.Contains("Dto")).Value;
+        if (bookInDto == null)
         {
-            throw new InternalServerException("Action filter: Expected parameter 'bookTitle' does not exist");
+            throw new InternalServerException("Action filter: Expected parameter containing 'Dto' does not exist");
         }
 
         
-        var bookTitle = bookTitleObject.ToString();
+        var bookTitle = bookInDto.Title;
         
         var user = await _userRepository.GetAsync(context.HttpContext.User.Identity!.Name, trackChanges: true);
         if (user.Books.Any(book => book.Title == bookTitle))
