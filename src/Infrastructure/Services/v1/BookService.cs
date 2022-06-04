@@ -76,6 +76,14 @@ public class BookService : IBookService
         await _bookRepository.SaveChangesAsync();
     }
 
+    private static void CheckIfBookAlreadyHasTag(Book book, string tagName)
+    {
+        if (book.Tags.Any(tag => tag.Name == tagName))
+        {
+            throw new InvalidParameterException("The book already has the given tag");
+        }
+    }
+
     private static Tag GetTagIfExist(User user, string tagName)
     {
         var tag = user.Tags.SingleOrDefault(tag => tag.Name == tagName);
@@ -85,14 +93,6 @@ public class BookService : IBookService
         }
 
         return tag;
-    }
-
-    private static void CheckIfBookAlreadyHasTag(Book book, string tagName)
-    {
-        if (book.Tags.Any(tag => tag.Name == tagName))
-        {
-            throw new InvalidParameterException("The book already has the given tag");
-        }
     }
     
     public async Task RemoveTagFromBookAsync(string email, string bookTitle, string tagName)
@@ -133,8 +133,13 @@ public class BookService : IBookService
         var user = await _userRepository.GetAsync(email, trackChanges: true);
         var book = user.Books.Single(book => book.Title == bookTitle);
 
-        var bookToPatch = _mapper.Map<BookForUpdateDto>(book);
+        var titleValue = (string)patchDoc.Operations.First(op => op.path == "/Title").value;
+        if (titleValue != null && user.Books.Any(b => b.Title == titleValue))
+        {
+            throw new InvalidParameterException("A book with this title already exists");
+        }
         
+        var bookToPatch = _mapper.Map<BookForUpdateDto>(book);
 
         patchDoc.ApplyTo(bookToPatch, controllerBase.ModelState);
         controllerBase.TryValidateModel(controllerBase.ModelState);
@@ -143,7 +148,7 @@ public class BookService : IBookService
         {
             throw new InvalidParameterException("The provided data is invalid");
         }
-
+        
         _mapper.Map(bookToPatch, book);
 
         await _bookRepository.SaveChangesAsync();

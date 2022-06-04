@@ -13,6 +13,7 @@ using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.Services.v1;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Moq;
@@ -220,7 +221,7 @@ public partial class BookServiceTests
     }
 
     [Fact]
-    public async Task PatchBookAsync_ShouldCallSaveChangesAsync_WhenUserExistsAndDataIsValid()
+    public async Task PatchBookAsync_ShouldCallSaveChangesAsync_WhenDataIsValid()
     {
         // Arrange
         const string bookTitle = "SomeBook";
@@ -234,10 +235,7 @@ public partial class BookServiceTests
         };
 
         var patchDoc = new JsonPatchDocument<BookForUpdateDto>();
-        patchDoc.Add(x => x.Title, "John");
-        patchDoc.Add(x => x.CurrentPage, 12);
-        patchDoc.Add(x => x.ReleaseDate, DateTime.Now);
-        patchDoc.Add(x => x.LastOpened, DateTime.Now);
+        patchDoc.Operations.Add(new Operation<BookForUpdateDto>("replace", "/Title", "source", "SomeOtherBook"));
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(user);
@@ -265,15 +263,12 @@ public partial class BookServiceTests
         {
             Books = new List<Book>
             {
-                new Book { Title = bookTitle }
+                new Book { Title = bookTitle, CurrentPage = -1 }
             }
         };
 
         var patchDoc = new JsonPatchDocument<BookForUpdateDto>();
-        patchDoc.Add(x => x.Title, "John");
-        patchDoc.Add(x => x.CurrentPage, 12);
-        patchDoc.Add(x => x.ReleaseDate, DateTime.Now);
-        patchDoc.Add(x => x.LastOpened, DateTime.Now);
+        patchDoc.Operations.Add(new Operation<BookForUpdateDto>("replace", "/Title", "source", "SomeOtherBook"));
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(user);
@@ -284,8 +279,38 @@ public partial class BookServiceTests
 
         // Assert
         await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.PatchBookAsync("JohnDoe@gmail.com",
-            new JsonPatchDocument<BookForUpdateDto>(), bookTitle, _controllerBaseMock.Object));
+            patchDoc, bookTitle, _controllerBaseMock.Object));
     }
+
+    [Fact]
+    public async Task PatchBookAsync_ShouldThrow_WhenBookWithTitleAlreadyExists()
+    {
+        // Arrange
+        const string bookTitle = "SomeBook";
+
+        var user = new User
+        {
+            Books = new List<Book>
+            {
+                new Book { Title = bookTitle, CurrentPage = 0 }
+            }
+        };
+
+        var patchDoc = new JsonPatchDocument<BookForUpdateDto>();
+        patchDoc.Operations.Add(new Operation<BookForUpdateDto>("replace", "/Title", "source", "SomeBook"));
+
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(user);
+
+        _controllerBaseMock.Setup(x => x.TryValidateModel(It.IsAny<ModelStateDictionary>()))
+            .Returns(false);
+
+
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.PatchBookAsync("JohnDoe@gmail.com",
+            patchDoc, bookTitle, _controllerBaseMock.Object));
+    }
+    
 
     [Fact]
     public async Task AddAuthorToBookAsync_ShouldCallSaveChangesAsync_WhenDataIsValid()

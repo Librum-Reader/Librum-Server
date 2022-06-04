@@ -401,18 +401,18 @@ public partial class BookServiceTests
         // Arrange
         var books = new Collection<Book>
         {
-            new Book { Title = "A", CreationDate = DateTime.Now.AddMinutes(-40) },
-            new Book { Title = "B", CreationDate = DateTime.Now.AddMinutes(-20) },
-            new Book { Title = "C", CreationDate = DateTime.Now },
-            new Book { Title = "D", CreationDate = DateTime.Now.AddMinutes(-50) },
-            new Book { Title = "E", CreationDate = DateTime.Now.AddMinutes(-30) }
+            new Book { Title = "A", CreationDate = DateTime.UtcNow.AddMinutes(-40) },
+            new Book { Title = "B", CreationDate = DateTime.UtcNow.AddMinutes(-20) },
+            new Book { Title = "C", CreationDate = DateTime.UtcNow },
+            new Book { Title = "D", CreationDate = DateTime.UtcNow.AddMinutes(-50) },
+            new Book { Title = "E", CreationDate = DateTime.UtcNow.AddMinutes(-30) }
         };
 
         var expectedResult = new Collection<Book>
         {
-            new Book { Title = "B", CreationDate = DateTime.Now },
-            new Book { Title = "C", CreationDate = DateTime.Now.AddMinutes(-20) },
-            new Book { Title = "E", CreationDate = DateTime.Now.AddMinutes(-30) },
+            new Book { Title = "B", CreationDate = DateTime.UtcNow },
+            new Book { Title = "C", CreationDate = DateTime.UtcNow.AddMinutes(-20) },
+            new Book { Title = "E", CreationDate = DateTime.UtcNow.AddMinutes(-30) },
         };
         
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
