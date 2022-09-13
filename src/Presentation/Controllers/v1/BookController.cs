@@ -61,7 +61,7 @@ public class BookController : ControllerBase
         }
         catch (InvalidParameterException e)
         {
-            _logger.LogWarning("Adding tags to book failed: {ErrorMessage}", e.Message);
+            _logger.LogWarning("{ErrorMessage}", e.Message);
             return BadRequest(e.Message);
         }
     }
@@ -85,7 +85,7 @@ public class BookController : ControllerBase
         }
         catch (InvalidParameterException e)
         {
-            _logger.LogWarning("Deleting books failed: {ErrorMessage}", e.Message);
+            _logger.LogWarning("{ErrorMessage}", e.Message);
             return BadRequest(e.Message);
         }
     }
@@ -102,7 +102,7 @@ public class BookController : ControllerBase
         }
         catch (InvalidParameterException e)
         {
-            _logger.LogWarning("Patching book failed: {ErrorMessage}", e.Message);
+            _logger.LogWarning("{ErrorMessage}", e.Message);
             return BadRequest(e.Message);
         }
     }

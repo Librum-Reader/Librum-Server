@@ -44,7 +44,7 @@ public class UserController : ControllerBase
         }
         catch (InvalidParameterException e)
         {
-            _logger.LogWarning("Patching user failed: {ErrorMessage}", e.Message);
+            _logger.LogWarning("{ErrorMessage}", e.Message);
             return BadRequest(e.Message);
         }
     }
