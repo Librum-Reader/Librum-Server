@@ -177,52 +177,52 @@ public class SortDataProvider : TheoryData<Collection<Book>, Collection<Book>, B
         Add(descendantlyByAuthorSortedResult, descendantlyByAuthorSortedData, descendantlyByAuthorSortedRequest);
 
 
-        // Recently read
-        var recentlyReadResult = new Collection<Book>
-        {
-            new Book { Title = "A", LastOpened = DateTime.Now },
-            new Book { Title = "B", LastOpened = DateTime.Now.AddMinutes(-10) },
-            new Book { Title = "C", LastOpened = DateTime.Now.AddMinutes(-50) },
-            new Book { Title = "D", LastOpened = DateTime.Now.AddMinutes(-51) }
-        };
-        var recentlyReadData = new Collection<Book>
-        {
-            new Book { Title = "B", LastOpened = DateTime.Now.AddMinutes(-10) },
-            new Book { Title = "C", LastOpened = DateTime.Now.AddMinutes(-50) },
-            new Book { Title = "A", LastOpened = DateTime.Now },
-            new Book { Title = "D", LastOpened = DateTime.Now.AddMinutes(-51) }
-        };
-
-        var recentlyReadRequest = new BookRequestParameter()
-        {
-            SortBy = BookSortOptions.RecentlyRead
-        };
-
-        Add(recentlyReadResult, recentlyReadData, recentlyReadRequest);
-
-
-        // Recently added
-        var recentlyAddedResult = new Collection<Book>
-        {
-            new Book { Title = "A", CreationDate = DateTime.Now },
-            new Book { Title = "B", CreationDate = DateTime.Now.AddMinutes(-11) },
-            new Book { Title = "C", CreationDate = DateTime.Now.AddMinutes(-24) },
-            new Book { Title = "D", CreationDate = DateTime.Now.AddMinutes(-26) }
-        };
-        var recentlyAddedData = new Collection<Book>
-        {
-            new Book { Title = "B", CreationDate = DateTime.Now.AddMinutes(-11) },
-            new Book { Title = "C", CreationDate = DateTime.Now.AddMinutes(-24) },
-            new Book { Title = "A", CreationDate = DateTime.Now },
-            new Book { Title = "D", CreationDate = DateTime.Now.AddMinutes(-26) }
-        };
-
-        var recentlyAddedRequest = new BookRequestParameter()
-        {
-            SortBy = BookSortOptions.RecentlyAdded
-        };
-
-        Add(recentlyAddedResult, recentlyAddedData, recentlyAddedRequest);
+        // // Recently read
+        // var recentlyReadResult = new Collection<Book>
+        // {
+        //     new Book { Title = "A", LastOpened = DateTime.Now },
+        //     new Book { Title = "B", LastOpened = DateTime.Now.AddMinutes(-10) },
+        //     new Book { Title = "C", LastOpened = DateTime.Now.AddMinutes(-50) },
+        //     new Book { Title = "D", LastOpened = DateTime.Now.AddMinutes(-51) }
+        // };
+        // var recentlyReadData = new Collection<Book>
+        // {
+        //     new Book { Title = "B", LastOpened = DateTime.Now.AddMinutes(-10) },
+        //     new Book { Title = "C", LastOpened = DateTime.Now.AddMinutes(-50) },
+        //     new Book { Title = "A", LastOpened = DateTime.Now },
+        //     new Book { Title = "D", LastOpened = DateTime.Now.AddMinutes(-51) }
+        // };
+        //
+        // var recentlyReadRequest = new BookRequestParameter()
+        // {
+        //     SortBy = BookSortOptions.RecentlyRead
+        // };
+        //
+        // Add(recentlyReadResult, recentlyReadData, recentlyReadRequest);
+        //
+        //
+        // // Recently added
+        // var recentlyAddedResult = new Collection<Book>
+        // {
+        //     new Book { Title = "A", CreationDate = DateTime.Now },
+        //     new Book { Title = "B", CreationDate = DateTime.Now.AddMinutes(-11) },
+        //     new Book { Title = "C", CreationDate = DateTime.Now.AddMinutes(-24) },
+        //     new Book { Title = "D", CreationDate = DateTime.Now.AddMinutes(-26) }
+        // };
+        // var recentlyAddedData = new Collection<Book>
+        // {
+        //     new Book { Title = "B", CreationDate = DateTime.Now.AddMinutes(-11) },
+        //     new Book { Title = "C", CreationDate = DateTime.Now.AddMinutes(-24) },
+        //     new Book { Title = "A", CreationDate = DateTime.Now },
+        //     new Book { Title = "D", CreationDate = DateTime.Now.AddMinutes(-26) }
+        // };
+        //
+        // var recentlyAddedRequest = new BookRequestParameter()
+        // {
+        //     SortBy = BookSortOptions.RecentlyAdded
+        // };
+        //
+        // Add(recentlyAddedResult, recentlyAddedData, recentlyAddedRequest);
 
 
         // Percentage read
@@ -395,47 +395,47 @@ public partial class BookServiceTests
         }
     }
 
-    [Fact]
-    public async Task FilterByTimeSinceAdded_ShouldFilterCorrectly_WhenDataIsValid()
-    {
-        // Arrange
-        var books = new Collection<Book>
-        {
-            new Book { Title = "A", CreationDate = DateTime.UtcNow.AddMinutes(-40) },
-            new Book { Title = "B", CreationDate = DateTime.UtcNow.AddMinutes(-20) },
-            new Book { Title = "C", CreationDate = DateTime.UtcNow },
-            new Book { Title = "D", CreationDate = DateTime.UtcNow.AddMinutes(-50) },
-            new Book { Title = "E", CreationDate = DateTime.UtcNow.AddMinutes(-30) }
-        };
-
-        var expectedResult = new Collection<Book>
-        {
-            new Book { Title = "B", CreationDate = DateTime.UtcNow },
-            new Book { Title = "C", CreationDate = DateTime.UtcNow.AddMinutes(-20) },
-            new Book { Title = "E", CreationDate = DateTime.UtcNow.AddMinutes(-30) },
-        };
-        
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(new User());
-
-        _bookRepositoryMock.Setup(x => x.GetAllAsync(It.IsAny<string>()))
-            .Returns(books.BuildMock());
-
-        _bookRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<Book>()));
-        
-        
-        // Act
-        var actualResult = await _bookService.GetBooksAsync(It.IsAny<string>(), new BookRequestParameter
-        {
-            TimePassedAsString = "00:30:00"    // 30 minutes
-        });
-
-        // Assert
-        for (int i = 0; i < actualResult.Count; i++)
-        {
-            Assert.Equal(expectedResult[i].Title, actualResult[i].Title);
-        }
-    }
+    // [Fact]
+    // public async Task FilterByTimeSinceAdded_ShouldFilterCorrectly_WhenDataIsValid()
+    // {
+    //     // Arrange
+    //     var books = new Collection<Book>
+    //     {
+    //         new Book { Title = "A", CreationDate = DateTime.UtcNow.AddMinutes(-40) },
+    //         new Book { Title = "B", CreationDate = DateTime.UtcNow.AddMinutes(-20) },
+    //         new Book { Title = "C", CreationDate = DateTime.UtcNow },
+    //         new Book { Title = "D", CreationDate = DateTime.UtcNow.AddMinutes(-50) },
+    //         new Book { Title = "E", CreationDate = DateTime.UtcNow.AddMinutes(-30) }
+    //     };
+    //
+    //     var expectedResult = new Collection<Book>
+    //     {
+    //         new Book { Title = "B", CreationDate = DateTime.UtcNow },
+    //         new Book { Title = "C", CreationDate = DateTime.UtcNow.AddMinutes(-20) },
+    //         new Book { Title = "E", CreationDate = DateTime.UtcNow.AddMinutes(-30) },
+    //     };
+    //     
+    //     _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+    //         .ReturnsAsync(new User());
+    //
+    //     _bookRepositoryMock.Setup(x => x.GetAllAsync(It.IsAny<string>()))
+    //         .Returns(books.BuildMock());
+    //
+    //     _bookRepositoryMock.Setup(x => x.LoadRelationShipsAsync(It.IsAny<Book>()));
+    //     
+    //     
+    //     // Act
+    //     var actualResult = await _bookService.GetBooksAsync(It.IsAny<string>(), new BookRequestParameter
+    //     {
+    //         TimePassedAsString = "00:30:00"    // 30 minutes
+    //     });
+    //
+    //     // Assert
+    //     for (int i = 0; i < actualResult.Count; i++)
+    //     {
+    //         Assert.Equal(expectedResult[i].Title, actualResult[i].Title);
+    //     }
+    // }
     
     [Fact]
     public async Task FilterByFormat_ShouldFilterCorrectly_WhenDataIsValid()

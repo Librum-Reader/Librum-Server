@@ -16,28 +16,41 @@ public class Book
     [MinLength(4, ErrorMessage = "The provided book title is too short")]
     [MaxLength(120, ErrorMessage = "The provided book title is too long")]
     public string Title { get; set; }
-
-    public DateTime ReleaseDate { get; set; }
     
     [Required]
     [Range(0, int.MaxValue, ErrorMessage = "The provided amount of pages are not in bound")]
     public int Pages { get; set; }
-
-    [Required]
-    public BookFormat Format { get; set; }
-    
-    [Required]
-    public string DataLink { get; set; }
     
     [Required]
     [Range(0, int.MaxValue, ErrorMessage = "The provided amount of pages are not in bound")]
     public int CurrentPage { get; set; }
     
     [Required]
-    public DateTime CreationDate { get; set; }
+    public BookFormat Format { get; set; }
+    
+    public string Language { get; set; }
+    
+    [Required]
+    public string DocumentSize { get; set; }
 
     [Required]
-    public DateTime LastOpened { get; set; }
+    public string PagesSize { get; set; }
+    
+    public string Creator { get; set; }
+    
+    [Required]
+    public string DataLink { get; set; }
+    
+    [Required]
+    public string CoverLink { get; set; }
+
+    [Required]
+    public string ReleaseDate { get; set; }
+    
+    [Required]
+    public string AddedToLibrary { get; set; }
+    
+    public string LastOpened { get; set; }
     
     
     

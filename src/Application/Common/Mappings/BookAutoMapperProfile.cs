@@ -10,8 +10,7 @@ public class BookAutoMapperProfile : Profile
     {
         CreateMap<BookInDto, Book>()
             .ForMember(dest => dest.DataLink, temp => temp.MapFrom(src => "none"))
-            .ForMember(dest => dest.CreationDate, temp => temp.MapFrom(src => DateTime.UtcNow))
-            .ForMember(dest => dest.LastOpened, temp => temp.MapFrom(src => DateTime.UtcNow));
+            .ForMember(dest => dest.CoverLink, temp => temp.MapFrom(src => "none"));
 
         CreateMap<Book, BookOutDto>()
             .ForMember(dest => dest.Format, temp => temp.MapFrom(src => src.Format.ToString()))

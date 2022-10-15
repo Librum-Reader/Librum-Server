@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Threading.Tasks;
 using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
@@ -47,7 +48,7 @@ public partial class BookServiceTests
         var bookDto = new BookInDto
         {
             Title = "Some book",
-            ReleaseDate = DateTime.Now,
+            ReleaseDate = DateTime.Now.ToString(CultureInfo.InvariantCulture),
             Format = BookFormat.Pdf,
             Pages = 1200,
             CurrentPage = 2,

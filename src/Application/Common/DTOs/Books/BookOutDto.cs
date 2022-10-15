@@ -9,17 +9,29 @@ public class BookOutDto
     
     public string Title { get; set; }
     
-    public DateTime ReleaseDate { get; set; }
-    
     public int Pages { get; set; }
     
-    public string Format { get; set; }
-
     public int CurrentPage { get; set; }
     
-    public DateTime CreationDate { get; set; }
+    public string Format { get; set; }
+    
+    public string Language { get; set; }
+    
+    public string DocumentSize { get; set; }
 
-    public DateTime LastOpened { get; set; }
+    public string PagesSize { get; set; }
+    
+    public string Creator { get; set; }
+    
+    public string DataLink { get; set; }
+    
+    public string CoverLink { get; set; }
+    
+    public string ReleaseDate { get; set; }
+    
+    public string AddedToLibrary { get; set; }
+
+    public string LastOpened { get; set; }
     
     
     

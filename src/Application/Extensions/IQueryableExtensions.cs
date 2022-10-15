@@ -46,9 +46,9 @@ public static class QueryableExtensions
             return books;
         }
 
-        var lastAcceptedTime = DateTime.Now.Subtract(timePassed).ToUniversalTime();
-        return books
-            .Where(book => book.CreationDate >= lastAcceptedTime);
+        // var lastAcceptedTime = DateTime.Now.Subtract(timePassed).ToUniversalTime();
+        return books;
+        // .Where(book => book.CreationDate >= lastAcceptedTime);
     }
 
     public static IQueryable<Book> FilterByFormat(this IQueryable<Book> books, BookFormat format)
@@ -93,7 +93,7 @@ public static class QueryableExtensions
         {
             BookSortOptions.Nothing => books,
             BookSortOptions.RecentlyRead => books.OrderByDescending(book => book.LastOpened),
-            BookSortOptions.RecentlyAdded => books.OrderByDescending(book => book.CreationDate),
+            // BookSortOptions.RecentlyAdded => books.OrderByDescending(book => book.CreationDate),
             BookSortOptions.Percentage => books.OrderByDescending(book => ((double)book.CurrentPage / book.Pages)),
             BookSortOptions.TitleLexicAsc => books.OrderBy(book => book.Title),
             BookSortOptions.TitleLexicDesc => books.OrderByDescending(book => book.Title),

@@ -19,12 +19,6 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
             toDb => toDb.ToString(),
             fromDb => (BookFormat)Enum.Parse(typeof(BookFormat), fromDb)
         );
-
-        builder.Property(x => x.CreationDate)
-            .HasConversion(utcConverter);
-        
-        builder.Property(x => x.LastOpened)
-            .HasConversion(utcConverter);
         
         builder.Property(x => x.Format)
             .HasConversion(bookFormatConverter);

@@ -1,3 +1,4 @@
+using System.Globalization;
 using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
 using Application.Common.DTOs.Users;
@@ -43,8 +44,8 @@ public static class DataContextSeeding
         {
             new BookInDto
             {
+                Guid = Guid.NewGuid().ToString(),
                 Title = "LukesRandomBook",
-                ReleaseDate = DateTime.Now,
                 Authors = new List<AuthorInDto>()
                 {
                     new AuthorInDto
@@ -59,13 +60,17 @@ public static class DataContextSeeding
                     }
                 },
                 Pages = 1200,
+                CurrentPage = 2,
                 Format = BookFormat.Pdf,
-                CurrentPage = 2
+                DocumentSize = "2MiB",
+                PagesSize = "800 x 300",
+                ReleaseDate = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
+                AddedToLibrary = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)
             },
             new BookInDto
             {
+                Guid = Guid.NewGuid().ToString(),
                 Title = "LisasRandomBook",
-                ReleaseDate = DateTime.Now,
                 Authors = new List<AuthorInDto>()
                 {
                     new AuthorInDto
@@ -75,13 +80,17 @@ public static class DataContextSeeding
                     }
                 },
                 Pages = 409,
+                CurrentPage = 211,
                 Format = BookFormat.Mobi,
-                CurrentPage = 211
+                DocumentSize = "0.7MiB",
+                PagesSize = "Mostly 200 x 800",
+                ReleaseDate = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
+                AddedToLibrary = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)
             },
             new BookInDto
             {
+                Guid = Guid.NewGuid().ToString(),
                 Title = "KaktorsRandomBook",
-                ReleaseDate = DateTime.Now,
                 Authors = new List<AuthorInDto>()
                 {
                     new AuthorInDto
@@ -92,7 +101,11 @@ public static class DataContextSeeding
                 },
                 Pages = 931200,
                 Format = BookFormat.Epub,
-                CurrentPage = 1234
+                CurrentPage = 1234,
+                DocumentSize = "0.7MiB",
+                PagesSize = "Mostly 200 x 800",
+                ReleaseDate = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
+                AddedToLibrary = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)
             }
         };
 
