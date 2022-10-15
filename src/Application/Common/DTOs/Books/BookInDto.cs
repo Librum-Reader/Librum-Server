@@ -17,6 +17,8 @@ public class BookInDto
     [Range(0, int.MaxValue)]
     public int Pages { get; set; }
     
+    public string Guid { get; set; }
+    
     public BookFormat Format { get; set; }
     
     public byte[] Data { get; set; }
@@ -27,6 +29,5 @@ public class BookInDto
     
     public IList<AuthorInDto> Authors { get; set; }
 
-    public bool IsValid => CurrentPage <= Pages && 
-                           Authors.Count() == Authors.DistinctBy(x => new { x.FirstName, x.LastName }).Count();
+    public bool IsValid => CurrentPage <= Pages;
 }

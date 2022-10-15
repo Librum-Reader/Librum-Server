@@ -39,7 +39,7 @@ public class BookController : ControllerBase
             return BadRequest("The provided data is invalid");
         }
 
-        await _bookService.CreateBookAsync(HttpContext.User.Identity!.Name, bookInDto);
+        await _bookService.CreateBookAsync(HttpContext.User.Identity!.Name, bookInDto, bookInDto.Guid);
         return StatusCode(201);
     }
 
@@ -50,13 +50,13 @@ public class BookController : ControllerBase
         return Ok(books);
     }
 
-    [HttpPost("tags/{bookTitle}")]
+    [HttpPost("tags/{bookGuid}")]
     [ServiceFilter(typeof(ValidateBookExistsAttribute))]
-    public async Task<ActionResult> AddTags([FromBody] IEnumerable<string> tagNames, string bookTitle)
+    public async Task<ActionResult> AddTags([FromBody] IEnumerable<string> tagNames, string bookGuid)
     {
         try
         {
-            await _bookService.AddTagsToBookAsync(HttpContext.User.Identity!.Name, bookTitle, tagNames);
+            await _bookService.AddTagsToBookAsync(HttpContext.User.Identity!.Name, bookGuid, tagNames);
             return Ok();
         }
         catch (InvalidParameterException e)
@@ -66,21 +66,21 @@ public class BookController : ControllerBase
         }
     }
 
-    [HttpDelete("tags/{bookTitle}/{tagName}")]
+    [HttpDelete("tags/{bookGuid}/{tagName}")]
     [ServiceFilter(typeof(ValidateBookExistsAttribute))]
     [ServiceFilter(typeof(ValidateBookHasTagAttribute))]
-    public async Task<ActionResult> RemoveTagFromBook(string bookTitle, string tagName)
+    public async Task<ActionResult> RemoveTagFromBook(string bookGuid, string tagName)
     {
-        await _bookService.RemoveTagFromBookAsync(HttpContext.User.Identity!.Name, bookTitle, tagName);
+        await _bookService.RemoveTagFromBookAsync(HttpContext.User.Identity!.Name, bookGuid, tagName);
         return Ok();
     }
 
     [HttpDelete]
-    public async Task<ActionResult> DeleteBooks([FromBody] ICollection<string> bookTitles)
+    public async Task<ActionResult> DeleteBooks([FromBody] ICollection<string> bookGuids)
     {
         try
         {
-            await _bookService.DeleteBooksAsync(HttpContext.User.Identity!.Name, bookTitles);
+            await _bookService.DeleteBooksAsync(HttpContext.User.Identity!.Name, bookGuids);
             return NoContent();
         }
         catch (InvalidParameterException e)
@@ -90,14 +90,14 @@ public class BookController : ControllerBase
         }
     }
 
-    [HttpPatch("{bookTitle}")]
+    [HttpPatch("{bookGuid}")]
     [ServiceFilter(typeof(ValidateBookExistsAttribute))]
     public async Task<ActionResult> PatchBook([FromBody] JsonPatchDocument<BookForUpdateDto> patchDoc,
-        string bookTitle)
+        string bookGuid)
     {
         try
         {
-            await _bookService.PatchBookAsync(HttpContext.User.Identity!.Name, patchDoc, bookTitle, this);
+            await _bookService.PatchBookAsync(HttpContext.User.Identity!.Name, patchDoc, bookGuid, this);
             return Ok();
         }
         catch (InvalidParameterException e)
@@ -107,21 +107,21 @@ public class BookController : ControllerBase
         }
     }
 
-    [HttpPost("authors/{bookTitle}")]
+    [HttpPost("authors/{bookGuid}")]
     [ServiceFilter(typeof(ValidateBookExistsAttribute))]
     [ServiceFilter(typeof(ValidateAuthorDoesNotExistAttribute))]
-    public async Task<ActionResult> AddAuthorToBook([FromBody] AuthorInDto authorInDto, string bookTitle)
+    public async Task<ActionResult> AddAuthorToBook([FromBody] AuthorInDto authorInDto, string bookGuid)
     {
-        await _bookService.AddAuthorToBookAsync(HttpContext.User.Identity!.Name, bookTitle, authorInDto);
+        await _bookService.AddAuthorToBookAsync(HttpContext.User.Identity!.Name, bookGuid, authorInDto);
         return Ok();
     }
 
-    [HttpDelete("authors/{bookTitle}")]
+    [HttpDelete("authors/{bookGuid}")]
     [ServiceFilter(typeof(ValidateBookExistsAttribute))]
     [ServiceFilter(typeof(ValidateAuthorExistsAttribute))]
-    public async Task<ActionResult> RemoveAuthorFromBook([FromBody] AuthorForRemovalDto authorDto, string bookTitle)
+    public async Task<ActionResult> RemoveAuthorFromBook([FromBody] AuthorForRemovalDto authorDto, string bookGuid)
     {
-        await _bookService.RemoveAuthorFromBookAsync(HttpContext.User.Identity!.Name, bookTitle, authorDto);
+        await _bookService.RemoveAuthorFromBookAsync(HttpContext.User.Identity!.Name, bookGuid, authorDto);
         return Ok();
     }
 }

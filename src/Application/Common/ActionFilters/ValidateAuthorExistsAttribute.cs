@@ -37,16 +37,16 @@ public class ValidateAuthorExistsAttribute : IAsyncActionFilter
             throw new InternalServerException("Action filter: Expected parameter containing 'Dto' does not exist");
         }
 
-        if(!context.ActionArguments.TryGetValue("bookTitle", out object bookTitleObject))
+        if(!context.ActionArguments.TryGetValue("bookGuid", out object bookGuidObject))
         {
-            throw new InternalServerException("Action filter: Expected parameter 'bookTitle' does not exist");
+            throw new InternalServerException("Action filter: Expected parameter 'bookGuid' does not exist");
         }
         
         
         var user = await _userRepository.GetAsync(context.HttpContext.User.Identity!.Name, trackChanges: true);
         
-        var bookTitle = bookTitleObject.ToString();
-        var book = user.Books.SingleOrDefault(book => book.Title == bookTitle);
+        var bookGuid = bookGuidObject.ToString();
+        var book = user.Books.SingleOrDefault(book => book.BookId.ToString() == bookGuid);
         await _bookRepository.LoadRelationShipsAsync(book);
 
         if (!book!.Authors.Any(author =>

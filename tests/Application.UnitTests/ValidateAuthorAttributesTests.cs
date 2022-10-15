@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application.Common.ActionFilters;
@@ -44,7 +45,7 @@ public class ValidateAuthorAttributesTests
     public async Task ValidateAuthorExists_ShouldSucceed_WhenAuthorExists()
     {
         // Arrange
-        const string bookTitle = "SomeBook";
+        var bookGuid = Guid.NewGuid();
         const string authorFirstName = "SomeAuthor";
         const string authorLastName = "SomeLastName";
 
@@ -54,7 +55,7 @@ public class ValidateAuthorAttributesTests
             {
                 new Book
                 {
-                    Title = bookTitle,
+                    BookId = bookGuid,
                     Authors = new List<Author>
                     {
                         new Author
@@ -91,7 +92,7 @@ public class ValidateAuthorAttributesTests
         );
 
         executingContext.ActionArguments.Add("SomeDto", authorInDto);
-        executingContext.ActionArguments.Add("bookTitle", bookTitle);
+        executingContext.ActionArguments.Add("bookGuid", bookGuid.ToString());
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(user);
@@ -109,7 +110,7 @@ public class ValidateAuthorAttributesTests
     public async Task ValidateAuthorDoesNotExist_ShouldThrow_WhenAuthorDoesNotExist()
     {
         // Arrange
-        const string bookTitle = "SomeBook";
+        var bookGuid = Guid.NewGuid();
 
         var user = new User
         {
@@ -117,7 +118,7 @@ public class ValidateAuthorAttributesTests
             {
                 new Book
                 {
-                    Title = bookTitle,
+                    BookId = bookGuid,
                     Authors = new List<Author>
                     {
                         new Author
@@ -154,7 +155,7 @@ public class ValidateAuthorAttributesTests
         );
 
         executingContext.ActionArguments.Add("SomeDto", authorInDto);
-        executingContext.ActionArguments.Add("bookTitle", bookTitle);
+        executingContext.ActionArguments.Add("bookGuid", bookGuid.ToString());
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(user);
@@ -172,7 +173,7 @@ public class ValidateAuthorAttributesTests
     public async Task ValidateAuthorExists_ShouldThrow_WhenNoDtoWasFound()
     {
         // Arrange
-        const string bookTitle = "SomeBook";
+        var bookGuid = Guid.NewGuid();
 
         var modelState = new ModelStateDictionary();
         var httpContextMock = new DefaultHttpContext();
@@ -191,7 +192,7 @@ public class ValidateAuthorAttributesTests
             modelState
         );
 
-        executingContext.ActionArguments.Add("bookTitle", bookTitle);
+        executingContext.ActionArguments.Add("bookGuid", bookGuid.ToString());
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new User());
@@ -247,7 +248,7 @@ public class ValidateAuthorAttributesTests
     public async Task ValidateAuthorDoesNotExist_ShouldSucceed_WhenAuthorDoesNotExist()
     {
         // Arrange
-        const string bookTitle = "SomeBook";
+        var bookGuid = Guid.NewGuid();
 
         var user = new User
         {
@@ -255,7 +256,7 @@ public class ValidateAuthorAttributesTests
             {
                 new Book
                 {
-                    Title = bookTitle,
+                    BookId = bookGuid,
                     Authors = new List<Author>
                     {
                         new Author
@@ -292,7 +293,7 @@ public class ValidateAuthorAttributesTests
         );
 
         executingContext.ActionArguments.Add("SomeDto", authorInDto);
-        executingContext.ActionArguments.Add("bookTitle", bookTitle);
+        executingContext.ActionArguments.Add("bookGuid", bookGuid.ToString());
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(user);
@@ -311,7 +312,7 @@ public class ValidateAuthorAttributesTests
     public async Task ValidateAuthorDoesNotExist_ShouldThrow_WhenAuthorAlreadyExists()
     {
         // Arrange
-        const string bookTitle = "SomeBook";
+        var bookGuid = Guid.NewGuid();
         const string authorFirstName = "SomeAuthor";
         const string authorLastName = "SomeLastName";
 
@@ -321,7 +322,7 @@ public class ValidateAuthorAttributesTests
             {
                 new Book
                 {
-                    Title = bookTitle,
+                    BookId = bookGuid,
                     Authors = new List<Author>
                     {
                         new Author
@@ -358,7 +359,7 @@ public class ValidateAuthorAttributesTests
         );
 
         executingContext.ActionArguments.Add("SomeDto", authorInDto);
-        executingContext.ActionArguments.Add("bookTitle", bookTitle);
+        executingContext.ActionArguments.Add("bookGuid", bookGuid.ToString());
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(user);
@@ -376,7 +377,7 @@ public class ValidateAuthorAttributesTests
     public async Task ValidateAuthorDoesNotExist_ShouldThrow_WhenNoDtoWasFound()
     {
         // Arrange
-        const string bookTitle = "SomeBook";
+        var bookGuid = Guid.NewGuid();
 
         var modelState = new ModelStateDictionary();
         var httpContextMock = new DefaultHttpContext();
@@ -395,7 +396,7 @@ public class ValidateAuthorAttributesTests
             modelState
         );
 
-        executingContext.ActionArguments.Add("bookTitle", bookTitle);
+        executingContext.ActionArguments.Add("bookGuid", bookGuid.ToString());
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new User());

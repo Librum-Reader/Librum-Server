@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application.Common.ActionFilters;
@@ -48,12 +49,12 @@ public class ValidateBookAttributesTests
     public async Task ValidateBookExists_ShouldSucceed_WhenBookExists()
     {
         // Arrange
-        const string bookTitle = "SomeBook";
+        var bookGuid = Guid.NewGuid();
         var user = new User
         {
             Books = new List<Book>
             {
-                new Book { Title = bookTitle }
+                new Book { BookId = bookGuid }
             }
         };
 
@@ -74,7 +75,7 @@ public class ValidateBookAttributesTests
             modelState
         );
 
-        executingContext.ActionArguments.Add("bookTitle", bookTitle);
+        executingContext.ActionArguments.Add("bookGuid", bookGuid.ToString());
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(user);
@@ -96,7 +97,7 @@ public class ValidateBookAttributesTests
         {
             Books = new List<Book>
             {
-                new Book { Title = "SomeBookTitle" }
+                new Book { BookId = Guid.NewGuid() }
             }
         };
 
@@ -117,7 +118,7 @@ public class ValidateBookAttributesTests
             modelState
         );
 
-        executingContext.ActionArguments.Add("bookTitle", "AnotherBookTitle");
+        executingContext.ActionArguments.Add("bookGuid", Guid.NewGuid());  // Different Guid
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(user);
@@ -216,18 +217,18 @@ public class ValidateBookAttributesTests
     public async Task ValidateBookDoesNotExist_ShouldFail_WhenBookExists()
     {
         // Arrange
-        const string bookTitle = "SomeBook";
+        var bookGuid = Guid.NewGuid();
         
         var bookInDto = new BookInDto
         {
-            Title = bookTitle
+            Guid = bookGuid.ToString()
         };
         
         var user = new User
         {
             Books = new List<Book>
             {
-                new Book { Title = bookTitle }
+                new Book { BookId = bookGuid }
             }
         };
 
@@ -291,15 +292,12 @@ public class ValidateBookAttributesTests
         await Assert.ThrowsAsync<InternalServerException>(() => 
             _bookDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context)));
     }
-
-
-
-
+    
     [Fact]
     public async Task ValidateBookHasTag_ShouldSucceed_WhenBookHasTag()
     {
         // Arrange
-        const string bookTitle = "SomeBook";
+        var bookGuid = Guid.NewGuid();
         const string tagName = "SomeTag";
         
         var user = new User
@@ -308,7 +306,7 @@ public class ValidateBookAttributesTests
             {
                 new Book
                 {
-                    Title = bookTitle,
+                    BookId = bookGuid,
                     Tags = new List<Tag>
                     {
                         new Tag { Name = tagName }
@@ -335,7 +333,7 @@ public class ValidateBookAttributesTests
         );
 
         executingContext.ActionArguments.Add("tagName", tagName);
-        executingContext.ActionArguments.Add("bookTitle", bookTitle);
+        executingContext.ActionArguments.Add("bookGuid", bookGuid.ToString());
         
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
@@ -354,7 +352,7 @@ public class ValidateBookAttributesTests
     public async Task ValidateBookHasTag_ShouldFail_WhenBookDoesNotHaveTag()
     {
         // Arrange
-        const string bookTitle = "SomeBook";
+        var bookGuid = Guid.NewGuid();
         
         var user = new User
         {
@@ -362,7 +360,7 @@ public class ValidateBookAttributesTests
             {
                 new Book
                 {
-                    Title = bookTitle,
+                    BookId = bookGuid,
                     Tags = new List<Tag>
                     {
                         new Tag { Name = "SomeTag" }
@@ -389,7 +387,7 @@ public class ValidateBookAttributesTests
         );
 
         executingContext.ActionArguments.Add("tagName", "SomeOtherTag");
-        executingContext.ActionArguments.Add("bookTitle", bookTitle);
+        executingContext.ActionArguments.Add("bookGuid", bookGuid.ToString());
         
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))

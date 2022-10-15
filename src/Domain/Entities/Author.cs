@@ -18,7 +18,6 @@ public class Author
     public string LastName { get; set; }
     
     
-    
     public Guid BookId { get; set; }
     public Book Book { get; set; }
 }

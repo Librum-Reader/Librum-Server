@@ -14,7 +14,8 @@ public class BookAutoMapperProfile : Profile
             .ForMember(dest => dest.LastOpened, temp => temp.MapFrom(src => DateTime.UtcNow));
 
         CreateMap<Book, BookOutDto>()
-            .ForMember(dest => dest.Format, temp => temp.MapFrom(src => src.Format.ToString()));
+            .ForMember(dest => dest.Format, temp => temp.MapFrom(src => src.Format.ToString()))
+            .ForMember(dest => dest.Guid, temp => temp.MapFrom(src => src.BookId.ToString()));
 
         CreateMap<Book, BookForUpdateDto>()
             .ReverseMap();

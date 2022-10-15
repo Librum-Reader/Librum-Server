@@ -26,9 +26,9 @@ public class ValidateBookHasTagAttribute : IAsyncActionFilter
     
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        if (!context.ActionArguments.TryGetValue("bookTitle", out object bookTitleObject))
+        if (!context.ActionArguments.TryGetValue("bookGuid", out object bookGuidObject))
         {
-            throw new InternalServerException("Action filter: Expected parameter 'bookTitle' does not exist");
+            throw new InternalServerException("Action filter: Expected parameter 'bookGuid' does not exist");
         }
         
         if (!context.ActionArguments.TryGetValue("tagName", out object tagNameObject))
@@ -37,12 +37,12 @@ public class ValidateBookHasTagAttribute : IAsyncActionFilter
         }
 
         
-        var bookTitle = bookTitleObject.ToString();
+        var bookGuid = bookGuidObject.ToString();
         var tagName = tagNameObject.ToString();
 
         var user = await _userRepository.GetAsync(context.HttpContext.User.Identity!.Name, trackChanges: true);
         
-        var book = user.Books.Single(book => book.Title == bookTitle);
+        var book = user.Books.Single(book => book.BookId.ToString() == bookGuid);
         await _bookRepository.LoadRelationShipsAsync(book);
 
         if (!book.Tags.Any(tag => tag.Name == tagName))

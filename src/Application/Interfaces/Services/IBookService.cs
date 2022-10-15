@@ -8,14 +8,14 @@ namespace Application.Interfaces.Services;
 
 public interface IBookService
 {
-    Task CreateBookAsync(string email, BookInDto bookInDto);
+    Task CreateBookAsync(string email, BookInDto bookInDto, string guid);
     Task<IList<BookOutDto>> GetBooksAsync(string email, BookRequestParameter bookRequestParameter);
-    Task AddTagsToBookAsync(string email, string bookTitle, IEnumerable<string> tagNames);
-    Task RemoveTagFromBookAsync(string email, string bookTitle, string tagName);
-    Task DeleteBooksAsync(string email, IEnumerable<string> bookTitles);
-    Task PatchBookAsync(string email, JsonPatchDocument<BookForUpdateDto> patchDoc, string bookTitle,
+    Task AddTagsToBookAsync(string email, string bookGuid, IEnumerable<string> tagNames);
+    Task RemoveTagFromBookAsync(string email, string bookGuid, string tagName);
+    Task DeleteBooksAsync(string email, IEnumerable<string> bookGuids);
+    Task PatchBookAsync(string email, JsonPatchDocument<BookForUpdateDto> patchDoc, string bookGuid,
         ControllerBase controllerBase);
     
-    Task AddAuthorToBookAsync(string email, string bookTitle, AuthorInDto authorToAdd);
-    Task RemoveAuthorFromBookAsync(string email, string bookTitle, AuthorForRemovalDto authorToRemove);
+    Task AddAuthorToBookAsync(string email, string bookGuid, AuthorInDto authorToAdd);
+    Task RemoveAuthorFromBookAsync(string email, string bookGuid, AuthorForRemovalDto authorToRemove);
 }

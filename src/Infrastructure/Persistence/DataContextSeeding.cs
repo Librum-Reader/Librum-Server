@@ -100,7 +100,7 @@ public static class DataContextSeeding
         for (int i = 0; i < users.Count; ++i)
         {
             await authenticationService.RegisterUserAsync(users[i]);
-            await bookService.CreateBookAsync(users[i].Email, books[i]);
+            await bookService.CreateBookAsync(users[i].Email, books[i], Guid.NewGuid().ToString());
         }
     }
 }

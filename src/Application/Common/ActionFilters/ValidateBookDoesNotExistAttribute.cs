@@ -32,18 +32,18 @@ public class ValidateBookDoesNotExistAttribute : IAsyncActionFilter
         }
 
         
-        var bookTitle = bookInDto.Title;
+        var bookGuid = bookInDto.Guid;
         
         var user = await _userRepository.GetAsync(context.HttpContext.User.Identity!.Name, trackChanges: true);
-        if (user.Books.Any(book => book.Title == bookTitle))
+        if (user.Books.Any(book => book.BookId.ToString() == bookGuid))
         {
-            _logger.LogWarning("A book with this title already exists");
+            _logger.LogWarning("A book with this GUID already exists");
 
             context.HttpContext.Response.ContentType = "application/json";
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
             var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode, 
-                "A book with this title already exists");
+                "A book with this GUID already exists");
 
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;

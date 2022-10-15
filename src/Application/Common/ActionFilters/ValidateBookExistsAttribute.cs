@@ -23,24 +23,24 @@ public class ValidateBookExistsAttribute : IAsyncActionFilter
     
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        if (!context.ActionArguments.TryGetValue("bookTitle", out object bookTitleObject))
+        if (!context.ActionArguments.TryGetValue("bookGuid", out object bookGuidObject))
         {
-            throw new InternalServerException("Action filter: Expected parameter 'bookTitle' does not exist");
+            throw new InternalServerException("Action filter: Expected parameter 'bookGuid' does not exist");
         }
 
         
-        var bookTitle = bookTitleObject.ToString();
+        var bookGuid = bookGuidObject.ToString();
         
         var user = await _userRepository.GetAsync(context.HttpContext.User.Identity!.Name, trackChanges: true);
-        if (!user.Books.Any(book => book.Title == bookTitle))
+        if (!user.Books.Any(book => book.BookId.ToString() == bookGuid))
         {
-            _logger.LogWarning("No book with this title exists");
+            _logger.LogWarning("No book with this GUID exists");
 
             context.HttpContext.Response.ContentType = "application/json";
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
             var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode, 
-                "No book with this title exists");
+                "No book with this GUID exists");
 
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;

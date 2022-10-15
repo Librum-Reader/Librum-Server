@@ -1,12 +1,14 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Enums;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace Domain.Entities;
 
-[Index(nameof(Title), IsUnique = true)]
+
 public class Book
 {
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
     [Key]
     public Guid BookId { get; set; }
 
