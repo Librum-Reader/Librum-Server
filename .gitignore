@@ -455,4 +455,4 @@ $RECYCLE.BIN/
 
 # Custom
 *.db*
-Migrations/*
+Migrations/
