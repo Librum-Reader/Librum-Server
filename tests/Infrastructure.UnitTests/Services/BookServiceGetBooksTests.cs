@@ -1,16 +1,16 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Application.Common.Enums;
 using Application.Common.RequestParameters;
 using Domain.Entities;
-using Domain.Enums;
 using MockQueryable.Moq;
 using Moq;
 using Xunit;
 
+
 namespace Infrastructure.UnitTests.Services;
+
 
 public class SortDataProvider : TheoryData<Collection<Book>, Collection<Book>, BookRequestParameter>
 {
@@ -443,11 +443,11 @@ public partial class BookServiceTests
         // Arrange
         var books = new Collection<Book>
         {
-            new Book { Title = "A", Format = BookFormat.Pdf },
-            new Book { Title = "B", Format = BookFormat.Mobi },
-            new Book { Title = "C", Format = BookFormat.Pdf },
-            new Book { Title = "D", Format = BookFormat.Epub },
-            new Book { Title = "E", Format = BookFormat.Epub }
+            new Book { Title = "A", Format = "Pdf" },
+            new Book { Title = "B", Format = "Mobi" },
+            new Book { Title = "C", Format = "Pdf" },
+            new Book { Title = "D", Format = "Epub" },
+            new Book { Title = "E", Format = "Epub" }
         };
 
         var expectedResult = new Collection<Book>
@@ -468,7 +468,7 @@ public partial class BookServiceTests
         // Act
         var actualResult = await _bookService.GetBooksAsync(It.IsAny<string>(), new BookRequestParameter
         {
-            Format = BookFormat.Pdf
+            Format = "Pdf"
         });
 
         // Assert

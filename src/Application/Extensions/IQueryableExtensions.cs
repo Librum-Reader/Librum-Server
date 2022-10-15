@@ -2,9 +2,10 @@ using Application.Common.Enums;
 using Application.Common.Exceptions;
 using Application.Common.RequestParameters;
 using Domain.Entities;
-using Domain.Enums;
+
 
 namespace Application.Extensions;
+
 
 public static class QueryableExtensions
 {
@@ -51,9 +52,9 @@ public static class QueryableExtensions
         // .Where(book => book.CreationDate >= lastAcceptedTime);
     }
 
-    public static IQueryable<Book> FilterByFormat(this IQueryable<Book> books, BookFormat format)
+    public static IQueryable<Book> FilterByFormat(this IQueryable<Book> books, string format)
     {
-        return (format == BookFormat.None) ? books : books.Where(book => book.Format == format);
+        return (string.IsNullOrEmpty(format)) ? books : books.Where(book => book.Format == format);
     }
 
     public static IQueryable<Book> FilterByOptions(this IQueryable<Book> books,

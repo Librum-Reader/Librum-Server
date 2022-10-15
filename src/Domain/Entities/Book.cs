@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Domain.Enums;
 
 
 namespace Domain.Entities;
@@ -26,7 +25,7 @@ public class Book
     public int CurrentPage { get; set; }
     
     [Required]
-    public BookFormat Format { get; set; }
+    public string Format { get; set; }
     
     public string Language { get; set; }
     

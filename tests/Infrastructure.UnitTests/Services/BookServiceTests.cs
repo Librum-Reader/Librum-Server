@@ -11,7 +11,6 @@ using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
-using Domain.Enums;
 using Infrastructure.Services.v1;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
@@ -20,7 +19,9 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Moq;
 using Xunit;
 
+
 namespace Infrastructure.UnitTests.Services;
+
 
 public partial class BookServiceTests
 {
@@ -49,7 +50,7 @@ public partial class BookServiceTests
         {
             Title = "Some book",
             ReleaseDate = DateTime.Now.ToString(CultureInfo.InvariantCulture),
-            Format = BookFormat.Pdf,
+            Format = "Pdf",
             Pages = 1200,
             CurrentPage = 2,
             Authors = new Collection<AuthorInDto>

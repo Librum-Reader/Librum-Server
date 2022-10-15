@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using Application.Common.DTOs.Authors;
-using Domain.Enums;
+
 
 namespace Application.Common.DTOs.Books;
+
 
 public class BookInDto
 {
@@ -23,7 +24,7 @@ public class BookInDto
     public int CurrentPage { get; set; }
 
     [Required]
-    public BookFormat Format { get; set; }
+    public string Format { get; set; }
 
     public string Language { get; set; }
 

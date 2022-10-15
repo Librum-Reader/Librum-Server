@@ -1,8 +1,9 @@
 using Application.Common.DTOs.Tags;
 using Application.Common.Enums;
-using Domain.Enums;
+
 
 namespace Application.Common.RequestParameters;
+
 
 public class BookRequestParameter
 {
@@ -33,7 +34,7 @@ public class BookRequestParameter
 
     public TimeSpan TimePassed { get; private set; }
 
-    public BookFormat Format { get; set; }
+    public string Format { get; set; }
 
     public bool Read { get; set; }
     

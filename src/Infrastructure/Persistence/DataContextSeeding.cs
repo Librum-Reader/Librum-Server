@@ -3,7 +3,6 @@ using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
 using Application.Common.DTOs.Users;
 using Application.Interfaces.Services;
-using Domain.Enums;
 
 namespace Infrastructure.Persistence;
 
@@ -61,7 +60,7 @@ public static class DataContextSeeding
                 },
                 Pages = 1200,
                 CurrentPage = 2,
-                Format = BookFormat.Pdf,
+                Format = "Pdf",
                 DocumentSize = "2MiB",
                 PagesSize = "800 x 300",
                 ReleaseDate = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
@@ -81,7 +80,7 @@ public static class DataContextSeeding
                 },
                 Pages = 409,
                 CurrentPage = 211,
-                Format = BookFormat.Mobi,
+                Format = "Mobi",
                 DocumentSize = "0.7MiB",
                 PagesSize = "Mostly 200 x 800",
                 ReleaseDate = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
@@ -100,7 +99,7 @@ public static class DataContextSeeding
                     }
                 },
                 Pages = 931200,
-                Format = BookFormat.Epub,
+                Format = "Epub",
                 CurrentPage = 1234,
                 DocumentSize = "0.7MiB",
                 PagesSize = "Mostly 200 x 800",
