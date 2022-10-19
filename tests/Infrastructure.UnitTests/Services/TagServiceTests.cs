@@ -15,22 +15,24 @@ namespace Infrastructure.UnitTests.Services;
 
 public class TagServiceTests
 {
-    private readonly Mock<ITagRepository> _tagRepositoryMock = new Mock<ITagRepository>();
-    private readonly Mock<IUserRepository> _userRepositoryMock = new Mock<IUserRepository>();
+    private readonly Mock<ITagRepository> _tagRepositoryMock = new();
+    private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly ITagService _tagService;
     
     
     public TagServiceTests()
     {
-        var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<TagAutoMapperProfile>());
+        var mapperConfig = new MapperConfiguration(
+            cfg => cfg.AddProfile<TagAutoMapperProfile>());
         var mapper = new Mapper(mapperConfig);
 
-        _tagService = new TagService(mapper, _tagRepositoryMock.Object, _userRepositoryMock.Object);
+        _tagService = new TagService(mapper, _tagRepositoryMock.Object,
+                                     _userRepositoryMock.Object);
     }
 
 
     [Fact]
-    public async Task CreateTagAsync_ShouldCallSaveChanges_WhenUserExistsAndTagUnique()
+    public async Task ATagService_SucceedsCreatingTag()
     {
         // Arrange
         var user = new User
@@ -38,14 +40,15 @@ public class TagServiceTests
             Tags = new List<Tag>()
         };
         
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(user);
 
 
         _tagRepositoryMock.Setup(x => x.SaveChangesAsync())
             .ReturnsAsync(1);
         
-
+        
         // Act
         await _tagService.CreateTagAsync("JohnDoe@gmial.com", new TagInDto());
 
@@ -54,7 +57,7 @@ public class TagServiceTests
     }
 
     [Fact]
-    public async Task DeleteTagAsync_ShouldCallSaveChangesAsync_WhenUserExistsAndTagExists()
+    public async Task ATagService_SucceedsDeletingATag()
     {
         // Arrange
         const string tagName = "MyTag";
@@ -67,7 +70,8 @@ public class TagServiceTests
             }
         };
         
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(user);
         
         _tagRepositoryMock.Setup(x => x.SaveChangesAsync())
@@ -81,7 +85,7 @@ public class TagServiceTests
     }
 
     [Fact]
-    public async Task GetTagsAsync_ShouldReturnsAllTags_WhenDataIsValid()
+    public async Task ATagService_SucceedsGettingAllTags()
     {
         // Arrange
         var tagNames = new[] { "FirstTag", "SecondTag", "ThirdTag" };
@@ -96,14 +100,15 @@ public class TagServiceTests
             }
         };
         
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(user);
         
         // Act
         var result = await _tagService.GetTagsAsync("JohnDoe@gmail.com");
 
         // Assert
-        for(int i = 0; i < tagNames.Length; ++i)
+        for(var i = 0; i < tagNames.Length; ++i)
         {
             Assert.Equal(tagNames[i], result.ElementAt(i).Name);
         }
