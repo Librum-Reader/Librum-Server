@@ -25,16 +25,19 @@ namespace Infrastructure.UnitTests.Services;
 
 public partial class BookServiceTests
 {
-    private readonly Mock<IBookRepository> _bookRepositoryMock = new Mock<IBookRepository>();
-    private readonly Mock<IUserRepository> _userRepositoryMock = new Mock<IUserRepository>();
-    private readonly Mock<ControllerBase> _controllerBaseMock = new Mock<ControllerBase>();
+    private readonly Mock<IBookRepository> _bookRepositoryMock = new();
+    private readonly Mock<IUserRepository> _userRepositoryMock = new();
+    private readonly Mock<ControllerBase> _controllerBaseMock = new();
     private readonly IBookService _bookService;
 
 
     public BookServiceTests()
     {
-        var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfiles(new List<Profile>
-            { new BookAutoMapperProfile(), new AuthorAutoMappingProfile() }));
+        var mapperConfig = new MapperConfiguration(
+            cfg => cfg.AddProfiles(new List<Profile>
+            {
+                new BookAutoMapperProfile(), new AuthorAutoMappingProfile()
+            }));
         var mapper = new Mapper(mapperConfig);
 
         _bookService = new BookService(mapper, _bookRepositoryMock.Object,
@@ -43,7 +46,7 @@ public partial class BookServiceTests
 
 
     [Fact]
-    public async Task CreateBookAsync_ShouldSaveBook_WhenBookDataValidAndUserExists()
+    public async Task ABookService_SucceedsCreatingABook()
     {
         // Arrange
         var bookDto = new BookInDto
@@ -55,15 +58,23 @@ public partial class BookServiceTests
             CurrentPage = 2,
             Authors = new Collection<AuthorInDto>
             {
-                new AuthorInDto { FirstName = "Someone", LastName = "SomeonesLastName" },
-                new AuthorInDto { FirstName = "SomeoneElse", LastName = "Johnson" }
+                new AuthorInDto
+                {
+                    FirstName = "Someone", LastName = "SomeonesLastName"
+                },
+                new AuthorInDto
+                {
+                    FirstName = "SomeoneElse", LastName = "Johnson"
+                }
             }
         };
 
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(new User { Books = new Collection<Book>() });
 
-        _bookRepositoryMock.Setup(x => x.ExistsAsync(It.IsAny<string>(), It.IsAny<string>()))
+        _bookRepositoryMock.Setup(x => x.ExistsAsync(It.IsAny<string>(),
+                                                     It.IsAny<string>()))
             .ReturnsAsync(false);
         
         _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
@@ -71,14 +82,15 @@ public partial class BookServiceTests
 
 
         // Act
-        await _bookService.CreateBookAsync("JohnDoe@gmail.com", bookDto, Guid.NewGuid().ToString());
+        await _bookService.CreateBookAsync("JohnDoe@gmail.com", bookDto,
+                                           Guid.NewGuid().ToString());
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]
-    public async Task AddTagsToBookAsync_ShouldCallSaveChangesAsync_WhenDataIsValid()
+    public async Task ABookService_SucceedsAddingTagsToBook()
     {
         // Arrange
         const string firstTagName = "TagOne";
@@ -97,8 +109,15 @@ public partial class BookServiceTests
                 new Tag { Name = secondTagName }
             }
         };
+        
+        var tagList = new List<string>
+        {
+            firstTagName, 
+            secondTagName
+        };
 
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(user);
 
         _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
@@ -106,15 +125,16 @@ public partial class BookServiceTests
 
 
         // Act
-        await _bookService.AddTagsToBookAsync("JohnDoe@gmail.com", bookGuid.ToString(),
-            new List<string> { firstTagName, secondTagName });
+        await _bookService.AddTagsToBookAsync("JohnDoe@gmail.com",
+                                              bookGuid.ToString(),
+                                              tagList);
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]
-    public async Task AddTagsToBookAsync_ShouldThrow_WhenTagDoesNotExist()
+    public async Task ABookService_FailsAddingTagsToBookIfTagDoesNotExist()
     {
         // Arrange
         var bookGuid = Guid.NewGuid();
@@ -127,21 +147,26 @@ public partial class BookServiceTests
             Tags = new List<Tag>()
         };
 
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        var tagList = new List<string> { "TagOne", "TagTwo" };
+
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(user);
 
 
         // Assert
         await Assert.ThrowsAsync<InvalidParameterException>(() =>
-            _bookService.AddTagsToBookAsync("JohnDoe@gmail.com", bookGuid.ToString(), new List<string> { "TagOne", "TagTwo" }));
+            _bookService.AddTagsToBookAsync("JohnDoe@gmail.com",
+                                            bookGuid.ToString(),
+                                            tagList));
     }
     
     [Fact]
-    public async Task AddTagsToBookAsync_ShouldThrow_WhenBookAlreadyHasTag()
+    public async Task ABookService_FailsAddingTagsToBookIfTagsAlreadyExist()
     {
         // Arrange
         var bookGuid = Guid.NewGuid();
-        const string tagName = "SomeTag";
+        var tagNames = new List<string> { "SomeTag" };
         
         var user = new User
         {
@@ -152,27 +177,30 @@ public partial class BookServiceTests
                     BookId = bookGuid, 
                     Tags = new List<Tag>
                     {
-                        new Tag { Name = tagName }
+                        new Tag { Name = tagNames[0] }
                     } 
                 }
             },
             Tags = new List<Tag>
             {
-                new Tag { Name = tagName }
+                new Tag { Name = tagNames[0] }
             }
         };
         
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(user);
 
 
         // Assert
         await Assert.ThrowsAsync<InvalidParameterException>(() =>
-            _bookService.AddTagsToBookAsync("JohnDoe@gmail.com", bookGuid.ToString(), new List<string> { tagName }));
+            _bookService.AddTagsToBookAsync("JohnDoe@gmail.com",
+                                            bookGuid.ToString(),
+                                            tagNames));
     }
 
     [Fact]
-    public async Task RemoveTagFromBookAsync_ShouldCallSaveChangesAsync_WhenDataIsValid()
+    public async Task ABookService_SucceedsRemovingTagFromBook()
     {
         // Arrange
         const string tagName = "TagOne";
@@ -193,22 +221,31 @@ public partial class BookServiceTests
             }
         };
 
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(user);
 
 
         // Act
-        await _bookService.RemoveTagFromBookAsync("JohnDoe@gmail.com", bookGuid.ToString(), tagName);
+        await _bookService.RemoveTagFromBookAsync("JohnDoe@gmail.com",
+                                                  bookGuid.ToString(),
+                                                  tagName);
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]
-    public async Task DeleteBooks_ShouldCallSaveChangesAsync_WhenDataIsValid()
+    public async Task ABookService_SucceedsDeletingBooks()
     {
         // Arrange
         var bookGuids = new[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
+        var bookGuidsAsString = new List<string>
+        {
+            bookGuids[0].ToString(),
+            bookGuids[1].ToString(),
+            bookGuids[2].ToString()
+        };
 
         var user = new User
         {
@@ -220,45 +257,47 @@ public partial class BookServiceTests
             }
         };
 
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(user);
 
 
         // Act
         await _bookService.DeleteBooksAsync("JohnDoe@gmail.com",
-            new List<string> { bookGuids[0].ToString(), bookGuids[1].ToString(), bookGuids[2].ToString() });
+                                            bookGuidsAsString);
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]
-    public async Task DeleteBooks_ShouldThrow_WhenABookDoesNotExist()
+    public async Task ABookService_FailsDeletingBooksIfBooksDontExist()
     {
         // Arrange
-        var bookNames = new[] { "FirstBook", "SecondBook", "ThirdBook" };
+        var bookNames = new[] { "FirstBook", "SecondBook", "ANonExistentBook" };
 
         var user = new User
         {
             Books = new List<Book>
             {
-                new Book { Title = "FirstBook" },
-                new Book { Title = "SecondBook" },
-                new Book { Title = "ThirdBook" }
+                new Book { Title = bookNames[0] },
+                new Book { Title = bookNames[1] }
             }
         };
 
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(user);
 
 
         // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.DeleteBooksAsync("JohnDoe@gmail.com",
-            new List<string> { bookNames[0], "ANotExistentBook", bookNames[2] }));
+        await Assert.ThrowsAsync<InvalidParameterException>(
+            () => _bookService.DeleteBooksAsync("JohnDoe@gmail.com",
+                                                bookNames));
     }
 
     [Fact]
-    public async Task PatchBookAsync_ShouldCallSaveChangesAsync_WhenDataIsValid()
+    public async Task ABookService_SucceedsPatchingABook()
     {
         // Arrange
         var bookGuid = Guid.NewGuid();
@@ -272,26 +311,34 @@ public partial class BookServiceTests
         };
 
         var patchDoc = new JsonPatchDocument<BookForUpdateDto>();
-        patchDoc.Operations.Add(new Operation<BookForUpdateDto>("replace", "/Title", "source", "SomeOtherBook"));
+        var operation = new Operation<BookForUpdateDto>("replace",
+                                                        "/Title",
+                                                        "source",
+                                                        "SomeOtherBook");
+        patchDoc.Operations.Add(operation);
 
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(user);
 
-        _controllerBaseMock.Setup(x => x.TryValidateModel(It.IsAny<ModelStateDictionary>()))
+        _controllerBaseMock.Setup(x => x.TryValidateModel(
+                                      It.IsAny<ModelStateDictionary>()))
             .Returns(true);
 
         _userRepositoryMock.Setup(x => x.SaveChangesAsync())
             .ReturnsAsync(1);
 
         // Act
-        await _bookService.PatchBookAsync("JohnDoe@gmail.com", patchDoc, bookGuid.ToString(), _controllerBaseMock.Object);
+        await _bookService.PatchBookAsync("JohnDoe@gmail.com", patchDoc, 
+                                          bookGuid.ToString(),
+                                          _controllerBaseMock.Object);
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]
-    public async Task PatchBookAsync_ShouldThrow_WhenApplyingToBookFails()
+    public async Task ABookService_FailsPatchingBookIfApplyingToBookFails()
     {
         // Arrange
         var bookGuid = Guid.NewGuid();
@@ -305,22 +352,31 @@ public partial class BookServiceTests
         };
 
         var patchDoc = new JsonPatchDocument<BookForUpdateDto>();
-        patchDoc.Operations.Add(new Operation<BookForUpdateDto>("replace", "/Title", "source", "SomeOtherBook"));
+        var operation = new Operation<BookForUpdateDto>("replace",
+                                                        "/Title",
+                                                        "source",
+                                                        "SomeOtherBook");
+        patchDoc.Operations.Add(operation);
 
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(user);
 
-        _controllerBaseMock.Setup(x => x.TryValidateModel(It.IsAny<ModelStateDictionary>()))
+        _controllerBaseMock.Setup(x => x.TryValidateModel(
+                                      It.IsAny<ModelStateDictionary>()))
             .Returns(false);
 
 
         // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => _bookService.PatchBookAsync("JohnDoe@gmail.com",
-            patchDoc, bookGuid.ToString(), _controllerBaseMock.Object));
+        await Assert.ThrowsAsync<InvalidParameterException>(
+            () => _bookService.PatchBookAsync("JohnDoe@gmail.com", 
+                                              patchDoc, 
+                                              bookGuid.ToString(), 
+                                              _controllerBaseMock.Object));
     }
 
     [Fact]
-    public async Task AddAuthorToBookAsync_ShouldCallSaveChangesAsync_WhenDataIsValid()
+    public async Task ABookService_SucceedsAddingAnAuthorToBook()
     {
         // Arrange
         var authorToAdd = new AuthorInDto
@@ -339,7 +395,8 @@ public partial class BookServiceTests
             }
         };
 
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(user);
 
         _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
@@ -347,14 +404,16 @@ public partial class BookServiceTests
 
 
         // Act
-        await _bookService.AddAuthorToBookAsync("JohnDoe@gmail.com", bookGuid.ToString(), authorToAdd);
+        await _bookService.AddAuthorToBookAsync("JohnDoe@gmail.com",
+                                                bookGuid.ToString(),
+                                                authorToAdd);
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]
-    public async Task RemoveAuthorFromBookAsync_ShouldCallSaveChangesAsync_WhenDataIsValid()
+    public async Task ABookService_SucceedsRemovingAnAuthorFromABook()
     {
         // Arrange
         var bookGuid = Guid.NewGuid();
@@ -376,13 +435,18 @@ public partial class BookServiceTests
                     BookId = bookGuid, 
                     Authors = new List<Author>
                     {
-                        new Author { FirstName = authorFirstName, LastName = authorLastName }
+                        new Author
+                        {
+                            FirstName = authorFirstName,
+                            LastName = authorLastName
+                        }
                     }
                 }
             }
         };
 
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(user);
 
         _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
@@ -390,7 +454,9 @@ public partial class BookServiceTests
 
 
         // Act
-        await _bookService.RemoveAuthorFromBookAsync("JohnDoe@gmail.com", bookGuid.ToString(), authorToRemove);
+        await _bookService.RemoveAuthorFromBookAsync("JohnDoe@gmail.com",
+                                                     bookGuid.ToString(),
+                                                     authorToRemove);
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
