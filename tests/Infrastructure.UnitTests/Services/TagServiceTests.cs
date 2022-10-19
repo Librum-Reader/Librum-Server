@@ -5,9 +5,9 @@ using Application.Common.DTOs.Tags;
 using Application.Common.Mappings;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
+using Application.Services.v1;
 using AutoMapper;
 using Domain.Entities;
-using Infrastructure.Services.v1;
 using Moq;
 using Xunit;
 
