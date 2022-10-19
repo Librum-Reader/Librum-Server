@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Infrastructure.JWT;
+namespace Application.JWT;
 
 public class AuthenticationManager : IAuthenticationManager
 {

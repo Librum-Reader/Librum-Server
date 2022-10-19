@@ -6,7 +6,7 @@ using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 
-namespace Infrastructure.Services.v1;
+namespace Application.Services.v1;
 
 public class AuthenticationService : IAuthenticationService
 {

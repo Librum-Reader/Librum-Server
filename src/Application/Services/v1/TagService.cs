@@ -6,7 +6,7 @@ using AutoMapper;
 using Domain.Entities;
 
 
-namespace Infrastructure.Services.v1;
+namespace Application.Services.v1;
 
 public class TagService : ITagService
 {
