@@ -14,7 +14,7 @@ using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace Infrastructure.UnitTests.Services;
+namespace Application.UnitTests.Services;
 
 public class UserServiceTests
 {

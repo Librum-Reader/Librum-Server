@@ -20,7 +20,7 @@ using Moq;
 using Xunit;
 
 
-namespace Infrastructure.UnitTests.Services;
+namespace Application.UnitTests.Services;
 
 
 public partial class BookServiceTests

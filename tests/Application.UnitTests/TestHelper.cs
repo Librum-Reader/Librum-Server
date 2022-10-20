@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Moq;
 
-namespace Infrastructure.UnitTests;
+namespace Application.UnitTests;
 
 public static class TestHelpers
 {

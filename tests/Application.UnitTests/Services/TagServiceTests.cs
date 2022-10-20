@@ -11,7 +11,7 @@ using Domain.Entities;
 using Moq;
 using Xunit;
 
-namespace Infrastructure.UnitTests.Services;
+namespace Application.UnitTests.Services;
 
 public class TagServiceTests
 {

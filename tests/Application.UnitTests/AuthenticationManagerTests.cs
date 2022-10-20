@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;
 
-namespace Infrastructure.UnitTests;
+namespace Application.UnitTests;
 
 public class AuthenticationManagerTests
 {

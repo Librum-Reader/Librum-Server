@@ -16,7 +16,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace Application.UnitTests;
+namespace Application.UnitTests.ValidationAttributes;
 
 public class ValidateBookAttributesTests
 {
