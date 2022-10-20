@@ -15,25 +15,32 @@ namespace Infrastructure.UnitTests.Services;
 
 public class AuthenticationServiceTests
 {
-    private readonly Mock<UserManager<User>> _userManagerMock = TestHelpers.MockUserManager<User>();
-    private readonly Mock<IAuthenticationManager> _authenticationManagerMock = new Mock<IAuthenticationManager>();
+    private readonly Mock<UserManager<User>> _userManagerMock = 
+        TestHelpers.MockUserManager<User>();
+    private readonly Mock<IAuthenticationManager> _authenticationManagerMock = new();
     private readonly AuthenticationService _authenticationService;
     
     
     public AuthenticationServiceTests()
     {
-        var mapperConfig = new MapperConfiguration(cfg => { cfg.AddProfile<UserAutoMapperProfile>(); });
+        var mapperConfig = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile<UserAutoMapperProfile>();
+        });
         var mapper = new Mapper(mapperConfig);
 
-        _authenticationService = new AuthenticationService(mapper, _authenticationManagerMock.Object, _userManagerMock.Object);
+        _authenticationService = new AuthenticationService(mapper,
+                                                           _authenticationManagerMock.Object,
+                                                           _userManagerMock.Object);
     }
 
 
     [Fact]
-    public async Task LoginUserAsync_ShouldReturnToken_WhenUserExists()
+    public async Task AnAuthenticationService_SucceedsAuthenticatingUser()
     {
         // Arrange
-        _authenticationManagerMock.Setup(x => x.UserExistsAsync(It.IsAny<string>(), It.IsAny<string>()))
+        _authenticationManagerMock.Setup(x => x.UserExistsAsync(It.IsAny<string>(),
+                                                                It.IsAny<string>()))
             .ReturnsAsync(true);
         
         var loginDto = new LoginDto
@@ -42,7 +49,7 @@ public class AuthenticationServiceTests
             Password = "SomePassword123"
         };
         
-        string token = "KJ32ksMyGeneratedTokenBj2/3C";
+        const string token = "KJ32ksMyGeneratedTokenBj2/3C";
         
         _authenticationManagerMock.Setup(x => x.CreateTokenAsync(loginDto))
             .ReturnsAsync(token);
@@ -55,7 +62,7 @@ public class AuthenticationServiceTests
     }
     
     [Fact]
-    public async Task LoginUserAsync_ShouldThrow_WhenUserDoesNotExist()
+    public async Task AnAuthenticationService_FailsAuthenticatingIfUserDoesNotExist()
     {
         // Arrange
         var loginDto = new LoginDto
@@ -64,59 +71,18 @@ public class AuthenticationServiceTests
             Password = "SomePassword123"
         };
         
-        _authenticationManagerMock.Setup(x => x.UserExistsAsync(It.IsAny<string>(), It.IsAny<string>()))
+        _authenticationManagerMock.Setup(x => x.UserExistsAsync(It.IsAny<string>(),
+                                                                It.IsAny<string>()))
             .ReturnsAsync(false);
         
         
         // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => _authenticationService.LoginUserAsync(loginDto));
-    }
-
-    [Fact]
-    public async Task RegisterUserAsync_ShouldThrow_WhenUserAlreadyExists()
-    {
-        // Arrange
-        var registerDto = new RegisterDto
-        {
-            Email = "JohnDoe@gmail.com",
-            FirstName = "John",
-            LastName = "Doe",
-            Password = "SomePassword123"
-        };
-
-        _authenticationManagerMock.Setup(x => x.UserExistsAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync(true);
-        
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => _authenticationService.RegisterUserAsync(registerDto));
+        await Assert.ThrowsAsync<InvalidParameterException>(
+            () => _authenticationService.LoginUserAsync(loginDto));
     }
     
     [Fact]
-    public async Task RegisterUserAsync_ShouldThrow_WhenUserDataIsInvalid()
-    {
-        // Arrange
-        var registerDto = new RegisterDto
-        {
-            Email = "JohnDoe@gmail.com",
-            FirstName = "John",
-            LastName = "Doe",
-            Password = "SomePassword123"
-        };
-        
-        _authenticationManagerMock.Setup(x => x.UserExistsAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync(false);
-        
-        _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
-            .ReturnsAsync(IdentityResult.Failed());
-        
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() => _authenticationService.RegisterUserAsync(registerDto));
-    }
-    
-    [Fact]
-    public async Task RegisterUserAsync_ShouldCreateUser_WhenDataIsValidAndUserDoesNotExist()
+    public async Task AnAuthenticationService_SucceedsRegisteringAUser()
     {
         // Arrange
         var registerDto = new RegisterDto
@@ -128,7 +94,8 @@ public class AuthenticationServiceTests
             
         };
         
-        _authenticationManagerMock.Setup(x => x.UserExistsAsync(It.IsAny<string>(), It.IsAny<string>()))
+        _authenticationManagerMock.Setup(x => x.UserExistsAsync(It.IsAny<string>(),
+                                                                It.IsAny<string>()))
             .ReturnsAsync(false);
         
         _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
@@ -139,11 +106,61 @@ public class AuthenticationServiceTests
         await _authenticationService.RegisterUserAsync(registerDto);
         
         // Assert
-        _userManagerMock.Verify(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
+        _userManagerMock.Verify(x => x.CreateAsync(It.IsAny<User>(),
+                                                   It.IsAny<string>()),
+                                Times.Once);
     }
-    
+
     [Fact]
-    public async Task RegisterUserAsync_ShouldAddRoles_WhenDataIsValidAndUserDoesNotExist()
+    public async Task AnAuthenticationService_FailsRegisteringAUserIfUserAlreadyExists()
+    {
+        // Arrange
+        var registerDto = new RegisterDto
+        {
+            Email = "JohnDoe@gmail.com",
+            FirstName = "John",
+            LastName = "Doe",
+            Password = "SomePassword123"
+        };
+
+        _authenticationManagerMock.Setup(x => x.UserExistsAsync(It.IsAny<string>(),
+                                                                It.IsAny<string>()))
+            .ReturnsAsync(true);
+        
+
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(
+            () => _authenticationService.RegisterUserAsync(registerDto));
+    }
+
+    [Fact]
+    public async Task AnAuthenticationService_FailsRegistrationIfDataIsInvalid()
+    {
+        // Arrange
+        var registerDto = new RegisterDto
+        {
+            Email = "JohnDoe@gmail.com",
+            FirstName = "John",
+            LastName = "Doe",
+            Password = "SomePassword123"
+        };
+        
+        _authenticationManagerMock.Setup(x => x.UserExistsAsync(It.IsAny<string>(),
+                                                                It.IsAny<string>()))
+            .ReturnsAsync(false);
+        
+        _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>(),
+                                                  It.IsAny<string>()))
+            .ReturnsAsync(IdentityResult.Failed());
+        
+
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(
+            () => _authenticationService.RegisterUserAsync(registerDto));
+    }
+
+    [Fact]
+    public async Task AnAuthenticationService_SucceedsAddingRoles()
     {
         // Arrange
         var registerDto = new RegisterDto
@@ -156,7 +173,8 @@ public class AuthenticationServiceTests
             
         };
         
-        _authenticationManagerMock.Setup(x => x.UserExistsAsync(It.IsAny<string>(), It.IsAny<string>()))
+        _authenticationManagerMock.Setup(x => x.UserExistsAsync(It.IsAny<string>(),
+                                                                It.IsAny<string>()))
             .ReturnsAsync(false);
         
         _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
@@ -167,6 +185,8 @@ public class AuthenticationServiceTests
         await _authenticationService.RegisterUserAsync(registerDto);
         
         // Assert
-        _userManagerMock.Verify(x => x.AddToRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()), Times.Once);
+        _userManagerMock.Verify(x => x.AddToRolesAsync(It.IsAny<User>(),
+                                                       It.IsAny<IEnumerable<string>>()),
+                                Times.Once);
     }
 }
