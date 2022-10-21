@@ -7,13 +7,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Common.ActionFilters;
 
-public class ValidateUserExistsAttribute : IAsyncActionFilter
+public class UserExistsAttribute : IAsyncActionFilter
 {
     private readonly IUserRepository _userRepository;
-    private readonly ILogger<ValidateUserExistsAttribute> _logger;
+    private readonly ILogger<UserExistsAttribute> _logger;
 
 
-    public ValidateUserExistsAttribute(IUserRepository userRepository, ILogger<ValidateUserExistsAttribute> logger)
+    public UserExistsAttribute(IUserRepository userRepository, ILogger<UserExistsAttribute> logger)
     {
         _userRepository = userRepository;
         _logger = logger;

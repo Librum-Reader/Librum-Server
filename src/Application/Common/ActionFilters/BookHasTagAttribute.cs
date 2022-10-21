@@ -8,15 +8,15 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Common.ActionFilters;
 
-public class ValidateBookHasTagAttribute : IAsyncActionFilter
+public class BookHasTagAttribute : IAsyncActionFilter
 {
     private readonly IUserRepository _userRepository;
     private readonly IBookRepository _bookRepository;
-    private readonly ILogger<ValidateBookHasTagAttribute> _logger;
+    private readonly ILogger<BookHasTagAttribute> _logger;
 
 
-    public ValidateBookHasTagAttribute(IUserRepository userRepository, IBookRepository bookRepository,
-        ILogger<ValidateBookHasTagAttribute> logger)
+    public BookHasTagAttribute(IUserRepository userRepository, IBookRepository bookRepository,
+        ILogger<BookHasTagAttribute> logger)
     {
         _userRepository = userRepository;
         _bookRepository = bookRepository;

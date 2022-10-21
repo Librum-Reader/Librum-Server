@@ -8,13 +8,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Common.ActionFilters;
 
-public class ValidateTagExistsAttribute : IAsyncActionFilter
+public class TagExistsAttribute : IAsyncActionFilter
 {
     private readonly IUserRepository _userRepository;
-    private readonly ILogger<ValidateTagExistsAttribute> _logger;
+    private readonly ILogger<TagExistsAttribute> _logger;
 
 
-    public ValidateTagExistsAttribute(IUserRepository userRepository, ILogger<ValidateTagExistsAttribute> logger)
+    public TagExistsAttribute(IUserRepository userRepository, ILogger<TagExistsAttribute> logger)
     {
         _userRepository = userRepository;
         _logger = logger;

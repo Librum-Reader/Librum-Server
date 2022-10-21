@@ -15,17 +15,17 @@ using Xunit;
 
 namespace Application.UnitTests.ValidationAttributes;
 
-public class ValidateUserAttributeTests
+public class UserAttributeTests
 {
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
-    private readonly Mock<ILogger<ValidateUserExistsAttribute>> _loggerMock = new();
+    private readonly Mock<ILogger<UserExistsAttribute>> _loggerMock = new();
 
-    private readonly ValidateUserExistsAttribute _filterAttribute;
+    private readonly UserExistsAttribute _filterAttribute;
 
 
-    public ValidateUserAttributeTests()
+    public UserAttributeTests()
     {
-        _filterAttribute = new ValidateUserExistsAttribute(_userRepositoryMock.Object, _loggerMock.Object);
+        _filterAttribute = new UserExistsAttribute(_userRepositoryMock.Object, _loggerMock.Object);
     }
     
     

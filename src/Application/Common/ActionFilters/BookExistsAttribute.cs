@@ -8,13 +8,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Common.ActionFilters;
 
-public class ValidateBookExistsAttribute : IAsyncActionFilter
+public class BookExistsAttribute : IAsyncActionFilter
 {
     private readonly IUserRepository _userRepository;
-    private readonly ILogger<ValidateBookExistsAttribute> _logger;
+    private readonly ILogger<BookExistsAttribute> _logger;
 
 
-    public ValidateBookExistsAttribute(IUserRepository userRepository, ILogger<ValidateBookExistsAttribute> logger)
+    public BookExistsAttribute(IUserRepository userRepository, ILogger<BookExistsAttribute> logger)
     {
         _userRepository = userRepository;
         _logger = logger;

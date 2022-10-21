@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Controllers.v1;
 
 [Authorize]
-[ServiceFilter(typeof(ValidateUserExistsAttribute))]
-[ServiceFilter(typeof(ValidateStringParameterAttribute))]
+[ServiceFilter(typeof(UserExistsAttribute))]
+[ServiceFilter(typeof(ValidParameterAttribute))]
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/[controller]")]
@@ -24,7 +24,7 @@ public class TagController : ControllerBase
 
 
     [HttpPost("create")]
-    [TypeFilter(typeof(ValidateTagDoesNotExistAttribute))]
+    [TypeFilter(typeof(TagDoesNotExistAttribute))]
     public async Task<ActionResult> CreateTag([FromBody] TagInDto tagInDto)
     {
         await _tagService.CreateTagAsync(HttpContext.User.Identity!.Name, tagInDto);
@@ -32,7 +32,7 @@ public class TagController : ControllerBase
     }
     
     [HttpDelete("{tagName}")]
-    [ServiceFilter(typeof(ValidateTagExistsAttribute))]
+    [ServiceFilter(typeof(TagExistsAttribute))]
     public async Task<ActionResult> DeleteTag(string tagName)
     {
         await _tagService.DeleteTagAsync(HttpContext.User.Identity!.Name, tagName);

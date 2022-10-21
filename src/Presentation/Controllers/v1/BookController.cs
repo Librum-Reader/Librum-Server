@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Controllers.v1;
 
 [Authorize]
-[ServiceFilter(typeof(ValidateUserExistsAttribute))]
-[ServiceFilter(typeof(ValidateStringParameterAttribute))]
+[ServiceFilter(typeof(UserExistsAttribute))]
+[ServiceFilter(typeof(ValidParameterAttribute))]
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/[controller]")]
@@ -30,7 +30,7 @@ public class BookController : ControllerBase
 
 
     [HttpPost("create")]
-    [TypeFilter(typeof(ValidateBookDoesNotExistAttribute))]
+    [TypeFilter(typeof(BookDoesNotExistAttribute))]
     public async Task<ActionResult> CreateBook([FromBody] BookInDto bookInDto)
     {
         if (!bookInDto.IsValid)
@@ -51,7 +51,7 @@ public class BookController : ControllerBase
     }
 
     [HttpPost("tags/{bookGuid}")]
-    [ServiceFilter(typeof(ValidateBookExistsAttribute))]
+    [ServiceFilter(typeof(BookExistsAttribute))]
     public async Task<ActionResult> AddTags([FromBody] IEnumerable<string> tagNames, string bookGuid)
     {
         try
@@ -67,8 +67,8 @@ public class BookController : ControllerBase
     }
 
     [HttpDelete("tags/{bookGuid}/{tagName}")]
-    [ServiceFilter(typeof(ValidateBookExistsAttribute))]
-    [ServiceFilter(typeof(ValidateBookHasTagAttribute))]
+    [ServiceFilter(typeof(BookExistsAttribute))]
+    [ServiceFilter(typeof(BookHasTagAttribute))]
     public async Task<ActionResult> RemoveTagFromBook(string bookGuid, string tagName)
     {
         await _bookService.RemoveTagFromBookAsync(HttpContext.User.Identity!.Name, bookGuid, tagName);
@@ -91,7 +91,7 @@ public class BookController : ControllerBase
     }
 
     [HttpPatch("{bookGuid}")]
-    [ServiceFilter(typeof(ValidateBookExistsAttribute))]
+    [ServiceFilter(typeof(BookExistsAttribute))]
     public async Task<ActionResult> PatchBook([FromBody] JsonPatchDocument<BookForUpdateDto> patchDoc,
         string bookGuid)
     {
@@ -108,8 +108,8 @@ public class BookController : ControllerBase
     }
 
     [HttpPost("authors/{bookGuid}")]
-    [ServiceFilter(typeof(ValidateBookExistsAttribute))]
-    [ServiceFilter(typeof(ValidateAuthorDoesNotExistAttribute))]
+    [ServiceFilter(typeof(BookExistsAttribute))]
+    [ServiceFilter(typeof(AuthorDoesNotExistAttribute))]
     public async Task<ActionResult> AddAuthorToBook([FromBody] AuthorInDto authorInDto, string bookGuid)
     {
         await _bookService.AddAuthorToBookAsync(HttpContext.User.Identity!.Name, bookGuid, authorInDto);
@@ -117,8 +117,8 @@ public class BookController : ControllerBase
     }
 
     [HttpDelete("authors/{bookGuid}")]
-    [ServiceFilter(typeof(ValidateBookExistsAttribute))]
-    [ServiceFilter(typeof(ValidateAuthorExistsAttribute))]
+    [ServiceFilter(typeof(BookExistsAttribute))]
+    [ServiceFilter(typeof(AuthorExistsAttribute))]
     public async Task<ActionResult> RemoveAuthorFromBook([FromBody] AuthorForRemovalDto authorDto, string bookGuid)
     {
         await _bookService.RemoveAuthorFromBookAsync(HttpContext.User.Identity!.Name, bookGuid, authorDto);

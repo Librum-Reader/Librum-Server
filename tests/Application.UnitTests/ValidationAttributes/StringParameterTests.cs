@@ -14,15 +14,15 @@ using Xunit;
 
 namespace Application.UnitTests.ValidationAttributes;
 
-public class ValidateStringParameterTests
+public class StringParameterTests
 {
-    private readonly Mock<ILogger<ValidateStringParameterAttribute>> _loggerMock = new();
-    private readonly ValidateStringParameterAttribute _filterAttribute;
+    private readonly Mock<ILogger<ValidParameterAttribute>> _loggerMock = new();
+    private readonly ValidParameterAttribute _filterAttribute;
     
 
-    public ValidateStringParameterTests()
+    public StringParameterTests()
     {
-        _filterAttribute = new ValidateStringParameterAttribute(_loggerMock.Object);
+        _filterAttribute = new ValidParameterAttribute(_loggerMock.Object);
     }
 
 

@@ -17,22 +17,22 @@ using Xunit;
 
 namespace Application.UnitTests.ValidationAttributes;
 
-public class ValidateTagAttributesTests
+public class TagAttributesTests
 {
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
-    private readonly Mock<ILogger<ValidateTagExistsAttribute>> _bookExistsLoggerMock = new();
-    private readonly Mock<ILogger<ValidateTagDoesNotExistAttribute>> _bookDoesNotExistLoggerMock = new();
+    private readonly Mock<ILogger<TagExistsAttribute>> _bookExistsLoggerMock = new();
+    private readonly Mock<ILogger<TagDoesNotExistAttribute>> _bookDoesNotExistLoggerMock = new();
 
-    private readonly ValidateTagExistsAttribute _tagExistsFilterAttribute;
-    private readonly ValidateTagDoesNotExistAttribute _tagDoesNotExistFilterAttribute;
+    private readonly TagExistsAttribute _tagExistsFilterAttribute;
+    private readonly TagDoesNotExistAttribute _tagDoesNotExistFilterAttribute;
 
 
-    public ValidateTagAttributesTests()
+    public TagAttributesTests()
     {
-        _tagExistsFilterAttribute = new ValidateTagExistsAttribute(_userRepositoryMock.Object, 
+        _tagExistsFilterAttribute = new TagExistsAttribute(_userRepositoryMock.Object, 
             _bookExistsLoggerMock.Object);
 
-        _tagDoesNotExistFilterAttribute = new ValidateTagDoesNotExistAttribute(_userRepositoryMock.Object,
+        _tagDoesNotExistFilterAttribute = new TagDoesNotExistAttribute(_userRepositoryMock.Object,
             _bookDoesNotExistLoggerMock.Object);
     }
 

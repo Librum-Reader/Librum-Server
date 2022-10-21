@@ -18,29 +18,29 @@ using Xunit;
 
 namespace Application.UnitTests.ValidationAttributes;
 
-public class ValidateBookAttributesTests
+public class BookAttributesTests
 {
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly Mock<IBookRepository> _bookRepositoryMock = new();
-    private readonly Mock<ILogger<ValidateBookExistsAttribute>> _bookExistsLoggerMock = new();
-    private readonly Mock<ILogger<ValidateBookDoesNotExistAttribute>> _bookDoesNotExistLoggerMock = new();
-    private readonly Mock<ILogger<ValidateBookHasTagAttribute>> _bookHasTagLoggerMock = new();
+    private readonly Mock<ILogger<BookExistsAttribute>> _bookExistsLoggerMock = new();
+    private readonly Mock<ILogger<BookDoesNotExistAttribute>> _bookDoesNotExistLoggerMock = new();
+    private readonly Mock<ILogger<BookHasTagAttribute>> _bookHasTagLoggerMock = new();
 
-    private readonly ValidateBookExistsAttribute _bookExistsFilterAttribute;
-    private readonly ValidateBookDoesNotExistAttribute _bookDoesNotExistFilterAttribute;
-    private readonly ValidateBookHasTagAttribute _bookHasTagFilterAttribute;
+    private readonly BookExistsAttribute _bookExistsFilterAttribute;
+    private readonly BookDoesNotExistAttribute _bookDoesNotExistFilterAttribute;
+    private readonly BookHasTagAttribute _bookHasTagFilterAttribute;
 
 
 
-    public ValidateBookAttributesTests()
+    public BookAttributesTests()
     {
-        _bookExistsFilterAttribute = new ValidateBookExistsAttribute(_userRepositoryMock.Object, 
+        _bookExistsFilterAttribute = new BookExistsAttribute(_userRepositoryMock.Object, 
             _bookExistsLoggerMock.Object);
 
-        _bookDoesNotExistFilterAttribute = new ValidateBookDoesNotExistAttribute(_userRepositoryMock.Object,
+        _bookDoesNotExistFilterAttribute = new BookDoesNotExistAttribute(_userRepositoryMock.Object,
             _bookDoesNotExistLoggerMock.Object);
         
-        _bookHasTagFilterAttribute = new ValidateBookHasTagAttribute(_userRepositoryMock.Object, 
+        _bookHasTagFilterAttribute = new BookHasTagAttribute(_userRepositoryMock.Object, 
             _bookRepositoryMock.Object, _bookHasTagLoggerMock.Object);
     }
 

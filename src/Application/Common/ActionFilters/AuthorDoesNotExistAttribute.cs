@@ -9,15 +9,15 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Common.ActionFilters;
 
-public class ValidateAuthorExistsAttribute : IAsyncActionFilter
+public class AuthorDoesNotExistAttribute : IAsyncActionFilter
 {
     private readonly IUserRepository _userRepository;
     private readonly IBookRepository _bookRepository;
-    private readonly ILogger<ValidateAuthorExistsAttribute> _logger;
+    private readonly ILogger<AuthorDoesNotExistAttribute> _logger;
 
 
-    public ValidateAuthorExistsAttribute(IUserRepository userRepository, IBookRepository bookRepository
-        ,ILogger<ValidateAuthorExistsAttribute> logger)
+    public AuthorDoesNotExistAttribute(IUserRepository userRepository, IBookRepository bookRepository
+        , ILogger<AuthorDoesNotExistAttribute> logger)
     {
         _userRepository = userRepository;
         _bookRepository = bookRepository;
@@ -27,11 +27,9 @@ public class ValidateAuthorExistsAttribute : IAsyncActionFilter
     
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        
-        var authorForRemovalDto = (AuthorForRemovalDto)context.ActionArguments
-                                                              .SingleOrDefault(arg => arg.Key.Contains("Dto"))
-                                                              .Value;
-        
+        var authorForRemovalDto = (AuthorInDto)context.ActionArguments
+                                                      .SingleOrDefault(arg => arg.Key.Contains("Dto"))
+                                                      .Value;
         if (authorForRemovalDto == null)
         {
             throw new InternalServerException("Action filter: Expected parameter containing 'Dto' does not exist");
@@ -43,22 +41,23 @@ public class ValidateAuthorExistsAttribute : IAsyncActionFilter
         }
         
         
+
         var user = await _userRepository.GetAsync(context.HttpContext.User.Identity!.Name, trackChanges: true);
         
         var bookGuid = bookGuidObject.ToString();
         var book = user.Books.SingleOrDefault(book => book.BookId.ToString() == bookGuid);
         await _bookRepository.LoadRelationShipsAsync(book);
 
-        if (!book!.Authors.Any(author =>
+        if (book!.Authors.Any(author =>
                 author.FirstName == authorForRemovalDto.FirstName && author.LastName == authorForRemovalDto.LastName))
         {
-            _logger.LogWarning("No author with this name exists");
+            _logger.LogWarning("An author with this name already exists");
             
             context.HttpContext.Response.ContentType = "application/json";
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             
             var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode, 
-                "No author with this name exists");
+                "An author with this name already exists");
 
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;
