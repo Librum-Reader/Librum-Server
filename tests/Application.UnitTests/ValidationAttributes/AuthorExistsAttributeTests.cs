@@ -18,7 +18,7 @@ using Xunit;
 
 namespace Application.UnitTests.ValidationAttributes;
 
-public class AuthorAttributesTests
+public class AuthorExistsAttributeTests
 {
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly Mock<IBookRepository> _bookRepositoryMock = new();
@@ -30,7 +30,7 @@ public class AuthorAttributesTests
     private readonly AuthorExistsAttribute _authorExistsAttribute;
 
 
-    public AuthorAttributesTests()
+    public AuthorExistsAttributeTests()
     {
         _authorExistsAttribute = new AuthorExistsAttribute(
             _userRepositoryMock.Object, 
