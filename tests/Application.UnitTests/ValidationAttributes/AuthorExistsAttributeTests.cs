@@ -22,11 +22,9 @@ public class AuthorExistsAttributeTests
 {
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly Mock<IBookRepository> _bookRepositoryMock = new();
-    
     private readonly Mock<ILogger<AuthorExistsAttribute>>
         _authorExistsLoggerMock = new();
-
-
+    
     private readonly AuthorExistsAttribute _authorExistsAttribute;
 
 
@@ -40,7 +38,7 @@ public class AuthorExistsAttributeTests
 
 
     [Fact]
-    public async Task AnAuthorValidationAttribute_Succeeds()
+    public async Task AnAuthorExistsAttribute_Succeeds()
     {
         // Arrange
         var bookGuid = Guid.NewGuid();
@@ -109,7 +107,7 @@ public class AuthorExistsAttributeTests
     }
     
     [Fact]
-    public async Task AnAuthorValidationAttribute_FailsIfAuthorDoesNotExist()
+    public async Task AnAuthorExistsAttribute_FailsIfAuthorDoesNotExist()
     {
         // Arrange
         var bookGuid = Guid.NewGuid();
@@ -176,7 +174,7 @@ public class AuthorExistsAttributeTests
     }
     
     [Fact]
-    public async Task AnAuthorValidationAttribute_FailsIfNoDtoWasFoundInTheRequest()
+    public async Task AnAuthorExistsAttribute_FailsIfNoDtoWasFound()
     {
         // Arrange
         var bookGuid = Guid.NewGuid();
@@ -218,7 +216,7 @@ public class AuthorExistsAttributeTests
     
     
     [Fact]
-    public async Task AnAuthorValidationAttribute_FailsIfBookTitleWasNotFound()
+    public async Task AnAuthorExistsAttribute_FailsIfNoGuidParameterExists()
     {
         // Arrange
         var modelState = new ModelStateDictionary();

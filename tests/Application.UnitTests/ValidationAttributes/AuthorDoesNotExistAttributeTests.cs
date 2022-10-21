@@ -37,8 +37,8 @@ public class AuthorDoesNotExistAttributeTests
     }
     
     
-        [Fact]
-    public async Task ValidateAuthorDoesNotExist_ShouldSucceed_WhenAuthorDoesNotExist()
+    [Fact]
+    public async Task AnAuthorDoesNotExistAttribute_Succeeds()
     {
         // Arrange
         var bookGuid = Guid.NewGuid();
@@ -88,13 +88,16 @@ public class AuthorDoesNotExistAttributeTests
         executingContext.ActionArguments.Add("SomeDto", authorInDto);
         executingContext.ActionArguments.Add("bookGuid", bookGuid.ToString());
 
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(user);
 
 
         // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _authorDoesNotExistAttribute.OnActionExecutionAsync(executingContext, 
+        var context = new ActionExecutedContext(executingContext,
+                                                new List<IFilterMetadata>(),
+                                                Mock.Of<Controller>());
+        await _authorDoesNotExistAttribute.OnActionExecutionAsync(executingContext,
             () => Task.FromResult(context));
 
         // Assert
@@ -102,7 +105,7 @@ public class AuthorDoesNotExistAttributeTests
     }
     
     [Fact]
-    public async Task ValidateAuthorDoesNotExist_ShouldThrow_WhenAuthorAlreadyExists()
+    public async Task AnAuthorDoesNotExistAttribute_FailsIfAuthorExists()
     {
         // Arrange
         var bookGuid = Guid.NewGuid();
@@ -154,20 +157,24 @@ public class AuthorDoesNotExistAttributeTests
         executingContext.ActionArguments.Add("SomeDto", authorInDto);
         executingContext.ActionArguments.Add("bookGuid", bookGuid.ToString());
 
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(user);
 
 
         // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _authorDoesNotExistAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
+        var context = new ActionExecutedContext(executingContext,
+                                                new List<IFilterMetadata>(),
+                                                Mock.Of<Controller>());
+        await _authorDoesNotExistAttribute.OnActionExecutionAsync(executingContext,
+                    () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(400, executingContext.HttpContext.Response.StatusCode);
     }
     
     [Fact]
-    public async Task ValidateAuthorDoesNotExist_ShouldThrow_WhenNoDtoWasFound()
+    public async Task AnAuthorDoesNotExistAttribute_FailsIfNoDtoWasFound()
     {
         // Arrange
         var bookGuid = Guid.NewGuid();
@@ -191,20 +198,25 @@ public class AuthorDoesNotExistAttributeTests
 
         executingContext.ActionArguments.Add("bookGuid", bookGuid.ToString());
 
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(new User());
 
 
         // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
+        var context = new ActionExecutedContext(executingContext,
+                                                new List<IFilterMetadata>(),
+                                                Mock.Of<Controller>());
 
         // Assert
-        await Assert.ThrowsAsync<InternalServerException>(() => _authorDoesNotExistAttribute
-            .OnActionExecutionAsync(executingContext, () => Task.FromResult(context)));
+        await Assert.ThrowsAsync<InternalServerException>(
+            () => _authorDoesNotExistAttribute
+            .OnActionExecutionAsync(executingContext, 
+                                    () => Task.FromResult(context)));
     }
     
     [Fact]
-    public async Task ValidateAuthorDoesNotExist_ShouldThrow_WhenNoBookTitleWasFound()
+    public async Task AnAuthorDoesNotExistAttribute_FailsIfNoGuidParameterExists()
     {
         // Arrange
         var modelState = new ModelStateDictionary();
@@ -226,15 +238,20 @@ public class AuthorDoesNotExistAttributeTests
 
         executingContext.ActionArguments.Add("SomeDto", new AuthorInDto());
 
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(new User());
 
 
         // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
+        var context = new ActionExecutedContext(executingContext,
+                                                new List<IFilterMetadata>(),
+                                                Mock.Of<Controller>());
 
         // Assert
-        await Assert.ThrowsAsync<InternalServerException>(() => _authorDoesNotExistAttribute
-            .OnActionExecutionAsync(executingContext, () => Task.FromResult(context)));
+        await Assert.ThrowsAsync<InternalServerException>(
+            () => _authorDoesNotExistAttribute
+            .OnActionExecutionAsync(executingContext,
+                                    () => Task.FromResult(context)));
     }
 }
