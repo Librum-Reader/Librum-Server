@@ -17,23 +17,17 @@ using Xunit;
 
 namespace Application.UnitTests.ValidationAttributes;
 
-public class TagAttributesTests
+public class TagExistsAttributeTests
 {
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
-    private readonly Mock<ILogger<TagExistsAttribute>> _bookExistsLoggerMock = new();
-    private readonly Mock<ILogger<TagDoesNotExistAttribute>> _bookDoesNotExistLoggerMock = new();
-
+    private readonly Mock<ILogger<TagExistsAttribute>> _loggerMock = new();
     private readonly TagExistsAttribute _tagExistsFilterAttribute;
-    private readonly TagDoesNotExistAttribute _tagDoesNotExistFilterAttribute;
 
 
-    public TagAttributesTests()
+    public TagExistsAttributeTests()
     {
         _tagExistsFilterAttribute = new TagExistsAttribute(_userRepositoryMock.Object, 
-            _bookExistsLoggerMock.Object);
-
-        _tagDoesNotExistFilterAttribute = new TagDoesNotExistAttribute(_userRepositoryMock.Object,
-            _bookDoesNotExistLoggerMock.Object);
+                                                           _loggerMock.Object);
     }
 
 
@@ -147,134 +141,5 @@ public class TagAttributesTests
         // Assert
         await Assert.ThrowsAsync<InternalServerException>(() => 
             _tagExistsFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context)));
-    }
-    
-    
-    
-    
-    [Fact]
-    public async Task ValidateTagDoesNotExist_ShouldSucceed_WhenTagDoesNotExists()
-    {
-        // Arrange
-        var user = new User
-        {
-            Tags = new List<Tag>
-            {
-                new Tag {  Name = "SomeTagName" }
-            }
-        };
-
-        var modelState = new ModelStateDictionary();
-        var httpContextMock = new DefaultHttpContext();
-
-        var actionContext = new ActionContext(
-            httpContextMock,
-            Mock.Of<RouteData>(),
-            Mock.Of<ActionDescriptor>(),
-            modelState
-        );
-
-        var executingContext = new ActionExecutingContext(
-            actionContext,
-            new List<IFilterMetadata>(),
-            new Dictionary<string, object>()!,
-            modelState
-        );
-
-        executingContext.ActionArguments.Add("someDto", new TagInDto { Name = "SomeTag" });
-
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(user);
-
-
-        // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _tagDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
-
-        // Assert
-        Assert.Equal(200, executingContext.HttpContext.Response.StatusCode);
-    }
-    
-    [Fact]
-    public async Task ValidateTagDoesNotExist_ShouldFail_WhenTagExists()
-    {
-        // Arrange
-        const string tagName = "SomeTag";
-
-        var tagInDto = new TagInDto
-        {
-            Name = tagName
-        };
-
-        var user = new User
-        {
-            Tags = new List<Tag>
-            {
-                new Tag { Name = tagName }
-            }
-        };
-        
-        var modelState = new ModelStateDictionary();
-        var httpContextMock = new DefaultHttpContext();
-
-        var actionContext = new ActionContext(
-            httpContextMock,
-            Mock.Of<RouteData>(),
-            Mock.Of<ActionDescriptor>(),
-            modelState
-        );
-
-        var executingContext = new ActionExecutingContext(
-            actionContext,
-            new List<IFilterMetadata>(),
-            new Dictionary<string, object>()!,
-            modelState
-        );
-
-        executingContext.ActionArguments.Add("someDto", tagInDto);
-
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(user);
-
-
-        // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _tagDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
-
-        // Assert
-        Assert.Equal(400, executingContext.HttpContext.Response.StatusCode);
-    }
-    
-    [Fact]
-    public async Task ValidateTagDoesNotExist_ShouldThrow_WhenNoTagInDtoFound()
-    {
-        // Arrange
-        var modelState = new ModelStateDictionary();
-        var httpContextMock = new DefaultHttpContext();
-
-        var actionContext = new ActionContext(
-            httpContextMock,
-            Mock.Of<RouteData>(),
-            Mock.Of<ActionDescriptor>(),
-            modelState
-        );
-
-        var executingContext = new ActionExecutingContext(
-            actionContext,
-            new List<IFilterMetadata>(),
-            new Dictionary<string, object>()!,
-            modelState
-        );
-        
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync(new User());
-
-
-        // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-
-        // Assert
-        await Assert.ThrowsAsync<InternalServerException>(() => 
-            _tagDoesNotExistFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context)));
     }
 }
