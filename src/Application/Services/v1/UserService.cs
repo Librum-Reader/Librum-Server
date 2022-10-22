@@ -36,7 +36,9 @@ public class UserService : IUserService
         await _userRepository.SaveChangesAsync();
     }
 
-    public async Task PatchUserAsync(string email, JsonPatchDocument<UserForUpdateDto> patchDoc, ControllerBase controllerBase)
+    public async Task PatchUserAsync(string email,
+                                     JsonPatchDocument<UserForUpdateDto> patchDoc,
+                                     ControllerBase controllerBase)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
         
@@ -47,11 +49,11 @@ public class UserService : IUserService
 
         if (!controllerBase.ModelState.IsValid || !userToPatch.DataIsValid)
         {
-            throw new InvalidParameterException("The provided data is invalid");
+            const string message = "The provided data is invalid";
+            throw new InvalidParameterException(message);
         }
 
         _mapper.Map(userToPatch, user);
-
         await _userRepository.SaveChangesAsync();
     }
 }

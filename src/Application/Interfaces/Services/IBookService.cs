@@ -9,7 +9,7 @@ namespace Application.Interfaces.Services;
 public interface IBookService
 {
     Task CreateBookAsync(string email, BookInDto bookInDto, string guid);
-    Task<IList<BookOutDto>> GetBooksAsync(string email, BookRequestParameter bookRequestParameter);
+    Task<IList<BookOutDto>> GetBooksAsync(string email, BookRequestParameter request);
     Task AddTagsToBookAsync(string email, string bookGuid, IEnumerable<string> tagNames);
     Task RemoveTagFromBookAsync(string email, string bookGuid, string tagName);
     Task DeleteBooksAsync(string email, IEnumerable<string> bookGuids);

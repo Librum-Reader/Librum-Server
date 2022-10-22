@@ -15,7 +15,9 @@ public class TagService : ITagService
     private readonly IMapper _mapper;
 
 
-    public TagService(IMapper mapper, ITagRepository tagRepository, IUserRepository userRepository)
+    public TagService(IMapper mapper,
+                      ITagRepository tagRepository,
+                      IUserRepository userRepository)
     {
         _tagRepository = tagRepository;
         _userRepository = userRepository;
