@@ -41,7 +41,8 @@ public class BookRepository : IBookRepository
 
     public async Task<bool> ExistsAsync(string userId, string bookTitle)
     {
-        return await _context.Books.AnyAsync(book => book.UserId == userId && book.Title == bookTitle);
+        return await _context.Books.AnyAsync(book => book.UserId == userId &&
+                                                     book.Title == bookTitle);
     }
 
     public void DeleteBook(Book book)
