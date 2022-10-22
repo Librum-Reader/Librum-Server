@@ -31,7 +31,7 @@ public class TagExistsAttributeTests
 
 
     [Fact]
-    public async Task ValidateTagExists_ShouldSucceed_WhenTagExists()
+    public async Task ATagExistsAttribute_Succeeds()
     {
         // Arrange
         const string tagName = "SomeTag";
@@ -62,20 +62,24 @@ public class TagExistsAttributeTests
 
         executingContext.ActionArguments.Add("tagName", tagName);
 
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(user);
 
 
         // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _tagExistsFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
+        var context = new ActionExecutedContext(executingContext,
+                                                new List<IFilterMetadata>(),
+                                                Mock.Of<Controller>());
+        await _tagExistsFilterAttribute.OnActionExecutionAsync(executingContext,
+                    () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(200, executingContext.HttpContext.Response.StatusCode);
     }
     
     [Fact]
-    public async Task ValidateTagExists_ShouldFail_WhenTagDoesNotExist()
+    public async Task ATagExistsAttribute_FailsIfTagDoesNotExist()
     {
         // Arrange
         var modelState = new ModelStateDictionary();
@@ -97,20 +101,24 @@ public class TagExistsAttributeTests
 
         executingContext.ActionArguments.Add("tagName", "SomeNonExistentTag");
 
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(new User { Tags = new List<Tag>() });
 
 
         // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _tagExistsFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
+        var context = new ActionExecutedContext(executingContext,
+                                                new List<IFilterMetadata>(),
+                                                Mock.Of<Controller>());
+        await _tagExistsFilterAttribute.OnActionExecutionAsync(executingContext,
+                    () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(400, executingContext.HttpContext.Response.StatusCode);
     }
     
     [Fact]
-    public async Task ValidateTagExists_ShouldThrow_WhenNoTagNameFound()
+    public async Task ATagExistsAttribute_FailsIfNoTagNameFound()
     {
         // Arrange
         var modelState = new ModelStateDictionary();
@@ -130,15 +138,19 @@ public class TagExistsAttributeTests
             modelState
         );
         
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(new User());
 
 
         // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
+        var context = new ActionExecutedContext(executingContext,
+                                                new List<IFilterMetadata>(),
+                                                Mock.Of<Controller>());
 
         // Assert
         await Assert.ThrowsAsync<InternalServerException>(() => 
-            _tagExistsFilterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context)));
+            _tagExistsFilterAttribute.OnActionExecutionAsync(executingContext,
+                    () => Task.FromResult(context)));
     }
 }

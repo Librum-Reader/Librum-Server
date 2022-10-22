@@ -34,7 +34,7 @@ public class BookHasTagAttributeTests
     
     
     [Fact]
-    public async Task ValidateBookHasTag_ShouldSucceed_WhenBookHasTag()
+    public async Task ABookHasTagAttribute_Succeeds()
     {
         // Arrange
         var bookGuid = Guid.NewGuid();
@@ -76,20 +76,24 @@ public class BookHasTagAttributeTests
         executingContext.ActionArguments.Add("bookGuid", bookGuid.ToString());
         
 
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(user);
 
 
         // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _bookHasTagAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
+        var context = new ActionExecutedContext(executingContext,
+                                                new List<IFilterMetadata>(),
+                                                Mock.Of<Controller>());
+        await _bookHasTagAttribute.OnActionExecutionAsync(executingContext,
+                    () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(200, executingContext.HttpContext.Response.StatusCode);
     }
     
     [Fact]
-    public async Task ValidateBookHasTag_ShouldFail_WhenBookDoesNotHaveTag()
+    public async Task ABookHasTagAttribute_FailsIfBookDoesNotHaveTag()
     {
         // Arrange
         var bookGuid = Guid.NewGuid();
@@ -130,20 +134,24 @@ public class BookHasTagAttributeTests
         executingContext.ActionArguments.Add("bookGuid", bookGuid.ToString());
         
 
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(user);
 
 
         // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _bookHasTagAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
+        var context = new ActionExecutedContext(executingContext,
+                                                new List<IFilterMetadata>(),
+                                                Mock.Of<Controller>());
+        await _bookHasTagAttribute.OnActionExecutionAsync(executingContext,
+                    () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(400, executingContext.HttpContext.Response.StatusCode);
     }
     
     [Fact]
-    public async Task ValidateBookHasTag_ShouldThrow_WhenNoBookTitleFound()
+    public async Task ABookHasTagAttribute_FailsIfNoGuidExists()
     {
         // Arrange
         var modelState = new ModelStateDictionary();
@@ -167,14 +175,17 @@ public class BookHasTagAttributeTests
 
 
         // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
+        var context = new ActionExecutedContext(executingContext,
+                                                new List<IFilterMetadata>(),
+                                                Mock.Of<Controller>());
         await Assert.ThrowsAsync<InternalServerException>(() => 
-            _bookHasTagAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context)));
+            _bookHasTagAttribute.OnActionExecutionAsync(executingContext,
+                    () => Task.FromResult(context)));
         
     }
     
     [Fact]
-    public async Task ValidateBookHasTag_ShouldThrow_WhenNoTagNameFound()
+    public async Task ABookHasTagAttribute_FailsIfNoNameWasFound()
     {
         // Arrange
         var modelState = new ModelStateDictionary();
@@ -193,14 +204,17 @@ public class BookHasTagAttributeTests
             new Dictionary<string, object>()!,
             modelState
         );
-
-        executingContext.ActionArguments.Add("bookTitle", "SomeBook");
+        
+        executingContext.ActionArguments.Add("bookGuid", Guid.Empty.ToString());
 
 
         // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
+        var context = new ActionExecutedContext(executingContext,
+                                                new List<IFilterMetadata>(),
+                                                Mock.Of<Controller>());
         await Assert.ThrowsAsync<InternalServerException>(() => 
-            _bookHasTagAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context)));
+            _bookHasTagAttribute.OnActionExecutionAsync(executingContext,
+                    () => Task.FromResult(context)));
         
     }
 }

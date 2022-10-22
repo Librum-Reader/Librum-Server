@@ -14,20 +14,20 @@ using Xunit;
 
 namespace Application.UnitTests.ValidationAttributes;
 
-public class ValidParameterTests
+public class ValidParameterAttributeTests
 {
     private readonly Mock<ILogger<ValidParameterAttribute>> _loggerMock = new();
     private readonly ValidParameterAttribute _filterAttribute;
     
 
-    public ValidParameterTests()
+    public ValidParameterAttributeTests()
     {
         _filterAttribute = new ValidParameterAttribute(_loggerMock.Object);
     }
 
 
     [Fact]
-    public async Task ValidateStringParameter_ShouldSucceed_WhenStringIsValid()
+    public async Task AValidParameterAttribute_Succeeds()
     {
         var modelState = new ModelStateDictionary();
         var httpContextMock = new DefaultHttpContext();
@@ -46,19 +46,24 @@ public class ValidParameterTests
             modelState
         );
 
-        executingContext.ActionArguments.Add("SomeValidString", "this is an valid string");
-        executingContext.ActionArguments.Add("AnotherValidString", "SomePassword123");
+        executingContext.ActionArguments.Add("SomeValidString",
+                                             "this is an valid string");
+        executingContext.ActionArguments.Add("AnotherValidString",
+                                             "SomePassword123");
 
         // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _filterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
+        var context = new ActionExecutedContext(executingContext,
+                                                new List<IFilterMetadata>(),
+                                                Mock.Of<Controller>());
+        await _filterAttribute.OnActionExecutionAsync(executingContext,
+                    () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(200, executingContext.HttpContext.Response.StatusCode);
     }
     
     [Fact]
-    public async Task ValidateStringParameter_ShouldSucceed_WhenNoStringArgumentExists()
+    public async Task AValidParameterAttribute_FailsIfNoParameterExists()
     {
         var modelState = new ModelStateDictionary();
         var httpContextMock = new DefaultHttpContext();
@@ -81,15 +86,18 @@ public class ValidParameterTests
         executingContext.ActionArguments.Add("AnotherValidString", 32);
 
         // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _filterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
+        var context = new ActionExecutedContext(executingContext,
+                                                new List<IFilterMetadata>(),
+                                                Mock.Of<Controller>());
+        await _filterAttribute.OnActionExecutionAsync(executingContext,
+                    () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(200, executingContext.HttpContext.Response.StatusCode);
     }
     
     [Fact]
-    public async Task ValidateStringParameter_ShouldFail_WhenStringIsNull()
+    public async Task AValidParameterAttribute_FailsIfParameterIsNull()
     {
         var modelState = new ModelStateDictionary();
         var httpContextMock = new DefaultHttpContext();
@@ -111,15 +119,18 @@ public class ValidParameterTests
         executingContext.ActionArguments.Add("SomeValidString", null);
 
         // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _filterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
+        var context = new ActionExecutedContext(executingContext,
+                                                new List<IFilterMetadata>(),
+                                                Mock.Of<Controller>());
+        await _filterAttribute.OnActionExecutionAsync(executingContext,
+                    () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(400, executingContext.HttpContext.Response.StatusCode);
     }
     
     [Fact]
-    public async Task ValidateStringParameter_ShouldFail_WhenStringIsWhitespace()
+    public async Task AValidParameterAttribute_FailsIfParameterIsOnlyWhitespaces()
     {
         var modelState = new ModelStateDictionary();
         var httpContextMock = new DefaultHttpContext();
@@ -141,8 +152,11 @@ public class ValidParameterTests
         executingContext.ActionArguments.Add("SomeValidString", "   ");
 
         // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _filterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
+        var context = new ActionExecutedContext(executingContext,
+                                                new List<IFilterMetadata>(),
+                                                Mock.Of<Controller>());
+        await _filterAttribute.OnActionExecutionAsync(executingContext,
+                    () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(400, executingContext.HttpContext.Response.StatusCode);

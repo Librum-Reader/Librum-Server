@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Application.UnitTests.ValidationAttributes;
 
-public class UserAttributeTests
+public class UserExistsAttributeTests
 {
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly Mock<ILogger<UserExistsAttribute>> _loggerMock = new();
@@ -23,14 +23,14 @@ public class UserAttributeTests
     private readonly UserExistsAttribute _filterAttribute;
 
 
-    public UserAttributeTests()
+    public UserExistsAttributeTests()
     {
         _filterAttribute = new UserExistsAttribute(_userRepositoryMock.Object, _loggerMock.Object);
     }
     
     
     [Fact]
-    public async Task ValidateUserExists_ShouldSucceed_WhenUserExists()
+    public async Task AUserExistsAttribute_Succeeds()
     {
         // Arrange
         var modelState = new ModelStateDictionary();
@@ -50,20 +50,24 @@ public class UserAttributeTests
             modelState
         );
         
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(new User());
 
 
         // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _filterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
+        var context = new ActionExecutedContext(executingContext,
+                                                new List<IFilterMetadata>(),
+                                                Mock.Of<Controller>());
+        await _filterAttribute.OnActionExecutionAsync(executingContext,
+                    () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(200, executingContext.HttpContext.Response.StatusCode);
     }
     
     [Fact]
-    public async Task ValidateUserExists_ShouldFail_WhenUserDoesNotExist()
+    public async Task AUserExistsAttribute_FailsIfUserDoesNotExist()
     {
         // Arrange
         var modelState = new ModelStateDictionary();
@@ -83,13 +87,17 @@ public class UserAttributeTests
             modelState
         );
         
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<bool>()))
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
             .ReturnsAsync(() => null);
 
 
         // Act
-        var context = new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
-        await _filterAttribute.OnActionExecutionAsync(executingContext, () => Task.FromResult(context));
+        var context = new ActionExecutedContext(executingContext,
+                                                new List<IFilterMetadata>(),
+                                                Mock.Of<Controller>());
+        await _filterAttribute.OnActionExecutionAsync(executingContext,
+                    () => Task.FromResult(context));
 
         // Assert
         Assert.Equal(401, executingContext.HttpContext.Response.StatusCode);
