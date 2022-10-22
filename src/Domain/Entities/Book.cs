@@ -12,16 +12,16 @@ public class Book
     public Guid BookId { get; set; }
 
     [Required]
-    [MinLength(4, ErrorMessage = "The provided book title is too short")]
-    [MaxLength(120, ErrorMessage = "The provided book title is too long")]
+    [MinLength(4, ErrorMessage = "The book title is too short")]
+    [MaxLength(120, ErrorMessage = "The book title is too long")]
     public string Title { get; set; }
     
     [Required]
-    [Range(0, int.MaxValue, ErrorMessage = "The provided amount of pages are not in bound")]
+    [Range(0, int.MaxValue, ErrorMessage = "The amount of pages is not in bounds")]
     public int Pages { get; set; }
     
     [Required]
-    [Range(0, int.MaxValue, ErrorMessage = "The provided amount of pages are not in bound")]
+    [Range(0, int.MaxValue, ErrorMessage = "The current page is not in bounds")]
     public int CurrentPage { get; set; }
     
     [Required]
