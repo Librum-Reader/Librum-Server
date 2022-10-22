@@ -17,25 +17,24 @@ public class ValidParameterAttribute : IAsyncActionFilter
     }
     
     
-    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    public async Task OnActionExecutionAsync(ActionExecutingContext context,
+                                             ActionExecutionDelegate next)
     {
-        foreach (var arg in context.ActionArguments)
+        if (context.ActionArguments.Any(arg => arg.Value == null ||
+                                               IsInvalidString(arg.Value)))
         {
-            if (arg.Value == null || IsInvalidString(arg.Value))
-            {
-                _logger.LogWarning("The given string parameter was invalid");
+            _logger.LogWarning("The given string parameter was invalid");
             
-                context.HttpContext.Response.ContentType = "application/json";
-                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            context.HttpContext.Response.ContentType = "application/json";
+            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             
-                var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode, 
-                    "The given string parameter was invalid");
+            var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode, 
+                                               "The given string parameter was invalid");
 
-                await context.HttpContext.Response.WriteAsync(response.ToString());
-                return;
-            }
+            await context.HttpContext.Response.WriteAsync(response.ToString());
+            return;
         }
-        
+
         await next();
     }
 

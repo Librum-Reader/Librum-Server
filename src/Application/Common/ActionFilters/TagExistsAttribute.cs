@@ -14,33 +14,40 @@ public class TagExistsAttribute : IAsyncActionFilter
     private readonly ILogger<TagExistsAttribute> _logger;
 
 
-    public TagExistsAttribute(IUserRepository userRepository, ILogger<TagExistsAttribute> logger)
+    public TagExistsAttribute(IUserRepository userRepository,
+                              ILogger<TagExistsAttribute> logger)
     {
         _userRepository = userRepository;
         _logger = logger;
     }
     
     
-    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    public async Task OnActionExecutionAsync(ActionExecutingContext context,
+                                             ActionExecutionDelegate next)
     {
 
-        if (!context.ActionArguments.TryGetValue("tagName", out object tagNameObject))
+        if (!context.ActionArguments.TryGetValue("tagName",
+                                                 out object tagNameObject))
         {
-            throw new InternalServerException("Action filter: Expected parameter 'tagName'");
+            const string message = "Action filter: Expected" +
+                                   " parameter 'tagName'";
+            throw new InternalServerException(message);
         }
         
         var tagName = tagNameObject.ToString();
 
+        var userName = context.HttpContext.User.Identity!.Name;
+        var user = await _userRepository.GetAsync(userName, trackChanges: true);
 
-        var user = await _userRepository.GetAsync(context.HttpContext.User.Identity!.Name, trackChanges: true);
-        if (!user.Tags.Any(tag => tag.Name == tagName))
+        if (user.Tags.All(tag => tag.Name != tagName))
         {
             _logger.LogWarning("No tag with this name exists");
             
             context.HttpContext.Response.ContentType = "application/json";
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             
-            var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode, "No tag with this name exists");
+            var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode,
+                                               "No tag with this name exists");
 
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;

@@ -16,8 +16,9 @@ public class AuthorDoesNotExistAttribute : IAsyncActionFilter
     private readonly ILogger<AuthorDoesNotExistAttribute> _logger;
 
 
-    public AuthorDoesNotExistAttribute(IUserRepository userRepository, IBookRepository bookRepository
-        , ILogger<AuthorDoesNotExistAttribute> logger)
+    public AuthorDoesNotExistAttribute(IUserRepository userRepository,
+                                       IBookRepository bookRepository,
+                                       ILogger<AuthorDoesNotExistAttribute> logger)
     {
         _userRepository = userRepository;
         _bookRepository = bookRepository;
@@ -25,31 +26,38 @@ public class AuthorDoesNotExistAttribute : IAsyncActionFilter
     }
     
     
-    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    public async Task OnActionExecutionAsync(ActionExecutingContext context,
+                                             ActionExecutionDelegate next)
     {
-        var authorForRemovalDto = (AuthorInDto)context.ActionArguments
-                                                      .SingleOrDefault(arg => arg.Key.Contains("Dto"))
-                                                      .Value;
-        if (authorForRemovalDto == null)
+        var authorToRemoveDto = (AuthorInDto)context
+            .ActionArguments
+            .SingleOrDefault(arg => arg.Key.Contains("Dto"))
+            .Value;
+        if (authorToRemoveDto == null)
         {
-            throw new InternalServerException("Action filter: Expected parameter containing 'Dto' does not exist");
+            const string message = "Action filter: Expected parameter " +
+                                   "containing 'Dto' does not exist";
+            throw new InternalServerException(message);
         }
 
-        if(!context.ActionArguments.TryGetValue("bookGuid", out object bookGuidObject))
+        if(!context.ActionArguments.TryGetValue("bookGuid",
+                                                out object bookGuidObject))
         {
-            throw new InternalServerException("Action filter: Expected parameter 'bookGuid' does not exist");
+            const string message = "Action filter: Expected parameter" +
+                                   " 'bookGuid' does not exist";
+            throw new InternalServerException(message);
         }
-        
-        
 
-        var user = await _userRepository.GetAsync(context.HttpContext.User.Identity!.Name, trackChanges: true);
+        var userName = context.HttpContext.User.Identity!.Name;
+        var user = await _userRepository.GetAsync(userName, trackChanges: true);
         
         var bookGuid = bookGuidObject.ToString();
         var book = user.Books.SingleOrDefault(book => book.BookId.ToString() == bookGuid);
         await _bookRepository.LoadRelationShipsAsync(book);
 
         if (book!.Authors.Any(author =>
-                author.FirstName == authorForRemovalDto.FirstName && author.LastName == authorForRemovalDto.LastName))
+                author.FirstName == authorToRemoveDto.FirstName &&
+                author.LastName == authorToRemoveDto.LastName))
         {
             _logger.LogWarning("An author with this name already exists");
             
@@ -57,7 +65,7 @@ public class AuthorDoesNotExistAttribute : IAsyncActionFilter
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             
             var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode, 
-                "An author with this name already exists");
+                                               "An author with this name already exists");
 
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;

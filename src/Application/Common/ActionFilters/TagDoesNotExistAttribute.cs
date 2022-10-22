@@ -15,27 +15,32 @@ public class TagDoesNotExistAttribute : IAsyncActionFilter
     private readonly ILogger<TagDoesNotExistAttribute> _logger;
 
 
-    public TagDoesNotExistAttribute(IUserRepository userRepository, 
-        ILogger<TagDoesNotExistAttribute> logger)
+    public TagDoesNotExistAttribute(IUserRepository userRepository,
+                                    ILogger<TagDoesNotExistAttribute> logger)
     {
         _userRepository = userRepository;
         _logger = logger;
     }
     
     
-    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    public async Task OnActionExecutionAsync(ActionExecutingContext context,
+                                             ActionExecutionDelegate next)
     {
 
-        var tagInDto = (TagInDto)context.ActionArguments.SingleOrDefault(arg => arg.Key.Contains("Dto")).Value;
+        var tagInDto = (TagInDto)context.ActionArguments.SingleOrDefault(
+            arg => arg.Key.Contains("Dto")).Value;
         if (tagInDto == null)
         {
-            throw new InternalServerException("Action filter: Expected parameter containing 'Dto'");
+            const string message = "Action filter: Expected " +
+                                   "parameter containing 'Dto'";
+            throw new InternalServerException(message);
         }
         
-        var tagName = tagInDto.Name.ToString();
+        var tagName = tagInDto.Name;
 
-
-        var user = await _userRepository.GetAsync(context.HttpContext.User.Identity!.Name, trackChanges: true);
+        var userName = context.HttpContext.User.Identity!.Name;
+        var user = await _userRepository.GetAsync(userName, trackChanges: true);
+        
         if (user.Tags.Any(tag => tag.Name == tagName))
         {
             _logger.LogWarning("A tag with this name already exists");
@@ -44,7 +49,7 @@ public class TagDoesNotExistAttribute : IAsyncActionFilter
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             
             var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode, 
-                "A tag with this name already exists");
+                                               "A tag with this name already exists");
 
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;

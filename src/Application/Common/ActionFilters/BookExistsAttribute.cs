@@ -14,25 +14,31 @@ public class BookExistsAttribute : IAsyncActionFilter
     private readonly ILogger<BookExistsAttribute> _logger;
 
 
-    public BookExistsAttribute(IUserRepository userRepository, ILogger<BookExistsAttribute> logger)
+    public BookExistsAttribute(IUserRepository userRepository,
+                               ILogger<BookExistsAttribute> logger)
     {
         _userRepository = userRepository;
         _logger = logger;
     }
 
     
-    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    public async Task OnActionExecutionAsync(ActionExecutingContext context,
+                                             ActionExecutionDelegate next)
     {
-        if (!context.ActionArguments.TryGetValue("bookGuid", out object bookGuidObject))
+        if (!context.ActionArguments.TryGetValue("bookGuid",
+                                                 out object bookGuidObject))
         {
-            throw new InternalServerException("Action filter: Expected parameter 'bookGuid' does not exist");
+            const string message = "Action filter: Expected parameter" +
+                                   " 'bookGuid' does not exist";
+            throw new InternalServerException(message);
         }
-
         
         var bookGuid = bookGuidObject.ToString();
+
+        var userName = context.HttpContext.User.Identity!.Name;
+        var user = await _userRepository.GetAsync(userName, trackChanges: true);
         
-        var user = await _userRepository.GetAsync(context.HttpContext.User.Identity!.Name, trackChanges: true);
-        if (!user.Books.Any(book => book.BookId.ToString() == bookGuid))
+        if (user.Books.All(book => book.BookId.ToString() != bookGuid))
         {
             _logger.LogWarning("No book with this GUID exists");
 
@@ -40,7 +46,7 @@ public class BookExistsAttribute : IAsyncActionFilter
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
             var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode, 
-                "No book with this GUID exists");
+                                               "No book with this GUID exists");
 
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;

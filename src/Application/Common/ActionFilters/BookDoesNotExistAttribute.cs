@@ -16,25 +16,33 @@ public class BookDoesNotExistAttribute : IAsyncActionFilter
 
 
     public BookDoesNotExistAttribute(IUserRepository userRepository,
-        ILogger<BookDoesNotExistAttribute> logger)
+                                     ILogger<BookDoesNotExistAttribute> logger)
     {
         _userRepository = userRepository;
         _logger = logger;
     }
 
     
-    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    public async Task OnActionExecutionAsync(ActionExecutingContext context,
+                                             ActionExecutionDelegate next)
     {
-        var bookInDto = (BookInDto)context.ActionArguments.SingleOrDefault(arg => arg.Key.Contains("Dto")).Value;
+        var bookInDto = (BookInDto)context
+            .ActionArguments
+            .SingleOrDefault(arg => arg.Key.Contains("Dto"))
+            .Value;
         if (bookInDto == null)
         {
-            throw new InternalServerException("Action filter: Expected parameter containing 'Dto' does not exist");
+            const string message = "Action filter: Expected parameter" +
+                                   " containing 'Dto' does not exist";
+            throw new InternalServerException(message);
         }
 
         
         var bookGuid = bookInDto.Guid;
+
+        var userName = context.HttpContext.User.Identity!.Name;
+        var user = await _userRepository.GetAsync(userName, trackChanges: true);
         
-        var user = await _userRepository.GetAsync(context.HttpContext.User.Identity!.Name, trackChanges: true);
         if (user.Books.Any(book => book.BookId.ToString() == bookGuid))
         {
             _logger.LogWarning("A book with this GUID already exists");
@@ -43,12 +51,11 @@ public class BookDoesNotExistAttribute : IAsyncActionFilter
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
             var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode, 
-                "A book with this GUID already exists");
+                                               "A book with this GUID already exists");
 
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;
         }
-
 
         await next();
     }

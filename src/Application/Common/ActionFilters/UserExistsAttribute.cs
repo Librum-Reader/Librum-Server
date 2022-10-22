@@ -13,14 +13,16 @@ public class UserExistsAttribute : IAsyncActionFilter
     private readonly ILogger<UserExistsAttribute> _logger;
 
 
-    public UserExistsAttribute(IUserRepository userRepository, ILogger<UserExistsAttribute> logger)
+    public UserExistsAttribute(IUserRepository userRepository,
+                               ILogger<UserExistsAttribute> logger)
     {
         _userRepository = userRepository;
         _logger = logger;
     }
     
     
-    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    public async Task OnActionExecutionAsync(ActionExecutingContext context,
+                                             ActionExecutionDelegate next)
     {
         var userEmail = context.HttpContext.User.Identity!.Name;
         if (await _userRepository.GetAsync(userEmail, trackChanges: false) == null)
@@ -31,7 +33,7 @@ public class UserExistsAttribute : IAsyncActionFilter
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             
             var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode, 
-                "No user with this email exists");
+                                               "No user with this email exists");
 
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;
