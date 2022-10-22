@@ -15,7 +15,8 @@ public class AuthenticationController : ControllerBase
     private readonly ILogger<AuthenticationController> _logger;
 
 
-    public AuthenticationController(IAuthenticationService authenticationService, ILogger<AuthenticationController> logger)
+    public AuthenticationController(IAuthenticationService authenticationService,
+                                    ILogger<AuthenticationController> logger)
     {
         _authenticationService = authenticationService;
         _logger = logger;
