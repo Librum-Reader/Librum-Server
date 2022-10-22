@@ -13,7 +13,9 @@ public class ExceptionHandlingMiddleware
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
 
-    public ExceptionHandlingMiddleware(RequestDelegate next, IHostEnvironment env, ILogger<ExceptionHandlingMiddleware> logger)
+    public ExceptionHandlingMiddleware(RequestDelegate next,
+                                       IHostEnvironment env,
+                                       ILogger<ExceptionHandlingMiddleware> logger)
     {
         _next = next;
         _env = env;
