@@ -16,7 +16,8 @@ public class AuthenticationManager : IAuthenticationManager
     private readonly UserManager<User> _userManager;
 
 
-    public AuthenticationManager(IConfiguration configuration, UserManager<User> userManager)
+    public AuthenticationManager(IConfiguration configuration,
+                                 UserManager<User> userManager)
     {
         _configuration = configuration;
         _userManager = userManager;
@@ -26,22 +27,24 @@ public class AuthenticationManager : IAuthenticationManager
     public async Task<bool> UserExistsAsync(string email, string password)
     {
         var user = await _userManager.FindByEmailAsync(email);
-
-        return (user != null && await _userManager.CheckPasswordAsync(user, password));
+        if (user == null)
+            return false;
+        
+        return await _userManager.CheckPasswordAsync(user, password);
     }
 
     public async Task<string> CreateTokenAsync(LoginDto loginDto)
     {
         var signingCredentials = GetSigningCredentials();
         var claims = await GetClaimsAsync(loginDto);
-        JwtSecurityToken tokenOptions = GenerateTokenOptions(signingCredentials, claims);
+        var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
     
         return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
     }
 
     private SigningCredentials GetSigningCredentials()
     {
-        byte[] key = Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]);
+        var key = Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]);
         var secret = new SymmetricSecurityKey(key);
 
         return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
@@ -52,7 +55,8 @@ public class AuthenticationManager : IAuthenticationManager
         var user = await _userManager.FindByEmailAsync(loginDto?.Email);
         if (user == null)
         {
-            throw new ArgumentException("Getting claims failed: User does not exist");
+            const string message = "Getting claims failed: User does not exist";
+            throw new ArgumentException(message);
         }
 
         var claims = new List<Claim>
@@ -69,7 +73,8 @@ public class AuthenticationManager : IAuthenticationManager
         return claims;
     }
     
-    private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
+    private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials,
+                                                  IEnumerable<Claim> claims)
     {
         var tokenOptions = new JwtSecurityToken
         (
