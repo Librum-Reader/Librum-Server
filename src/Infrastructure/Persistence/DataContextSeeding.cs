@@ -8,7 +8,9 @@ namespace Infrastructure.Persistence;
 
 public static class DataContextSeeding
 {
-    public static async Task SeedDataContext(DataContext context, IAuthenticationService authenticationService, IBookService bookService)
+    public static async Task SeedDataContext(DataContext context,
+                                             IAuthenticationService authenticationService,
+                                             IBookService bookService)
     {
         if (context.Users.Any())
             return;
@@ -112,7 +114,8 @@ public static class DataContextSeeding
         for (int i = 0; i < users.Count; ++i)
         {
             await authenticationService.RegisterUserAsync(users[i]);
-            await bookService.CreateBookAsync(users[i].Email, books[i], Guid.NewGuid().ToString());
+            await bookService.CreateBookAsync(users[i].Email, books[i],
+                                              Guid.NewGuid().ToString());
         }
     }
 }
