@@ -15,7 +15,9 @@ public class AuthenticationService : IAuthenticationService
     private readonly UserManager<User> _userManager;
 
 
-    public AuthenticationService(IMapper mapper, IAuthenticationManager authenticationManager, UserManager<User> userManager)
+    public AuthenticationService(IMapper mapper,
+                                 IAuthenticationManager authenticationManager,
+                                 UserManager<User> userManager)
     {
         _mapper = mapper;
         _authenticationManager = authenticationManager;
@@ -25,19 +27,22 @@ public class AuthenticationService : IAuthenticationService
     
     public async Task<string> LoginUserAsync(LoginDto loginDto)
     {
-        if (!await _authenticationManager.UserExistsAsync(loginDto.Email, loginDto.Password))
-        {
-            throw new InvalidParameterException("The provided login credentials are wrong");
-        }
-
-        return await _authenticationManager.CreateTokenAsync(loginDto);
+        var email = loginDto.Email;
+        var password = loginDto.Password;
+        if (await _authenticationManager.UserExistsAsync(email, password))
+            return await _authenticationManager.CreateTokenAsync(loginDto);
+        
+        const string message = "The login credentials are wrong";
+        throw new InvalidParameterException(message);
     }
     
     public async Task RegisterUserAsync(RegisterDto registerDto)
     {
-        if (await _authenticationManager.UserExistsAsync(registerDto.Email, registerDto.Password))
+        if (await _authenticationManager
+                .UserExistsAsync(registerDto.Email, registerDto.Password))
         {
-            throw new InvalidParameterException("A user with this email already exists");
+            const string message = "A user with this email already exists";
+            throw new InvalidParameterException(message);
         }
 
         var user = _mapper.Map<User>(registerDto);
@@ -45,7 +50,8 @@ public class AuthenticationService : IAuthenticationService
         var result = await _userManager.CreateAsync(user, registerDto.Password);
         if (!result.Succeeded)
         {
-            throw new InvalidParameterException("The provided data was invalid");
+            const string message = "The provided data was invalid";
+            throw new InvalidParameterException(message);
         }
 
         if(registerDto.Roles != null)
