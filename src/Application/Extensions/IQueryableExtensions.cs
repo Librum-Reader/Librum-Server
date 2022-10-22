@@ -9,13 +9,15 @@ namespace Application.Extensions;
 
 public static class QueryableExtensions
 {
-    public static IQueryable<Book> SortByBestMatch(this IQueryable<Book> books, string target)
+    public static IQueryable<Book> SortByBestMatch(this IQueryable<Book> books,
+                                                   string target)
     {
         if (target == string.Empty)
         {
             return books;
         }
-
+        
+        // Sort by: 1.contains target at the front, 2.contains target, 3.alphabetic
         var sortedBooks =
             from book in books
             let orderController = book.Title.ToLower().StartsWith(target)
@@ -29,7 +31,8 @@ public static class QueryableExtensions
         return sortedBooks;
     }
 
-    public static IQueryable<Book> FilterByAuthor(this IQueryable<Book> books, string authorName)
+    public static IQueryable<Book> FilterByAuthor(this IQueryable<Book> books,
+                                                  string authorName)
     {
         if (authorName == string.Empty)
         {
@@ -37,10 +40,12 @@ public static class QueryableExtensions
         }
 
         return books.Where(book => book.Authors
-            .Any(author => (author.FirstName.ToLower() + " " + author.LastName.ToLower()).Contains(authorName)));
+            .Any(author => (author.FirstName.ToLower() + " " + 
+                            author.LastName.ToLower()).Contains(authorName)));
     }
 
-    public static IQueryable<Book> FilterByTimeSinceAdded(this IQueryable<Book> books, TimeSpan timePassed)
+    public static IQueryable<Book> FilterByTimeSinceAdded(this IQueryable<Book> books,
+                                                          TimeSpan timePassed)
     {
         if (timePassed == default)
         {
@@ -52,9 +57,11 @@ public static class QueryableExtensions
         // .Where(book => book.CreationDate >= lastAcceptedTime);
     }
 
-    public static IQueryable<Book> FilterByFormat(this IQueryable<Book> books, string format)
+    public static IQueryable<Book> FilterByFormat(this IQueryable<Book> books,
+                                                  string format)
     {
-        return (string.IsNullOrEmpty(format)) ? books : books.Where(book => book.Format == format);
+        return string.IsNullOrEmpty(format) ? books : 
+            books.Where(book => book.Format == format);
     }
 
     public static IQueryable<Book> FilterByOptions(this IQueryable<Book> books,
@@ -69,12 +76,16 @@ public static class QueryableExtensions
         return books;
     }
 
-    public static IQueryable<Book> FilterByTags(this IQueryable<Book> books, string tagName)
+    public static IQueryable<Book> FilterByTags(this IQueryable<Book> books,
+                                                string tagName)
     {
-        return tagName == null ? books : books.Where(book => book.Tags.Any(tag => tag.Name == tagName));
+        return tagName == null ? books : 
+            books.Where(book => book.Tags.Any(tag => tag.Name == tagName));
     }
 
-    public static IQueryable<Book> PaginateBooks(this IQueryable<Book> books, int pageNumber, int pageSize)
+    public static IQueryable<Book> PaginateBooks(this IQueryable<Book> books,
+                                                 int pageNumber,
+                                                 int pageSize)
     {
         return books
             .Skip((pageNumber - 1) * pageSize)
@@ -82,7 +93,8 @@ public static class QueryableExtensions
     }
 
     public static IQueryable<Book> SortByCategories(this IQueryable<Book> books, 
-        BookSortOptions sortOption, string sortString)
+                                                    BookSortOptions sortOption,
+                                                    string sortString)
     {
         // Dont sort by categories, when sorting by a search string
         if (sortString.Length !> 0)
@@ -95,11 +107,12 @@ public static class QueryableExtensions
             BookSortOptions.Nothing => books,
             BookSortOptions.RecentlyRead => books.OrderByDescending(book => book.LastOpened),
             // BookSortOptions.RecentlyAdded => books.OrderByDescending(book => book.CreationDate),
-            BookSortOptions.Percentage => books.OrderByDescending(book => ((double)book.CurrentPage / book.Pages)),
+            BookSortOptions.Percentage =>
+                books.OrderByDescending(book => (double)book.CurrentPage / book.Pages),
             BookSortOptions.TitleLexicAsc => books.OrderBy(book => book.Title),
             BookSortOptions.TitleLexicDesc => books.OrderByDescending(book => book.Title),
             BookSortOptions.AuthorLexicAsc => books
-                .OrderBy(book => String.IsNullOrEmpty(book.Authors.First().FirstName))
+                .OrderBy(book => string.IsNullOrEmpty(book.Authors.First().FirstName))
                 .ThenBy(book => book.Authors.First().FirstName)
                 .ThenBy(book => book.Authors.FirstOrDefault().LastName),
             BookSortOptions.AuthorLexicDesc => books
