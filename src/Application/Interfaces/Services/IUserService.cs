@@ -8,5 +8,7 @@ public interface IUserService
 {
     public Task<UserOutDto> GetUserAsync(string email);
     public Task DeleteUserAsync(string email);
-    public Task PatchUserAsync(string email, JsonPatchDocument<UserForUpdateDto> patchDoc, ControllerBase controllerBase);
+    public Task PatchUserAsync(string email,
+                               JsonPatchDocument<UserForUpdateDto> patchDoc,
+                               ControllerBase controllerBase);
 }
