@@ -25,16 +25,26 @@ public class Book
     public int CurrentPage { get; set; }
     
     [Required]
+    [MinLength(1, ErrorMessage = "The format is too short")]
+    [MaxLength(40, ErrorMessage = "The format is too long")]
     public string Format { get; set; }
     
+    [MinLength(2, ErrorMessage = "The language is too short")]
+    [MaxLength(50, ErrorMessage = "The language is too long")]
     public string Language { get; set; }
     
     [Required]
+    [MinLength(2, ErrorMessage = "The document size is too short")]
+    [MaxLength(30, ErrorMessage = "The document size is too long")]
     public string DocumentSize { get; set; }
 
     [Required]
+    [MinLength(2, ErrorMessage = "The pages size is too short")]
+    [MaxLength(40, ErrorMessage = "The pages size is too long")]
     public string PagesSize { get; set; }
     
+    [MinLength(2, ErrorMessage = "The creator is too short")]
+    [MaxLength(140, ErrorMessage = "The creator is too long")]
     public string Creator { get; set; }
     
     [Required]
@@ -44,13 +54,14 @@ public class Book
     public string CoverLink { get; set; }
 
     [Required]
+    [MinLength(8, ErrorMessage = "The release date is too short")]
+    [MaxLength(140, ErrorMessage = "The release date is too long")]
     public string ReleaseDate { get; set; }
     
     [Required]
     public string AddedToLibrary { get; set; }
     
     public string LastOpened { get; set; }
-    
     
     
     public ICollection<Tag> Tags { get; set; }
