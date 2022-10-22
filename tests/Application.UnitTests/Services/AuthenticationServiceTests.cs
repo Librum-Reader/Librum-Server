@@ -28,13 +28,13 @@ public class AuthenticationServiceTests
             cfg.AddProfile<UserAutoMapperProfile>();
         });
         var mapper = new Mapper(mapperConfig);
-
+        
         _authenticationService = new AuthenticationService(mapper,
                                                            _authenticationManagerMock.Object,
                                                            _userManagerMock.Object);
     }
-
-
+    
+    
     [Fact]
     public async Task AnAuthenticationService_SucceedsAuthenticatingUser()
     {
@@ -62,7 +62,7 @@ public class AuthenticationServiceTests
     }
     
     [Fact]
-    public async Task AnAuthenticationService_FailsAuthenticatingIfUserDoesNotExist()
+    public async Task AnAuthenticationService_FailsAuthenticatingIfCredentialsWrong()
     {
         // Arrange
         var loginDto = new LoginDto
@@ -170,7 +170,6 @@ public class AuthenticationServiceTests
             LastName = "Doe",
             Password = "SomePassword123",
             Roles = new List<string>() {"Manager", "Client"}
-            
         };
         
         _authenticationManagerMock.Setup(x => x.UserExistsAsync(It.IsAny<string>(),

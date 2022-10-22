@@ -23,6 +23,7 @@ public class UserServiceTests
     private readonly Mock<ControllerBase> _controllerBaseMock = new();
     private readonly UserService _userService;
     
+    
     public UserServiceTests()
     {
         var mapperConfig = new MapperConfiguration(cfg =>
@@ -123,7 +124,7 @@ public class UserServiceTests
                                           It.IsAny<ModelStateDictionary>()))
             .Returns(true);
         
-
+        
         // Assert
         await Assert.ThrowsAsync<InvalidParameterException>(
             () => _userService.PatchUserAsync("JohnDoe@gmail.com", 
