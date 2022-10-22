@@ -11,8 +11,8 @@ public class BookInDto
     public string Guid { get; set; }
     
     [Required]
-    [MinLength(4, ErrorMessage = "The provided title is too short")]
-    [MaxLength(80, ErrorMessage = "The provided title is too long")]
+    [MinLength(4, ErrorMessage = "The title is too short")]
+    [MaxLength(80, ErrorMessage = "The title is too long")]
     public string Title { get; set; }
     
     [Required]
