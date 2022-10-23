@@ -30,20 +30,20 @@ public class BookInDto
 
     [Required]
     public string DocumentSize { get; set; }
-
-    [Required]
+    
     public string PagesSize { get; set; }
     
     public string Creator { get; set; }
     
-    [Required]
     public string ReleaseDate { get; set; }
     
     [Required]
     public string AddedToLibrary { get; set; }
     
+    [Required]
     public string LastOpened { get; set; }
     
+    [Required]
     public string Cover { get; set; }
     
     public string Data { get; set; }
