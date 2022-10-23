@@ -27,7 +27,7 @@ public class BookOutDto
     
     public string CoverLink { get; set; }
     
-    public string ReleaseDate { get; set; }
+    public string CreationDate { get; set; }
     
     public string AddedToLibrary { get; set; }
 

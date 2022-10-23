@@ -53,10 +53,9 @@ public class Book
     [Required]
     public string CoverLink { get; set; }
 
-    [Required]
-    [MinLength(8, ErrorMessage = "The release date is too short")]
-    [MaxLength(140, ErrorMessage = "The release date is too long")]
-    public string ReleaseDate { get; set; }
+    [MinLength(8, ErrorMessage = "The creation date is too short")]
+    [MaxLength(140, ErrorMessage = "The creation date is too long")]
+    public string CreationDate { get; set; }
     
     [Required]
     public string AddedToLibrary { get; set; }

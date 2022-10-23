@@ -65,7 +65,7 @@ public static class DataContextSeeding
                 Format = "Pdf",
                 DocumentSize = "2MiB",
                 PagesSize = "800 x 300",
-                ReleaseDate = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
+                CreationDate = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
                 AddedToLibrary = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)
             },
             new BookInDto
@@ -85,7 +85,7 @@ public static class DataContextSeeding
                 Format = "Mobi",
                 DocumentSize = "0.7MiB",
                 PagesSize = "Mostly 200 x 800",
-                ReleaseDate = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
+                CreationDate = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
                 AddedToLibrary = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)
             },
             new BookInDto
@@ -105,7 +105,7 @@ public static class DataContextSeeding
                 CurrentPage = 1234,
                 DocumentSize = "0.7MiB",
                 PagesSize = "Mostly 200 x 800",
-                ReleaseDate = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
+                CreationDate = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
                 AddedToLibrary = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)
             }
         };

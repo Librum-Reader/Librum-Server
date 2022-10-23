@@ -35,7 +35,7 @@ public class BookInDto
     
     public string Creator { get; set; }
     
-    public string ReleaseDate { get; set; }
+    public string CreationDate { get; set; }
     
     [Required]
     public string AddedToLibrary { get; set; }

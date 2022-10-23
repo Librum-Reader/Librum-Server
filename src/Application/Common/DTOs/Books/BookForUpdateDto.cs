@@ -10,7 +10,7 @@ public class BookForUpdateDto
     
     public string Creator { get; set; }
     
-    public string ReleaseDate { get; set; }
+    public string CreationDate { get; set; }
     
     public string LastOpened { get; set; }
     

@@ -52,7 +52,7 @@ public partial class BookServiceTests
         var bookDto = new BookInDto
         {
             Title = "Some book",
-            ReleaseDate = DateTime.Now.ToString(CultureInfo.InvariantCulture),
+            CreationDate = DateTime.Now.ToString(CultureInfo.InvariantCulture),
             Format = "Pdf",
             Pages = 1200,
             CurrentPage = 2,
