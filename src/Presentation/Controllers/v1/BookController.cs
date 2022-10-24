@@ -44,7 +44,7 @@ public class BookController : ControllerBase
         return StatusCode(201);
     }
 
-    [HttpPost("get")]
+    [HttpGet("get")]
     public async Task<ActionResult<IList<BookOutDto>>> GetBooks()
     {
         var userName = HttpContext.User.Identity!.Name;
