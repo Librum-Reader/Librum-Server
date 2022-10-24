@@ -1,6 +1,5 @@
 using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
-using Application.Common.RequestParameters;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,8 +8,7 @@ namespace Application.Interfaces.Services;
 public interface IBookService
 {
     Task CreateBookAsync(string email, BookInDto bookInDto, string guid);
-    Task<IList<BookOutDto>> GetBooksAsync(string email,
-                                          BookRequestParameter request);
+    Task<IList<BookOutDto>> GetBooksAsync(string email);
     Task AddTagsToBookAsync(string email, string bookGuid,
                             IEnumerable<string> tagNames);
     Task RemoveTagFromBookAsync(string email, string bookGuid, string tagName);

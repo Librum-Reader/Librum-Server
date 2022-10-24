@@ -1,8 +1,6 @@
 using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
-using Application.Common.RequestParameters;
-using Application.Extensions;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using AutoMapper;
@@ -40,26 +38,14 @@ public class BookService : IBookService
         await _bookRepository.SaveChangesAsync();
     }
 
-    public async Task<IList<BookOutDto>> GetBooksAsync(string email,
-                                                       BookRequestParameter request)
+    public async Task<IList<BookOutDto>> GetBooksAsync(string email)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: false);
 
         var books = _bookRepository.GetAllAsync(user.Id);
         await _bookRepository.LoadRelationShipsAsync(books);
         
-
-        var processedBooks = books
-            .FilterByTags(request.Tag?.Name)
-            .FilterByAuthor(request.Author.ToLower())
-            .FilterByTimeSinceAdded(request.TimePassed)
-            .FilterByFormat(request.Format)
-            .FilterByOptions(request)
-            .SortByBestMatch(request.SearchString.ToLower())
-            .SortByCategories(request.SortBy, request.SearchString)
-            .PaginateBooks(request.PageNumber, request.PageSize);
-        
-        return await processedBooks
+        return await books
             .Select(book => _mapper.Map<BookOutDto>(book))
             .ToListAsync();
     }

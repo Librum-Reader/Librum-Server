@@ -23,7 +23,7 @@ using Xunit;
 namespace Application.UnitTests.Services;
 
 
-public partial class BookServiceTests
+public class BookServiceTests
 {
     private readonly Mock<IBookRepository> _bookRepositoryMock = new();
     private readonly Mock<IUserRepository> _userRepositoryMock = new();

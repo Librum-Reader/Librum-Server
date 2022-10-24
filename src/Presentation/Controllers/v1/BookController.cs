@@ -2,7 +2,6 @@ using Application.Common.ActionFilters;
 using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
-using Application.Common.RequestParameters;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -46,12 +45,11 @@ public class BookController : ControllerBase
     }
 
     [HttpPost("get")]
-    public async Task<ActionResult<IList<BookOutDto>>> GetBooks(
-        [FromBody] BookRequestParameter bookRequestParameter)
+    public async Task<ActionResult<IList<BookOutDto>>> GetBooks()
     {
         var userName = HttpContext.User.Identity!.Name;
-        var books = await _bookService.GetBooksAsync(userName,
-                                                     bookRequestParameter);
+        var books = await _bookService.GetBooksAsync(userName);
+        
         return Ok(books);
     }
 
