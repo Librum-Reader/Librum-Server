@@ -24,6 +24,13 @@ public class AuthenticationController : ControllerBase
 
 
     [AllowAnonymous]
+    [HttpGet]
+    public ActionResult Get()
+    {
+        return Ok("Librum-Api Version 1");
+    }
+
+    [AllowAnonymous]
     [HttpPost("register")]
     public async Task<ActionResult> RegisterUser([FromBody] RegisterDto registerDto)
     {
