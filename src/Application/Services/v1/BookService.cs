@@ -124,25 +124,33 @@ public class BookService : IBookService
     }
     
     public async Task PatchBookAsync(string email,
-                                     JsonPatchDocument<BookForUpdateDto> patchDoc,
-                                     string bookGuid,
-                                     ControllerBase controllerBase)
+                                     BookForUpdateDto bookUpdateDto,
+                                     string bookGuid)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
         var book = user.Books.Single(book => book.BookId.ToString() == bookGuid);
+        
+        var type = bookUpdateDto.GetType();
+        var properties = type.GetProperties();
 
-        var bookToPatch = _mapper.Map<BookForUpdateDto>(book);
-
-        patchDoc.ApplyTo(bookToPatch, controllerBase.ModelState);
-        controllerBase.TryValidateModel(controllerBase.ModelState);
-
-        if (!controllerBase.ModelState.IsValid || !bookToPatch.DataIsValid)
+        foreach (var property in properties)
         {
-            const string message = "The provided data is invalid";
-            throw new InvalidParameterException(message);
+            var value = property.GetValue(bookUpdateDto);
+            
+            if (value == default || (value is int i && i == 0))
+                continue;
+
+            var bookProperty = book.GetType().GetProperty(property.Name);
+            if (bookProperty == null)
+            {
+                var message = "The book class does not  contain a property" +
+                              " called: " + property.Name;
+                throw new InvalidParameterException(message);
+            }
+
+            bookProperty.SetValue(book, value);
         }
         
-        _mapper.Map(bookToPatch, book);
         await _bookRepository.SaveChangesAsync();
     }
 

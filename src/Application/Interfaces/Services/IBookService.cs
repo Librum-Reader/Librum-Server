@@ -13,8 +13,8 @@ public interface IBookService
                             IEnumerable<string> tagNames);
     Task RemoveTagFromBookAsync(string email, string bookGuid, string tagName);
     Task DeleteBooksAsync(string email, IEnumerable<string> bookGuids);
-    Task PatchBookAsync(string email, JsonPatchDocument<BookForUpdateDto> patchDoc,
-                        string bookGuid, ControllerBase controllerBase);
+    Task PatchBookAsync(string email, BookForUpdateDto bookUpdateDto,
+                        string bookGuid);
     
     Task AddAuthorToBookAsync(string email, string bookGuid,
                               AuthorInDto authorToAdd);

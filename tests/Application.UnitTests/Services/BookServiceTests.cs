@@ -310,69 +310,24 @@ public class BookServiceTests
             }
         };
 
-        var patchDoc = new JsonPatchDocument<BookForUpdateDto>();
-        var operation = new Operation<BookForUpdateDto>("replace",
-                                                        "/Title",
-                                                        "source",
-                                                        "SomeOtherBook");
-        patchDoc.Operations.Add(operation);
-
+        var bookUpdateDto = new BookForUpdateDto
+        {
+            Title = "SomeNewTitle"
+        };
+        
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
                                                   It.IsAny<bool>()))
             .ReturnsAsync(user);
-
-        _controllerBaseMock.Setup(x => x.TryValidateModel(
-                                      It.IsAny<ModelStateDictionary>()))
-            .Returns(true);
 
         _userRepositoryMock.Setup(x => x.SaveChangesAsync())
             .ReturnsAsync(1);
 
         // Act
-        await _bookService.PatchBookAsync("JohnDoe@gmail.com", patchDoc, 
-                                          bookGuid.ToString(),
-                                          _controllerBaseMock.Object);
+        await _bookService.PatchBookAsync("JohnDoe@gmail.com", bookUpdateDto,
+                                          bookGuid.ToString());
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
-    }
-
-    [Fact]
-    public async Task ABookService_FailsPatchingBookIfApplyingToBookFails()
-    {
-        // Arrange
-        var bookGuid = Guid.NewGuid();
-
-        var user = new User
-        {
-            Books = new List<Book>
-            {
-                new Book { BookId = bookGuid, CurrentPage = -1 }
-            }
-        };
-
-        var patchDoc = new JsonPatchDocument<BookForUpdateDto>();
-        var operation = new Operation<BookForUpdateDto>("replace",
-                                                        "/Title",
-                                                        "source",
-                                                        "SomeOtherBook");
-        patchDoc.Operations.Add(operation);
-
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
-                                                  It.IsAny<bool>()))
-            .ReturnsAsync(user);
-
-        _controllerBaseMock.Setup(x => x.TryValidateModel(
-                                      It.IsAny<ModelStateDictionary>()))
-            .Returns(false);
-
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(
-            () => _bookService.PatchBookAsync("JohnDoe@gmail.com", 
-                                              patchDoc, 
-                                              bookGuid.ToString(), 
-                                              _controllerBaseMock.Object));
     }
 
     [Fact]
