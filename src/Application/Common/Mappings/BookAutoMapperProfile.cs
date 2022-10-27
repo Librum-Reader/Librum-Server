@@ -10,11 +10,12 @@ public class BookAutoMapperProfile : Profile
     {
         CreateMap<BookInDto, Book>()
             .ForMember(dest => dest.DataLink, temp => temp.MapFrom(src => "none"))
-            .ForMember(dest => dest.CoverLink, temp => temp.MapFrom(src => "none"));
+            .ForMember(dest => dest.CoverLink, temp => temp.MapFrom(src => src.Cover));
 
         CreateMap<Book, BookOutDto>()
             .ForMember(dest => dest.Format, temp => temp.MapFrom(src => src.Format.ToString()))
-            .ForMember(dest => dest.Guid, temp => temp.MapFrom(src => src.BookId.ToString()));
+            .ForMember(dest => dest.Guid, temp => temp.MapFrom(src => src.BookId.ToString()))
+            .ForMember(dest => dest.Cover, temp => temp.MapFrom(src => src.CoverLink));
 
         CreateMap<Book, BookForUpdateDto>()
             .ReverseMap();

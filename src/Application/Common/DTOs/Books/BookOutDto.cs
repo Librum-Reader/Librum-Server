@@ -33,8 +33,9 @@ public class BookOutDto
 
     public string LastOpened { get; set; }
     
-    
-    
+    public string Cover { get; set; }
+
+
     public ICollection<AuthorOutDto> Authors { get; set; }
     
     public ICollection<TagOutDto> Tags { get; set; }
