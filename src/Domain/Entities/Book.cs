@@ -13,7 +13,7 @@ public class Book
 
     [Required]
     [MinLength(4, ErrorMessage = "The book title is too short")]
-    [MaxLength(120, ErrorMessage = "The book title is too long")]
+    [MaxLength(200, ErrorMessage = "The book title is too long")]
     public string Title { get; set; }
     
     [Required]

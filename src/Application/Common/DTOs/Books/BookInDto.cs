@@ -12,7 +12,7 @@ public class BookInDto
     
     [Required]
     [MinLength(4, ErrorMessage = "The title is too short")]
-    [MaxLength(80, ErrorMessage = "The title is too long")]
+    [MaxLength(200, ErrorMessage = "The title is too long")]
     public string Title { get; set; }
     
     [Required]
