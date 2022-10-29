@@ -33,6 +33,13 @@ public class AuthenticationManager : IAuthenticationManager
         return await _userManager.CheckPasswordAsync(user, password);
     }
 
+    public async Task<bool> EmailAlreadyExistsAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        
+        return user != null;
+    }
+
     public async Task<string> CreateTokenAsync(LoginDto loginDto)
     {
         var signingCredentials = GetSigningCredentials();

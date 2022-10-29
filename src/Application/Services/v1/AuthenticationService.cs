@@ -39,7 +39,7 @@ public class AuthenticationService : IAuthenticationService
     public async Task RegisterUserAsync(RegisterDto registerDto)
     {
         if (await _authenticationManager
-                .UserExistsAsync(registerDto.Email, registerDto.Password))
+                .EmailAlreadyExistsAsync(registerDto.Email))
         {
             const string message = "A user with this email already exists";
             throw new InvalidParameterException(message);

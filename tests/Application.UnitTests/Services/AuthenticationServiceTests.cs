@@ -123,8 +123,8 @@ public class AuthenticationServiceTests
             Password = "SomePassword123"
         };
 
-        _authenticationManagerMock.Setup(x => x.UserExistsAsync(It.IsAny<string>(),
-                                                                It.IsAny<string>()))
+        _authenticationManagerMock.Setup(
+                x => x.EmailAlreadyExistsAsync(It.IsAny<string>()))
             .ReturnsAsync(true);
         
 
