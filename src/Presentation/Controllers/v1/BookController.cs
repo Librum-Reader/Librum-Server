@@ -4,7 +4,6 @@ using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers.v1;
