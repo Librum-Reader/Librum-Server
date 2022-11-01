@@ -1,5 +1,4 @@
 using Application.Common.ActionFilters;
-using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
 using Application.Interfaces.Services;
@@ -113,27 +112,5 @@ public class BookController : ControllerBase
             _logger.LogWarning("{ErrorMessage}", e.Message);
             return BadRequest(e.Message);
         }
-    }
-
-    [HttpPost("authors/{bookGuid}")]
-    [ServiceFilter(typeof(BookExistsAttribute))]
-    [ServiceFilter(typeof(AuthorDoesNotExistAttribute))]
-    public async Task<ActionResult> AddAuthorToBook([FromBody] AuthorInDto authorInDto,
-                                                    string bookGuid)
-    {
-        var userName = HttpContext.User.Identity!.Name;
-        await _bookService.AddAuthorToBookAsync(userName, bookGuid, authorInDto);
-        return Ok();
-    }
-
-    [HttpDelete("authors/{bookGuid}")]
-    [ServiceFilter(typeof(BookExistsAttribute))]
-    [ServiceFilter(typeof(AuthorExistsAttribute))]
-    public async Task<ActionResult> RemoveAuthorFromBook(
-        [FromBody] AuthorForRemovalDto authorDto, string bookGuid)
-    {
-        var userName = HttpContext.User.Identity!.Name;
-        await _bookService.RemoveAuthorFromBookAsync(userName, bookGuid, authorDto);
-        return Ok();
     }
 }

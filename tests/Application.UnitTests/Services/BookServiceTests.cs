@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Threading.Tasks;
-using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
 using Application.Common.Mappings;
@@ -12,10 +11,7 @@ using Application.Interfaces.Services;
 using Application.Services.v1;
 using AutoMapper;
 using Domain.Entities;
-using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Moq;
 using Xunit;
 
@@ -36,7 +32,7 @@ public class BookServiceTests
         var mapperConfig = new MapperConfiguration(
             cfg => cfg.AddProfiles(new List<Profile>
             {
-                new BookAutoMapperProfile(), new AuthorAutoMappingProfile()
+                new BookAutoMapperProfile()
             }));
         var mapper = new Mapper(mapperConfig);
 
@@ -55,18 +51,7 @@ public class BookServiceTests
             CreationDate = DateTime.Now.ToString(CultureInfo.InvariantCulture),
             Format = "Pdf",
             Pages = 1200,
-            CurrentPage = 2,
-            Authors = new Collection<AuthorInDto>
-            {
-                new AuthorInDto
-                {
-                    FirstName = "Someone", LastName = "SomeonesLastName"
-                },
-                new AuthorInDto
-                {
-                    FirstName = "SomeoneElse", LastName = "Johnson"
-                }
-            }
+            CurrentPage = 2
         };
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
@@ -325,93 +310,6 @@ public class BookServiceTests
         // Act
         await _bookService.PatchBookAsync("JohnDoe@gmail.com", bookUpdateDto,
                                           bookGuid.ToString());
-
-        // Assert
-        _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
-    }
-
-    [Fact]
-    public async Task ABookService_SucceedsAddingAnAuthorToBook()
-    {
-        // Arrange
-        var authorToAdd = new AuthorInDto
-        {
-            FirstName = "SomeAuthor",
-            LastName = "ALastName"
-        };
-
-        var bookGuid = Guid.NewGuid();
-
-        var user = new User
-        {
-            Books = new List<Book>
-            {
-                new Book { BookId = bookGuid, Authors = new List<Author>() }
-            }
-        };
-
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
-                                                  It.IsAny<bool>()))
-            .ReturnsAsync(user);
-
-        _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
-            .ReturnsAsync(1);
-
-
-        // Act
-        await _bookService.AddAuthorToBookAsync("JohnDoe@gmail.com",
-                                                bookGuid.ToString(),
-                                                authorToAdd);
-
-        // Assert
-        _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
-    }
-
-    [Fact]
-    public async Task ABookService_SucceedsRemovingAnAuthorFromABook()
-    {
-        // Arrange
-        var bookGuid = Guid.NewGuid();
-        const string authorFirstName = "AnyFirstName";
-        const string authorLastName = "AnyLastname";
-
-        var authorToRemove = new AuthorForRemovalDto
-        {
-            FirstName = authorFirstName,
-            LastName = authorLastName
-        };
-
-        var user = new User
-        {
-            Books = new List<Book>
-            {
-                new Book
-                {
-                    BookId = bookGuid, 
-                    Authors = new List<Author>
-                    {
-                        new Author
-                        {
-                            FirstName = authorFirstName,
-                            LastName = authorLastName
-                        }
-                    }
-                }
-            }
-        };
-
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
-                                                  It.IsAny<bool>()))
-            .ReturnsAsync(user);
-
-        _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
-            .ReturnsAsync(1);
-
-
-        // Act
-        await _bookService.RemoveAuthorFromBookAsync("JohnDoe@gmail.com",
-                                                     bookGuid.ToString(),
-                                                     authorToRemove);
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);

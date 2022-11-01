@@ -1,7 +1,4 @@
-using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
-using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Application.Interfaces.Services;
 
@@ -15,9 +12,4 @@ public interface IBookService
     Task DeleteBooksAsync(string email, IEnumerable<string> bookGuids);
     Task PatchBookAsync(string email, BookForUpdateDto bookUpdateDto,
                         string bookGuid);
-    
-    Task AddAuthorToBookAsync(string email, string bookGuid,
-                              AuthorInDto authorToAdd);
-    Task RemoveAuthorFromBookAsync(string email, string bookGuid,
-                                   AuthorForRemovalDto authorToRemove);
 }

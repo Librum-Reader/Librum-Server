@@ -39,8 +39,6 @@ public static class DependencyInjection
         services.AddScoped<TagExistsAttribute>();
         services.AddScoped<TagDoesNotExistAttribute>();
         services.AddScoped<BookHasTagAttribute>();
-        services.AddScoped<AuthorExistsAttribute>();
-        services.AddScoped<AuthorDoesNotExistAttribute>();
 
         
         services.AddApiVersioning(options =>

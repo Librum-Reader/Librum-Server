@@ -1,4 +1,3 @@
-using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
 using Application.Interfaces.Repositories;
@@ -149,37 +148,6 @@ public class BookService : IBookService
             bookProperty.SetValue(book, value);
         }
         
-        await _bookRepository.SaveChangesAsync();
-    }
-
-    public async Task AddAuthorToBookAsync(string email, string bookGuid,
-                                           AuthorInDto authorToAdd)
-    {
-        var user = await _userRepository.GetAsync(email, trackChanges: true);
-        
-        var book = user.Books.Single(book => book.BookId.ToString() == bookGuid);
-        await _bookRepository.LoadRelationShipsAsync(book);
-
-        var author = _mapper.Map<Author>(authorToAdd);
-        book.Authors.Add(author);
-        
-        await _bookRepository.SaveChangesAsync();
-    }
-
-    public async Task RemoveAuthorFromBookAsync(string email, string bookGuid,
-                                                AuthorForRemovalDto authorToRemove)
-    {
-        var user = await _userRepository.GetAsync(email, trackChanges: true);
-        
-        var book = user.Books.SingleOrDefault(book => book.BookId
-                                                  .ToString() == bookGuid);
-        await _bookRepository.LoadRelationShipsAsync(book);
-
-        var author = book!.Authors.SingleOrDefault(author => 
-            author.FirstName == authorToRemove.FirstName &&
-            author.LastName == authorToRemove.LastName);
-
-        book.Authors.Remove(author);
         await _bookRepository.SaveChangesAsync();
     }
 }

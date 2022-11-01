@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Application.Common.DTOs.Authors;
 
 
 namespace Application.Common.DTOs.Books;
@@ -49,9 +48,7 @@ public class BookInDto
     public string Cover { get; set; }
     
     public string Data { get; set; }
-    
-    public IList<AuthorInDto> Authors { get; set; }
 
-    
+
     public bool IsValid => CurrentPage <= Pages;
 }

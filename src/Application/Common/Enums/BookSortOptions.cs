@@ -8,6 +8,4 @@ public enum BookSortOptions
     Percentage,
     TitleLexicAsc,
     TitleLexicDesc,
-    AuthorLexicAsc,
-    AuthorLexicDesc
 }

@@ -22,7 +22,6 @@ public class BookRepository : IBookRepository
 
     public async Task LoadRelationShipsAsync(Book book)
     {
-        await _context.Entry(book).Collection(p => p.Authors).LoadAsync();
         await _context.Entry(book).Collection(p => p.Tags).LoadAsync();
     }
 

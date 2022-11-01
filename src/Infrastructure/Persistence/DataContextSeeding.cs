@@ -1,5 +1,4 @@
 using System.Globalization;
-using Application.Common.DTOs.Authors;
 using Application.Common.DTOs.Books;
 using Application.Common.DTOs.Users;
 using Application.Interfaces.Services;
@@ -47,19 +46,6 @@ public static class DataContextSeeding
             {
                 Guid = Guid.NewGuid().ToString(),
                 Title = "LukesRandomBook",
-                Authors = new List<AuthorInDto>()
-                {
-                    new AuthorInDto
-                    {
-                        FirstName = "Dave",
-                        LastName = "Lebovski"
-                    },
-                    new AuthorInDto()
-                    {
-                        FirstName= "Sos",
-                        LastName = "trator"
-                    }
-                },
                 Pages = 1200,
                 CurrentPage = 2,
                 Format = "Pdf",
@@ -73,14 +59,6 @@ public static class DataContextSeeding
             {
                 Guid = Guid.NewGuid().ToString(),
                 Title = "LisasRandomBook",
-                Authors = new List<AuthorInDto>()
-                {
-                    new AuthorInDto
-                    {
-                        FirstName = "Kai",
-                        LastName = "Jeff"
-                    }
-                },
                 Pages = 409,
                 CurrentPage = 211,
                 Format = "Mobi",
@@ -94,14 +72,6 @@ public static class DataContextSeeding
             {
                 Guid = Guid.NewGuid().ToString(),
                 Title = "KaktorsRandomBook",
-                Authors = new List<AuthorInDto>()
-                {
-                    new AuthorInDto
-                    {
-                        FirstName = "Vorel",
-                        LastName = "Nameskin"
-                    }
-                },
                 Pages = 931200,
                 Format = "Epub",
                 CurrentPage = 1234,
