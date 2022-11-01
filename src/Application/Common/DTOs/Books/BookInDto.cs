@@ -40,7 +40,6 @@ public class BookInDto
     [Required]
     public string AddedToLibrary { get; set; }
     
-    [Required]
     public string LastOpened { get; set; }
     
     [Required]
