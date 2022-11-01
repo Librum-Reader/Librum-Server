@@ -66,7 +66,8 @@ public static class DataContextSeeding
                 DocumentSize = "2MiB",
                 PagesSize = "800 x 300",
                 CreationDate = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
-                AddedToLibrary = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)
+                AddedToLibrary = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
+                LastModified = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)
             },
             new BookInDto
             {
@@ -86,7 +87,8 @@ public static class DataContextSeeding
                 DocumentSize = "0.7MiB",
                 PagesSize = "Mostly 200 x 800",
                 CreationDate = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
-                AddedToLibrary = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)
+                AddedToLibrary = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
+                LastModified = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)
             },
             new BookInDto
             {
@@ -106,7 +108,8 @@ public static class DataContextSeeding
                 DocumentSize = "0.7MiB",
                 PagesSize = "Mostly 200 x 800",
                 CreationDate = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
-                AddedToLibrary = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)
+                AddedToLibrary = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
+                LastModified = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)
             }
         };
 
