@@ -19,5 +19,7 @@ public class BookForUpdateDto
         
         public string LastOpened { get; set; }
         
+        public string LastModified { get; set; }
+        
         public string CoverLink { get; set; }
 }
