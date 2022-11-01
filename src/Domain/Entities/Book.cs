@@ -61,8 +61,11 @@ public class Book
     public string AddedToLibrary { get; set; }
     
     public string LastOpened { get; set; }
+
+    [Required]
+    public string LastModified { get; set; }
     
-    
+
     public ICollection<Tag> Tags { get; set; }
     
     public ICollection<Author> Authors { get; set; }

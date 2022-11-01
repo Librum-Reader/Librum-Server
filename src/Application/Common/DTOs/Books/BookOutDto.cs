@@ -33,6 +33,8 @@ public class BookOutDto
 
     public string LastOpened { get; set; }
     
+    public string LastModified { get; set; }
+    
     public string Cover { get; set; }
 
 

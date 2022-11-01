@@ -43,6 +43,9 @@ public class BookInDto
     public string LastOpened { get; set; }
     
     [Required]
+    public string LastModified { get; set; }
+    
+    [Required]
     public string Cover { get; set; }
     
     public string Data { get; set; }
