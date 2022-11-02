@@ -47,8 +47,8 @@ public class Book
     [MaxLength(140, ErrorMessage = "The creator is too long")]
     public string Creator { get; set; }
     
-    [MinLength(2, ErrorMessage = "The authors is too short")]
-    [MaxLength(400, ErrorMessage = "The authors is too long")]
+    [MinLength(2, ErrorMessage = "The authors are too short")]
+    [MaxLength(400, ErrorMessage = "The authors are too long")]
     public string Authors { get; set; }
     
     [Required]

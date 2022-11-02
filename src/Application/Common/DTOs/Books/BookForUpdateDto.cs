@@ -15,8 +15,8 @@ public class BookForUpdateDto
         
         public string Creator { get; set; }
         
-        [MinLength(2, ErrorMessage = "The authors is too short")]
-        [MaxLength(400, ErrorMessage = "The authors is too long")]
+        [MinLength(2, ErrorMessage = "The authors are too short")]
+        [MaxLength(400, ErrorMessage = "The authors are too long")]
         public string Authors { get; set; }
         
         public string CreationDate { get; set; }
