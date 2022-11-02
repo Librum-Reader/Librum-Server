@@ -22,6 +22,8 @@ public class BookOutDto
     
     public string Creator { get; set; }
     
+    public string Authors { get; set; }
+    
     public string DataLink { get; set; }
     
     public string CoverLink { get; set; }

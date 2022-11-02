@@ -1,6 +1,7 @@
 using Application.Common.DTOs.Books;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Common.Mappings;
 
@@ -10,7 +11,9 @@ public class BookAutoMapperProfile : Profile
     {
         CreateMap<BookInDto, Book>()
             .ForMember(dest => dest.DataLink, temp => temp.MapFrom(src => "none"))
-            .ForMember(dest => dest.CoverLink, temp => temp.MapFrom(src => src.Cover));
+            .ForMember(dest => dest.CoverLink, temp => temp.MapFrom(src => src.Cover.IsNullOrEmpty() 
+                                                                        ? "none"
+                                                                        : src.Cover));
 
         CreateMap<Book, BookOutDto>()
             .ForMember(dest => dest.Format, temp => temp.MapFrom(src => src.Format.ToString()))
