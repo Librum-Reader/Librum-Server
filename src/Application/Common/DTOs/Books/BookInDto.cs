@@ -34,7 +34,6 @@ public class BookInDto
     
     public string Creator { get; set; }
     
-    [MinLength(2, ErrorMessage = "The authors is too short")]
     [MaxLength(400, ErrorMessage = "The authors is too long")]
     public string Authors { get; set; }
     
