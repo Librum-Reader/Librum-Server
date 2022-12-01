@@ -50,7 +50,7 @@ public class BookServiceTests
             Title = "Some book",
             CreationDate = DateTime.Now.ToString(CultureInfo.InvariantCulture),
             Format = "Pdf",
-            Pages = 1200,
+            PageCount = 1200,
             CurrentPage = 2
         };
 
