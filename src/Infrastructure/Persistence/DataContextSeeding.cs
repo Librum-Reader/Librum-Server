@@ -46,7 +46,7 @@ public static class DataContextSeeding
             {
                 Guid = Guid.NewGuid().ToString(),
                 Title = "LukesRandomBook",
-                Pages = 1200,
+                PageCount = 1200,
                 CurrentPage = 2,
                 Format = "Pdf",
                 DocumentSize = "2MiB",
@@ -59,7 +59,7 @@ public static class DataContextSeeding
             {
                 Guid = Guid.NewGuid().ToString(),
                 Title = "LisasRandomBook",
-                Pages = 409,
+                PageCount = 409,
                 CurrentPage = 211,
                 Format = "Mobi",
                 DocumentSize = "0.7MiB",
@@ -72,7 +72,7 @@ public static class DataContextSeeding
             {
                 Guid = Guid.NewGuid().ToString(),
                 Title = "KaktorsRandomBook",
-                Pages = 931200,
+                PageCount = 931200,
                 Format = "Epub",
                 CurrentPage = 1234,
                 DocumentSize = "0.7MiB",

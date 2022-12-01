@@ -8,7 +8,7 @@ public class BookOutDto
     
     public string Title { get; set; }
     
-    public int Pages { get; set; }
+    public int PageCount { get; set; }
     
     public int CurrentPage { get; set; }
     

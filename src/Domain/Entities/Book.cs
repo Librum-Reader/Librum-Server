@@ -18,7 +18,7 @@ public class Book
     
     [Required]
     [Range(0, int.MaxValue, ErrorMessage = "The amount of pages is not in bounds")]
-    public int Pages { get; set; }
+    public int PageCount { get; set; }
     
     [Required]
     [Range(0, int.MaxValue, ErrorMessage = "The current page is not in bounds")]

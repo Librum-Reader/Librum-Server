@@ -16,7 +16,7 @@ public class BookInDto
     
     [Required]
     [Range(0, int.MaxValue)]
-    public int Pages { get; set; }
+    public int PageCount { get; set; }
     
     [Required]
     [Range(0, int.MaxValue)]
@@ -53,5 +53,5 @@ public class BookInDto
     public string Data { get; set; }
 
 
-    public bool IsValid => CurrentPage <= Pages;
+    public bool IsValid => CurrentPage <= PageCount;
 }
