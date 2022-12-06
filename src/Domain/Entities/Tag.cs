@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace Domain.Entities;
@@ -6,6 +7,7 @@ namespace Domain.Entities;
 [Index(nameof(Name), IsUnique = true)]
 public class Tag
 {
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
     [Key]
     public Guid TagId { get; set; }
     
