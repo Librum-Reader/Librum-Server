@@ -51,13 +51,13 @@ public class BookService : IBookService
                                          IEnumerable<string> tagNames)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
-        
+
         var book = user.Books.Single(book => book.BookId.ToString() == bookGuid);
         await _bookRepository.LoadRelationShipsAsync(book);
         
         foreach (var tagName in tagNames)
         {
-            var tag = GetTagIfExist(user, tagName);
+            var tag = GetTagIfExistElseCreate(user, tagName);
             CheckIfBookAlreadyHasTag(book, tagName);
             book.Tags.Add(tag);
         }
@@ -74,14 +74,19 @@ public class BookService : IBookService
         throw new InvalidParameterException(message);
     }
 
-    private static Tag GetTagIfExist(User user, string tagName)
+    private static Tag GetTagIfExistElseCreate(User user, string tagName)
     {
         var tag = user.Tags.SingleOrDefault(tag => tag.Name == tagName);
         if (tag != null)
             return tag;
-        
-        var message = "No tag called " + tagName + " exists";
-        throw new InvalidParameterException(message);
+
+        var newTag = new Tag
+        {
+            Name = tagName,
+            CreationDate = DateTime.UtcNow,
+            UserId = user.Id
+        };
+        return newTag;
     }
     
     public async Task RemoveTagFromBookAsync(string email, string bookGuid,
@@ -132,6 +137,14 @@ public class BookService : IBookService
 
         foreach (var property in properties)
         {
+            if (property == bookUpdateDto.Tags.GetType())
+            {
+                foreach (var tag in book.Tags)
+                {
+                    
+                }
+            }
+        
             var value = property.GetValue(bookUpdateDto);
             
             if (value == default || (value is int i && i == 0))
