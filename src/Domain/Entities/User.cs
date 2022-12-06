@@ -24,10 +24,8 @@ public class User : IdentityUser
 
     [Required]
     public DateTime AccountCreation { get; set; }
-
-
+    
     
     public ICollection<Book> Books { get; set; }
-
     public ICollection<Tag> Tags { get; set; }
 }
