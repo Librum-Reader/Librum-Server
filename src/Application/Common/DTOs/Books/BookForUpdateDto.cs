@@ -26,4 +26,6 @@ public class BookForUpdateDto
         public string LastModified { get; set; }
         
         public string CoverLink { get; set; }
+        
+        public ICollection<string> Tags { get; set; }
 }

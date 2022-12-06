@@ -51,6 +51,8 @@ public class BookInDto
     public string Cover { get; set; }
     
     public string Data { get; set; }
+    
+    public ICollection<string> Tags { get; set; }
 
 
     public bool IsValid => CurrentPage <= PageCount;
