@@ -1,10 +1,14 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Domain.Entities;
 
+[Index(nameof(Name), IsUnique = true)]
 public class Tag
 {
     [Key]
+    public Guid TagId { get; set; }
+    
     [MinLength(2, ErrorMessage = "The tag name is too short")]
     [MaxLength(30, ErrorMessage = "The tag name is too long")]
     public string Name { get; set; }
