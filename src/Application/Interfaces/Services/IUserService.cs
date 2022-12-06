@@ -11,4 +11,6 @@ public interface IUserService
     public Task PatchUserAsync(string email,
                                JsonPatchDocument<UserForUpdateDto> patchDoc,
                                ControllerBase controllerBase);
+    public Task AddTagAsync(string email, string tagName);
+    public Task DeleteTagAsync(string email, string tagName);
 }
