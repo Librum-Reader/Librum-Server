@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -60,13 +61,17 @@ public class TagServiceTests
     public async Task ATagService_SucceedsDeletingATag()
     {
         // Arrange
-        const string tagName = "MyTag";
+        var tagGuid = Guid.NewGuid();
         
         var user = new User
         {
             Tags = new List<Tag>
             {
-                new Tag { Name = tagName }
+                new Tag
+                {
+                    TagId = tagGuid,
+                    Name = "someName"
+                }
             }
         };
         
@@ -78,9 +83,10 @@ public class TagServiceTests
             .ReturnsAsync(1);
         
         // Act
-        await _tagService.DeleteTagAsync("JohnDoe@gmail.com", tagName);
+        await _tagService.DeleteTagAsync("JohnDoe@gmail.com", tagGuid.ToString());
         
         // Assert
+        _tagRepositoryMock.Verify(x => x.Delete(It.IsAny<Tag>()), Times.Once);
         _tagRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
 
