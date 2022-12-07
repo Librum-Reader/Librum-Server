@@ -24,18 +24,18 @@ public class TagController : ControllerBase
 
 
     [HttpPost("create")]
-    [TypeFilter(typeof(TagDoesNotExistAttribute))]
+    [TypeFilter(typeof(TagNameDoesNotExistAttribute))]
     public async Task<ActionResult> CreateTag([FromBody] TagInDto tagInDto)
     {
         await _tagService.CreateTagAsync(HttpContext.User.Identity!.Name, tagInDto);
         return StatusCode(201);
     }
     
-    [HttpDelete("{tagName}")]
+    [HttpDelete("{guid}")]
     [ServiceFilter(typeof(TagExistsAttribute))]
-    public async Task<ActionResult> DeleteTag(string tagName)
+    public async Task<ActionResult> DeleteTag(string guid)
     {
-        await _tagService.DeleteTagAsync(HttpContext.User.Identity!.Name, tagName);
+        await _tagService.DeleteTagAsync(HttpContext.User.Identity!.Name, guid);
         return NoContent();
     }
 
