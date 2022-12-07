@@ -19,6 +19,11 @@ public class TagRepository : ITagRepository
         return await _context.SaveChangesAsync();
     }
 
+    public void Add(Tag tag)
+    {
+        _context.Add(tag);
+    }
+
     public void Delete(Tag tag)
     {
         _context.Tags.Remove(tag);
