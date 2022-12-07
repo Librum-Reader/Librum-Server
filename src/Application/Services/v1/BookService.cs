@@ -1,4 +1,5 @@
 using Application.Common.DTOs.Books;
+using Application.Common.DTOs.Tags;
 using Application.Common.Exceptions;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
@@ -14,8 +15,8 @@ public class BookService : IBookService
     private readonly IBookRepository _bookRepository;
     private readonly IUserRepository _userRepository;
 
-    public BookService(IMapper mapper, IBookRepository bookRepository, 
-        IUserRepository userRepository)
+    public BookService(IMapper mapper, IBookRepository bookRepository,
+                       IUserRepository userRepository)
     {
         _mapper = mapper;
         _bookRepository = bookRepository;
@@ -41,63 +42,69 @@ public class BookService : IBookService
 
         var books = _bookRepository.GetAllAsync(user.Id);
         await _bookRepository.LoadRelationShipsAsync(books);
-        
+
         return await books
             .Select(book => _mapper.Map<BookOutDto>(book))
             .ToListAsync();
     }
 
     public async Task AddTagsToBookAsync(string email, string bookGuid,
-                                         IEnumerable<string> tagNames)
+                                         TagInDto tagIn)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
 
         var book = user.Books.Single(book => book.BookId.ToString() == bookGuid);
         await _bookRepository.LoadRelationShipsAsync(book);
+
+        CheckIfBookOwnsTag(book, tagIn.Guid);
         
-        foreach (var tagName in tagNames)
-        {
-            var tag = GetTagIfExistElseCreate(user, tagName);
-            CheckIfBookAlreadyHasTag(book, tagName);
-            book.Tags.Add(tag);
-        }
+        var tag = GetTagIfExistElseCreate(user, tagIn);
+        book.Tags.Add(tag);
 
         await _bookRepository.SaveChangesAsync();
     }
 
-    private static void CheckIfBookAlreadyHasTag(Book book, string tagName)
+    private static void CheckIfBookOwnsTag(Book book, string guid)
     {
-        if (book.Tags.All(tag => tag.Name != tagName))
+        if (book.Tags.All(t => t.TagId != new Guid(guid)))
             return;
-        
-        const string message = "The book already has the given tag";
+
+        const string message = "The book already owns the given tag";
         throw new InvalidParameterException(message);
     }
 
-    private static Tag GetTagIfExistElseCreate(User user, string tagName)
+    private static Tag GetTagIfExistElseCreate(User user, TagInDto tagIn)
     {
-        var tag = user.Tags.SingleOrDefault(tag => tag.Name == tagName);
-        if (tag != null)
-            return tag;
-
-        var newTag = new Tag
+        var tag = user.Tags.SingleOrDefault(tag => tag.TagId == 
+                                                   new Guid(tagIn.Guid));
+        if (tag == default)
         {
-            Name = tagName,
-            CreationDate = DateTime.UtcNow,
-            UserId = user.Id
-        };
-        return newTag;
+            tag = new Tag
+            {
+                TagId = new Guid(tagIn.Guid),
+                Name = tagIn.Name,
+                CreationDate = DateTime.UtcNow,
+                UserId = user.Id
+            };
+        }
+
+        return tag;
     }
-    
+
     public async Task RemoveTagFromBookAsync(string email, string bookGuid,
-                                             string tagName)
+                                             string tagGuid)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
-        
+
         var book = user.Books.Single(book => book.BookId.ToString() == bookGuid);
         await _bookRepository.LoadRelationShipsAsync(book);
 
-        var tag = book.Tags.SingleOrDefault(tag => tag.Name == tagName);
+        var tag = book.Tags.SingleOrDefault(tag => tag.TagId == new Guid(tagGuid));
+        if (tag == default)
+        {
+            const string message = "The book does not own the given tag";
+            throw new InvalidParameterException(message);
+        }
 
         book.Tags.Remove(tag);
         await _bookRepository.SaveChangesAsync();
@@ -124,29 +131,28 @@ public class BookService : IBookService
 
         await _bookRepository.SaveChangesAsync();
     }
-    
+
     public async Task PatchBookAsync(string email,
                                      BookForUpdateDto bookUpdateDto,
                                      string bookGuid)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
         var book = user.Books.Single(book => book.BookId.ToString() == bookGuid);
-        
+        await _bookRepository.LoadRelationShipsAsync(book);
+
         var type = bookUpdateDto.GetType();
         var properties = type.GetProperties();
 
         foreach (var property in properties)
         {
-            if (property == bookUpdateDto.Tags.GetType())
+            if (property.Name.Equals("Tags", StringComparison.InvariantCultureIgnoreCase))
             {
-                foreach (var tag in book.Tags)
-                {
-                    
-                }
+                MergeTags(bookUpdateDto.Tags, book, user);
+                continue;
             }
-        
+
             var value = property.GetValue(bookUpdateDto);
-            
+
             if (value == default || (value is int i && i == 0))
                 continue;
 
@@ -160,7 +166,41 @@ public class BookService : IBookService
 
             bookProperty.SetValue(book, value);
         }
-        
+
         await _bookRepository.SaveChangesAsync();
+    }
+
+    private static void MergeTags(ICollection<string> tags, Book book, User user)
+    {
+        // Delete all tags which no longer exist
+        foreach (var tag in book.Tags)
+        {
+            if (tags.All(tagName => tagName != tag.Name))
+                book.Tags.Remove(tag);
+        }
+
+        foreach (var tagName in tags)
+        {
+            // Update
+            var existingTag = book.Tags.SingleOrDefault(tag => tag.Name == tagName);
+            if (existingTag != default)
+            {
+                existingTag.Name = tagName;
+            }
+
+            // Create new tag
+            var newTag = user.Tags.SingleOrDefault(tag => tag.Name == tagName);
+            if (newTag == default)
+            {
+                newTag = new Tag
+                {
+                    Name = tagName,
+                    CreationDate = DateTime.UtcNow,
+                    UserId = user.Id
+                };
+            }
+            
+            book.Tags.Add(newTag);
+        }
     }
 }
