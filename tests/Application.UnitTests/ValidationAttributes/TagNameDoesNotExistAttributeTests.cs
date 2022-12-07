@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application.Common.ActionFilters;
@@ -17,14 +18,14 @@ using Xunit;
 
 namespace Application.UnitTests.ValidationAttributes;
 
-public class TagDoesNotExistAttributeTests
+public class TagNameDoesNotExistAttributeTests
 {
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly Mock<ILogger<TagNameDoesNotExistAttribute>> _loggerMock = new();
     private readonly TagNameDoesNotExistAttribute _tagNameDoesNotExistAttribute;
     
     
-    public TagDoesNotExistAttributeTests()
+    public TagNameDoesNotExistAttributeTests()
     {
         _tagNameDoesNotExistAttribute = new TagNameDoesNotExistAttribute(_userRepositoryMock.Object,
                                                                  _loggerMock.Object);
@@ -32,7 +33,7 @@ public class TagDoesNotExistAttributeTests
     
     
     [Fact]
-    public async Task ATagDoesNotExistAttribute_Succeeds()
+    public async Task ATagNameDoesNotExistAttribute_Succeeds()
     {
         // Arrange
         var user = new User
@@ -80,7 +81,7 @@ public class TagDoesNotExistAttributeTests
     }
     
     [Fact]
-    public async Task ATagDoesNotExistAttribute_FailsIfTagExists()
+    public async Task ATagNameDoesNotExistAttribute_FailsIfTagExists()
     {
         // Arrange
         const string tagName = "SomeTag";
@@ -94,7 +95,11 @@ public class TagDoesNotExistAttributeTests
         {
             Tags = new List<Tag>
             {
-                new Tag { Name = tagName }
+                new Tag
+                {
+                    TagId = Guid.NewGuid(),
+                    Name = tagName
+                }
             }
         };
         
@@ -134,7 +139,7 @@ public class TagDoesNotExistAttributeTests
     }
     
     [Fact]
-    public async Task TagDoesNotExistAttribute_FailsIfNoTagInDtoFound()
+    public async Task ATagNameDoesNotExistAttribute_FailsIfNoTagInDtoFound()
     {
         // Arrange
         var modelState = new ModelStateDictionary();

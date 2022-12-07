@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application.Common.ActionFilters;
@@ -34,12 +35,16 @@ public class TagExistsAttributeTests
     public async Task ATagExistsAttribute_Succeeds()
     {
         // Arrange
-        const string tagName = "SomeTag";
+        var tagGuid = Guid.NewGuid();
         var user = new User
         {
             Tags = new List<Tag>
             {
-                new Tag {  Name = tagName }
+                new Tag
+                {
+                    TagId = tagGuid,
+                    Name = "SomeTag"
+                }
             }
         };
 
@@ -60,7 +65,7 @@ public class TagExistsAttributeTests
             modelState
         );
 
-        executingContext.ActionArguments.Add("tagName", tagName);
+        executingContext.ActionArguments.Add("guid", tagGuid.ToString());
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
                                                   It.IsAny<bool>()))
@@ -82,6 +87,18 @@ public class TagExistsAttributeTests
     public async Task ATagExistsAttribute_FailsIfTagDoesNotExist()
     {
         // Arrange
+        var user = new User
+        {
+            Tags = new List<Tag>
+            {
+                new Tag
+                {
+                    TagId = Guid.NewGuid(),
+                    Name = "SomeTag"
+                }
+            }
+        };
+        
         var modelState = new ModelStateDictionary();
         var httpContextMock = new DefaultHttpContext();
 
@@ -99,11 +116,11 @@ public class TagExistsAttributeTests
             modelState
         );
 
-        executingContext.ActionArguments.Add("tagName", "SomeNonExistentTag");
+        executingContext.ActionArguments.Add("guid", Guid.NewGuid().ToString());
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
                                                   It.IsAny<bool>()))
-            .ReturnsAsync(new User { Tags = new List<Tag>() });
+            .ReturnsAsync(user);
 
 
         // Act
@@ -118,7 +135,7 @@ public class TagExistsAttributeTests
     }
     
     [Fact]
-    public async Task ATagExistsAttribute_FailsIfNoTagNameFound()
+    public async Task ATagExistsAttribute_FailsIfNoTagGuidParameterExists()
     {
         // Arrange
         var modelState = new ModelStateDictionary();

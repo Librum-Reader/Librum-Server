@@ -38,7 +38,7 @@ public class BookHasTagAttributeTests
     {
         // Arrange
         var bookGuid = Guid.NewGuid();
-        const string tagName = "SomeTag";
+        var tagGuid = Guid.NewGuid();
         
         var user = new User
         {
@@ -49,7 +49,11 @@ public class BookHasTagAttributeTests
                     BookId = bookGuid,
                     Tags = new List<Tag>
                     {
-                        new Tag { Name = tagName }
+                        new Tag
+                        {
+                            TagId = tagGuid,
+                            Name = "SomeTag"
+                        }
                     }
                 }
             }
@@ -72,7 +76,7 @@ public class BookHasTagAttributeTests
             modelState
         );
 
-        executingContext.ActionArguments.Add("tagName", tagName);
+        executingContext.ActionArguments.Add("tagGuid", tagGuid.ToString());
         executingContext.ActionArguments.Add("bookGuid", bookGuid.ToString());
         
 
@@ -107,7 +111,11 @@ public class BookHasTagAttributeTests
                     BookId = bookGuid,
                     Tags = new List<Tag>
                     {
-                        new Tag { Name = "SomeTag" }
+                        new Tag
+                        {
+                            TagId = Guid.NewGuid(),
+                            Name = "SomeTag"
+                        }
                     }
                 }
             }
@@ -130,7 +138,7 @@ public class BookHasTagAttributeTests
             modelState
         );
 
-        executingContext.ActionArguments.Add("tagName", "SomeOtherTag");
+        executingContext.ActionArguments.Add("tagGuid", Guid.NewGuid().ToString());
         executingContext.ActionArguments.Add("bookGuid", bookGuid.ToString());
         
 
@@ -151,7 +159,7 @@ public class BookHasTagAttributeTests
     }
     
     [Fact]
-    public async Task ABookHasTagAttribute_FailsIfNoGuidExists()
+    public async Task ABookHasTagAttribute_FailsIfNoBookGuidParameterExists()
     {
         // Arrange
         var modelState = new ModelStateDictionary();
@@ -171,7 +179,7 @@ public class BookHasTagAttributeTests
             modelState
         );
 
-        executingContext.ActionArguments.Add("tagName", "SomeTag");
+        executingContext.ActionArguments.Add("tagGuid", Guid.Empty.ToString());
 
 
         // Act
@@ -185,7 +193,7 @@ public class BookHasTagAttributeTests
     }
     
     [Fact]
-    public async Task ABookHasTagAttribute_FailsIfNoNameWasFound()
+    public async Task ABookHasTagAttribute_FailsIfNoTagGuidParameterExists()
     {
         // Arrange
         var modelState = new ModelStateDictionary();
