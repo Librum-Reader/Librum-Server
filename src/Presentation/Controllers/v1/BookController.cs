@@ -1,5 +1,6 @@
 using Application.Common.ActionFilters;
 using Application.Common.DTOs.Books;
+using Application.Common.DTOs.Tags;
 using Application.Common.Exceptions;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -53,13 +54,13 @@ public class BookController : ControllerBase
 
     [HttpPost("tags/{bookGuid}")]
     [ServiceFilter(typeof(BookExistsAttribute))]
-    public async Task<ActionResult> AddTagsToBook(
-        [FromBody] IEnumerable<string> tagNames, string bookGuid)
+    public async Task<ActionResult> AddTagsToBook(string bookGuid,
+                                                  [FromBody] TagInDto tagIn)
     {
         try
         {
             var userName = HttpContext.User.Identity!.Name;
-            await _bookService.AddTagsToBookAsync(userName, bookGuid, tagNames);
+            await _bookService.AddTagsToBookAsync(userName, bookGuid, tagIn);
             return Ok();
         }
         catch (InvalidParameterException e)
@@ -69,14 +70,14 @@ public class BookController : ControllerBase
         }
     }
 
-    [HttpDelete("tags/{bookGuid}/{tagName}")]
+    [HttpDelete("tags/{bookGuid}/{tagGuid}")]
     [ServiceFilter(typeof(BookExistsAttribute))]
     [ServiceFilter(typeof(BookHasTagAttribute))]
     public async Task<ActionResult> RemoveTagFromBook(string bookGuid,
-                                                      string tagName)
+                                                      string tagGuid)
     {
         var userName = HttpContext.User.Identity!.Name;
-        await _bookService.RemoveTagFromBookAsync(userName, bookGuid, tagName);
+        await _bookService.RemoveTagFromBookAsync(userName, bookGuid, tagGuid);
         return Ok();
     }
 
