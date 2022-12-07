@@ -170,34 +170,33 @@ public class BookService : IBookService
         await _bookRepository.SaveChangesAsync();
     }
 
-    private static void MergeTags(ICollection<string> tags, Book book, User user)
+    private void MergeTags(ICollection<TagInDto> tags, 
+                                  Book book, User user)
     {
         // Delete all tags which no longer exist
-        foreach (var tag in book.Tags)
+        foreach (var bookTag in book.Tags)
         {
-            if (tags.All(tagName => tagName != tag.Name))
-                book.Tags.Remove(tag);
+            if (tags.All(tag => new Guid(tag.Guid) != bookTag.TagId))
+                book.Tags.Remove(bookTag);
         }
 
-        foreach (var tagName in tags)
+        foreach (var tag in tags)
         {
-            // Update
-            var existingTag = book.Tags.SingleOrDefault(tag => tag.Name == tagName);
+            // Update existing tag
+            var existingTag = book.Tags.SingleOrDefault(
+                t => t.TagId == new Guid(tag.Guid));
             if (existingTag != default)
             {
-                existingTag.Name = tagName;
+                existingTag.Name = tag.Name;
             }
 
             // Create new tag
-            var newTag = user.Tags.SingleOrDefault(tag => tag.Name == tagName);
+            var newTag = user.Tags.SingleOrDefault(t => t.TagId == 
+                                                        new Guid(tag.Guid));
             if (newTag == default)
             {
-                newTag = new Tag
-                {
-                    Name = tagName,
-                    CreationDate = DateTime.UtcNow,
-                    UserId = user.Id
-                };
+                newTag = _mapper.Map<Tag>(tag);
+                newTag.UserId = user.Id;
             }
             
             book.Tags.Add(newTag);
