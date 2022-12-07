@@ -26,28 +26,33 @@ public class TagExistsAttribute : IAsyncActionFilter
                                              ActionExecutionDelegate next)
     {
 
-        if (!context.ActionArguments.TryGetValue("tagName",
-                                                 out object tagNameObject))
+        if (!context.ActionArguments.TryGetValue("guid",
+                                                 out object guidObject))
         {
             const string message = "Action filter: Expected" +
-                                   " parameter 'tagName'";
+                                   " parameter 'guid'";
             throw new InternalServerException(message);
         }
         
-        var tagName = tagNameObject.ToString();
+        var guid = guidObject.ToString();
+        if (guid == null)
+        {
+            const string message = "Action filter: Parameter is null";
+            throw new InternalServerException(message);
+        }
 
         var userName = context.HttpContext.User.Identity!.Name;
         var user = await _userRepository.GetAsync(userName, trackChanges: true);
 
-        if (user.Tags.All(tag => tag.Name != tagName))
+        if (user.Tags.All(tag => tag.TagId != new Guid(guid)))
         {
-            _logger.LogWarning("No tag with this name exists");
+            _logger.LogWarning("No tag with this guid exists");
             
             context.HttpContext.Response.ContentType = "application/json";
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             
             var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode,
-                                               "No tag with this name exists");
+                                               "No tag with this guid exists");
 
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;

@@ -9,14 +9,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Common.ActionFilters;
 
-public class TagDoesNotExistAttribute : IAsyncActionFilter
+public class TagNameDoesNotExistAttribute : IAsyncActionFilter
 {
     private readonly IUserRepository _userRepository;
-    private readonly ILogger<TagDoesNotExistAttribute> _logger;
+    private readonly ILogger<TagNameDoesNotExistAttribute> _logger;
 
 
-    public TagDoesNotExistAttribute(IUserRepository userRepository,
-                                    ILogger<TagDoesNotExistAttribute> logger)
+    public TagNameDoesNotExistAttribute(IUserRepository userRepository,
+                                    ILogger<TagNameDoesNotExistAttribute> logger)
     {
         _userRepository = userRepository;
         _logger = logger;

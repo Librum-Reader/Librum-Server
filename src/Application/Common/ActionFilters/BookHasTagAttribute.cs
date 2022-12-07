@@ -36,33 +36,37 @@ public class BookHasTagAttribute : IAsyncActionFilter
             throw new InternalServerException(message);
         }
         
-        if (!context.ActionArguments.TryGetValue("tagName",
-                                                 out object tagNameObject))
+        if (!context.ActionArguments.TryGetValue("tagGuid",
+                                                 out object tagGuidObject))
         {
             const string message = "Action filter: Expected parameter" +
-                                   " 'tagName' does not exist";
+                                   " 'tagGuid' does not exist";
             throw new InternalServerException(message);
         }
-
         
         var bookGuid = bookGuidObject.ToString();
-        var tagName = tagNameObject.ToString();
+        var tagGuid = tagGuidObject.ToString();
+        if (tagGuid == null || bookGuid == null)
+        {
+            const string message = "Action filter: Parameter is null";
+            throw new InternalServerException(message);
+        }
 
         var userName = context.HttpContext.User.Identity!.Name;
         var user = await _userRepository.GetAsync(userName, trackChanges: true);
         
-        var book = user.Books.Single(book => book.BookId.ToString() == bookGuid);
+        var book = user.Books.Single(book => book.BookId == new Guid(bookGuid));
         await _bookRepository.LoadRelationShipsAsync(book);
 
-        if (book.Tags.All(tag => tag.Name != tagName))
+        if (book.Tags.All(tag => tag.TagId != new Guid(tagGuid)))
         {
-            _logger.LogWarning("No tag with this name exists");
+            _logger.LogWarning("No tag with this guid exists");
             
             context.HttpContext.Response.ContentType = "application/json";
             context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             
             var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode, 
-                                               "No tag with this name exists");
+                                               "No tag with this guid exists");
 
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;
