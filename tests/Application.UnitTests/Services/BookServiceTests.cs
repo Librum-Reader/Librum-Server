@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Threading.Tasks;
 using Application.Common.DTOs.Books;
+using Application.Common.DTOs.Tags;
 using Application.Common.Exceptions;
 using Application.Common.Mappings;
 using Application.Interfaces.Repositories;
@@ -11,7 +12,6 @@ using Application.Interfaces.Services;
 using Application.Services.v1;
 using AutoMapper;
 using Domain.Entities;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
@@ -23,7 +23,6 @@ public class BookServiceTests
 {
     private readonly Mock<IBookRepository> _bookRepositoryMock = new();
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
-    private readonly Mock<ControllerBase> _controllerBaseMock = new();
     private readonly IBookService _bookService;
 
 
@@ -75,7 +74,7 @@ public class BookServiceTests
     }
 
     [Fact]
-    public async Task ABookService_SucceedsAddingTagsToBook()
+    public async Task ABookService_SucceedsAddingTagToBook()
     {
         // Arrange
         const string firstTagName = "TagOne";
@@ -94,11 +93,11 @@ public class BookServiceTests
                 new Tag { Name = secondTagName }
             }
         };
-        
-        var tagList = new List<string>
+
+        var tagIn = new TagInDto()
         {
-            firstTagName, 
-            secondTagName
+            Name = "SomeTag",
+            Guid = Guid.NewGuid().ToString()
         };
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
@@ -112,46 +111,22 @@ public class BookServiceTests
         // Act
         await _bookService.AddTagsToBookAsync("JohnDoe@gmail.com",
                                               bookGuid.ToString(),
-                                              tagList);
+                                              tagIn);
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
-
-    [Fact]
-    public async Task ABookService_FailsAddingTagsToBookIfTagDoesNotExist()
-    {
-        // Arrange
-        var bookGuid = Guid.NewGuid();
-        var user = new User
-        {
-            Books = new List<Book>
-            {
-                new Book { BookId = bookGuid, Tags = new List<Tag>() }
-            },
-            Tags = new List<Tag>()
-        };
-
-        var tagList = new List<string> { "TagOne", "TagTwo" };
-
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
-                                                  It.IsAny<bool>()))
-            .ReturnsAsync(user);
-
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() =>
-            _bookService.AddTagsToBookAsync("JohnDoe@gmail.com",
-                                            bookGuid.ToString(),
-                                            tagList));
-    }
     
     [Fact]
-    public async Task ABookService_FailsAddingTagsToBookIfTagsAlreadyExist()
+    public async Task ABookService_FailsAddingTagToBookIfTagAlreadyExist()
     {
         // Arrange
         var bookGuid = Guid.NewGuid();
-        var tagNames = new List<string> { "SomeTag" };
+        var tagIn = new TagInDto()
+        {
+            Name = "SomeTag",
+            Guid = Guid.NewGuid().ToString()
+        };
         
         var user = new User
         {
@@ -162,13 +137,21 @@ public class BookServiceTests
                     BookId = bookGuid, 
                     Tags = new List<Tag>
                     {
-                        new Tag { Name = tagNames[0] }
+                        new Tag
+                        {
+                            TagId = new Guid(tagIn.Guid),
+                            Name = tagIn.Name
+                        }
                     } 
                 }
             },
             Tags = new List<Tag>
             {
-                new Tag { Name = tagNames[0] }
+                new Tag
+                {
+                    TagId = new Guid(tagIn.Guid),
+                    Name = tagIn.Name
+                }
             }
         };
         
@@ -181,14 +164,14 @@ public class BookServiceTests
         await Assert.ThrowsAsync<InvalidParameterException>(() =>
             _bookService.AddTagsToBookAsync("JohnDoe@gmail.com",
                                             bookGuid.ToString(),
-                                            tagNames));
+                                            tagIn));
     }
 
     [Fact]
     public async Task ABookService_SucceedsRemovingTagFromBook()
     {
         // Arrange
-        const string tagName = "TagOne";
+        var tagGuid = Guid.NewGuid();
         var bookGuid = Guid.NewGuid();
 
         var user = new User
@@ -200,7 +183,11 @@ public class BookServiceTests
                     BookId = bookGuid,
                     Tags = new List<Tag>
                     {
-                        new Tag { Name = tagName }
+                        new Tag
+                        {
+                            TagId = tagGuid,
+                            Name = "SomeName"
+                        }
                     }
                 },
             }
@@ -214,7 +201,7 @@ public class BookServiceTests
         // Act
         await _bookService.RemoveTagFromBookAsync("JohnDoe@gmail.com",
                                                   bookGuid.ToString(),
-                                                  tagName);
+                                                  tagGuid.ToString());
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
@@ -291,7 +278,14 @@ public class BookServiceTests
         {
             Books = new List<Book>
             {
-                new Book { BookId = bookGuid }
+                new Book
+                {
+                    BookId = bookGuid,
+                    Tags = new List<Tag>()
+                    {
+                        
+                    }
+                }
             }
         };
 
