@@ -1,3 +1,4 @@
+using Application.Common.DTOs.Tags;
 using Application.Common.DTOs.Users;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +12,4 @@ public interface IUserService
     public Task PatchUserAsync(string email,
                                JsonPatchDocument<UserForUpdateDto> patchDoc,
                                ControllerBase controllerBase);
-    public Task AddTagAsync(string email, string tagName);
-    public Task DeleteTagAsync(string email, string tagName);
 }

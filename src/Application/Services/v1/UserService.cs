@@ -3,7 +3,6 @@ using Application.Common.Exceptions;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using AutoMapper;
-using Domain.Entities;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -55,34 +54,6 @@ public class UserService : IUserService
         }
 
         _mapper.Map(userToPatch, user);
-        await _userRepository.SaveChangesAsync();
-    }
-
-    public async Task AddTagAsync(string email, string tagName)
-    {
-        var user = await _userRepository.GetAsync(email, trackChanges: true);
-        if (user.Tags.Any(tag => tag.Name == tagName))
-            throw new InvalidParameterException("A tag with this name already exists");
-        
-        var tag = new Tag
-        {
-            Name = tagName,
-            CreationDate = DateTime.UtcNow
-        };
-        user.Tags.Add(tag);
-
-        await _userRepository.SaveChangesAsync();
-    }
-
-    public async Task DeleteTagAsync(string email, string tagName)
-    {
-        var user = await _userRepository.GetAsync(email, trackChanges: true);
-        if (user.Tags.All(tag => tag.Name != tagName))
-            throw new InvalidParameterException("A tag with this name does not exist");
-        
-        var tag = user.Tags.SingleOrDefault(tag => tag.Name == tagName);
-        user.Tags.Remove(tag);
-
         await _userRepository.SaveChangesAsync();
     }
 }

@@ -1,4 +1,5 @@
 using Application.Common.ActionFilters;
+using Application.Common.DTOs.Tags;
 using Application.Common.DTOs.Users;
 using Application.Common.Exceptions;
 using Application.Interfaces.Services;
@@ -54,35 +55,5 @@ public class UserController : ControllerBase
     {
         await _userService.DeleteUserAsync(HttpContext.User.Identity!.Name);
         return NoContent();
-    }
-
-    [HttpPost("tag/{tagName}")]
-    public async Task<ActionResult> AddTag(string tagName)
-    {
-        try
-        {
-            await _userService.AddTagAsync(HttpContext.User.Identity!.Name, tagName);
-            return StatusCode(201);
-        }
-        catch (InvalidParameterException e)
-        {
-            _logger.LogWarning("{ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
-        }
-    }
-    
-    [HttpDelete("tag/{tagName}")]
-    public async Task<ActionResult> DeleteTag(string tagName)
-    {
-        try
-        {
-            await _userService.DeleteTagAsync(HttpContext.User.Identity!.Name, tagName);
-            return NoContent();
-        }
-        catch (InvalidParameterException e)
-        {
-            _logger.LogWarning("{ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
-        }
     }
 }
