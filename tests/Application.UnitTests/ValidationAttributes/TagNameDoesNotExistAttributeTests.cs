@@ -20,13 +20,13 @@ namespace Application.UnitTests.ValidationAttributes;
 public class TagDoesNotExistAttributeTests
 {
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
-    private readonly Mock<ILogger<TagDoesNotExistAttribute>> _loggerMock = new();
-    private readonly TagDoesNotExistAttribute _tagDoesNotExistAttribute;
+    private readonly Mock<ILogger<TagNameDoesNotExistAttribute>> _loggerMock = new();
+    private readonly TagNameDoesNotExistAttribute _tagNameDoesNotExistAttribute;
     
     
     public TagDoesNotExistAttributeTests()
     {
-        _tagDoesNotExistAttribute = new TagDoesNotExistAttribute(_userRepositoryMock.Object,
+        _tagNameDoesNotExistAttribute = new TagNameDoesNotExistAttribute(_userRepositoryMock.Object,
                                                                  _loggerMock.Object);
     }
     
@@ -72,7 +72,7 @@ public class TagDoesNotExistAttributeTests
         var context = new ActionExecutedContext(executingContext,
                                                 new List<IFilterMetadata>(),
                                                 Mock.Of<Controller>());
-        await _tagDoesNotExistAttribute.OnActionExecutionAsync(executingContext,
+        await _tagNameDoesNotExistAttribute.OnActionExecutionAsync(executingContext,
                     () => Task.FromResult(context));
 
         // Assert
@@ -126,7 +126,7 @@ public class TagDoesNotExistAttributeTests
         var context = new ActionExecutedContext(executingContext,
                                                 new List<IFilterMetadata>(),
                                                 Mock.Of<Controller>());
-        await _tagDoesNotExistAttribute.OnActionExecutionAsync(executingContext,
+        await _tagNameDoesNotExistAttribute.OnActionExecutionAsync(executingContext,
                     () => Task.FromResult(context));
 
         // Assert
@@ -166,7 +166,7 @@ public class TagDoesNotExistAttributeTests
 
         // Assert
         await Assert.ThrowsAsync<InternalServerException>(() => 
-            _tagDoesNotExistAttribute.OnActionExecutionAsync(executingContext,
+            _tagNameDoesNotExistAttribute.OnActionExecutionAsync(executingContext,
                     () => Task.FromResult(context)));
     }
 }
