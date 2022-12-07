@@ -37,7 +37,7 @@ public static class DependencyInjection
         services.AddScoped<BookDoesNotExistAttribute>();
         services.AddScoped<UserExistsAttribute>();
         services.AddScoped<TagExistsAttribute>();
-        services.AddScoped<TagDoesNotExistAttribute>();
+        services.AddScoped<TagNameDoesNotExistAttribute>();
         services.AddScoped<BookHasTagAttribute>();
 
         
