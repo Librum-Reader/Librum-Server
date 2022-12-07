@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Application.Common.DTOs.Tags;
 
 namespace Application.Common.DTOs.Books;
 
@@ -27,5 +28,5 @@ public class BookForUpdateDto
         
         public string CoverLink { get; set; }
 
-        public ICollection<string> Tags { get; set; } = new List<string>();
+        public ICollection<TagInDto> Tags { get; set; } = new List<TagInDto>();
 }
