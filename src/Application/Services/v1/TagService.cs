@@ -1,5 +1,4 @@
 using Application.Common.DTOs.Tags;
-using Application.Common.Exceptions;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using AutoMapper;
@@ -10,8 +9,8 @@ namespace Application.Services.v1;
 
 public class TagService : ITagService
 {
-    private readonly ITagRepository _tagRepository;
     private readonly IUserRepository _userRepository;
+    private readonly ITagRepository _tagRepository;
     private readonly IMapper _mapper;
 
 
@@ -19,29 +18,31 @@ public class TagService : ITagService
                       ITagRepository tagRepository,
                       IUserRepository userRepository)
     {
-        _tagRepository = tagRepository;
-        _userRepository = userRepository;
         _mapper = mapper;
+        _userRepository = userRepository;
+        _tagRepository = tagRepository;
     }
 
 
     public async Task CreateTagAsync(string email, TagInDto tagIn)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
-
-        var tag = _mapper.Map<Tag>(tagIn);
-        user.Tags.Add(tag);
         
+        var tag = _mapper.Map<Tag>(tagIn);
+        tag!.UserId = user.Id;
+
+        _tagRepository.Add(tag);
         await _tagRepository.SaveChangesAsync();
     }
 
-    public async Task DeleteTagAsync(string email, string tagName)
+    public async Task DeleteTagAsync(string email, string guid)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
-        var tag = user.Tags.Single(tag => tag.Name == tagName);
+        
+        var tag = user.Tags.SingleOrDefault(tag => tag.TagId == new Guid(guid));
+        tag!.UserId = user.Id;
 
         _tagRepository.Delete(tag);
-        
         await _tagRepository.SaveChangesAsync();
     }
 
