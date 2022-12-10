@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Application.Common.DTOs.Tags;
 
 
 namespace Application.Common.DTOs.Books;
@@ -51,8 +52,8 @@ public class BookInDto
     public string Cover { get; set; }
     
     public string Data { get; set; }
-    
-    public ICollection<string> Tags { get; set; }
+
+    public ICollection<TagInDto> Tags { get; set; } = new List<TagInDto>();
 
 
     public bool IsValid => CurrentPage <= PageCount;
