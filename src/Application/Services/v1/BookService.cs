@@ -210,11 +210,11 @@ public class BookService : IBookService
             if (existingTag != default)
             {
                 existingTag.Name = tag.Name;
+                continue;
             }
-
+            
             // Create new tag
-            var newTag = user.Tags.SingleOrDefault(t => t.TagId == 
-                                                        new Guid(tag.Guid));
+            var newTag = user.Tags.SingleOrDefault(t => t.Name == tag.Name);
             if (newTag == default)
             {
                 newTag = _mapper.Map<Tag>(tag);
