@@ -22,6 +22,7 @@ public class UserRepository : IUserRepository
                 .Include(user => user.Tags)
                 .SingleOrDefaultAsync(user => user.Email == email)
             : await _context.Users
+                .Include(user => user.Tags)
                 .AsNoTracking()
                 .SingleOrDefaultAsync(user => user.Email == email);
     }
