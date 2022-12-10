@@ -1,3 +1,5 @@
+using Application.Common.DTOs.Tags;
+
 namespace Application.Common.DTOs.Users;
 
 public class UserOutDto
@@ -9,4 +11,6 @@ public class UserOutDto
     public string Email { get; set; }
 
     public DateTime AccountCreation { get; set; }
+    
+    public ICollection<TagOutDto> Tags { get; set; }
 }
