@@ -39,12 +39,6 @@ public class BookService : IBookService
                                                         new Guid(tag.Guid));
             if (newTag == default)
             {
-                if (user.Tags.Any(t => t.Name == tag.Name))
-                {
-                    const string message = "A tag with this name already exists";
-                    throw new InvalidParameterException(message);
-                }
-                
                 newTag = _mapper.Map<Tag>(tag);
                 newTag.UserId = user.Id;
             }
@@ -214,7 +208,7 @@ public class BookService : IBookService
             }
             
             // Create new tag
-            var newTag = user.Tags.SingleOrDefault(t => t.Name == tag.Name);
+            var newTag = user.Tags.SingleOrDefault(t => t.TagId == new Guid(tag.Guid));
             if (newTag == default)
             {
                 newTag = _mapper.Map<Tag>(tag);
