@@ -13,7 +13,8 @@ public class BookAutoMapperProfile : Profile
             .ForMember(dest => dest.DataLink, temp => temp.MapFrom(src => "none"))
             .ForMember(dest => dest.CoverLink, temp => temp.MapFrom(src => src.Cover.IsNullOrEmpty() 
                                                                         ? "none"
-                                                                        : src.Cover));
+                                                                        : src.Cover))
+            .ForMember(dest => dest.Tags, temp => temp.Ignore());
 
         CreateMap<Book, BookOutDto>()
             .ForMember(dest => dest.Format, temp => temp.MapFrom(src => src.Format.ToString()))
@@ -21,6 +22,8 @@ public class BookAutoMapperProfile : Profile
             .ForMember(dest => dest.Cover, temp => temp.MapFrom(src => src.CoverLink));
 
         CreateMap<Book, BookForUpdateDto>()
-            .ReverseMap();
+            .ForMember(dest => dest.Tags, temp => temp.Ignore());
+        
+        CreateMap<BookForUpdateDto, Book>();
     }
 }
