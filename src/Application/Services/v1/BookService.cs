@@ -31,6 +31,28 @@ public class BookService : IBookService
 
         var book = _mapper.Map<Book>(bookInDto);
         book.BookId = new Guid(guid);
+
+        // Add the tags
+        foreach (var tag in bookInDto.Tags)
+        {
+            var newTag = user.Tags.SingleOrDefault(t => t.TagId == 
+                                                        new Guid(tag.Guid));
+            if (newTag == default)
+            {
+                if (user.Tags.Any(t => t.Name == tag.Name))
+                {
+                    const string message = "A tag with this name already exists";
+                    throw new InvalidParameterException(message);
+                }
+                
+                newTag = _mapper.Map<Tag>(tag);
+                newTag.UserId = user.Id;
+            }
+
+            book.Tags ??= new List<Tag>();
+            book.Tags.Add(newTag);
+        }
+        
         user.Books.Add(book);
 
         await _bookRepository.SaveChangesAsync();
