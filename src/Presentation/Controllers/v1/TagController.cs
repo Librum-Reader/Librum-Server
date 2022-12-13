@@ -38,6 +38,16 @@ public class TagController : ControllerBase
         await _tagService.DeleteTagAsync(HttpContext.User.Identity!.Name, guid);
         return NoContent();
     }
+    
+    [HttpPut("{guid}")]
+    [ServiceFilter(typeof(TagExistsAttribute))]
+    public async Task<ActionResult> CreateTag(string guid, 
+                                              [FromBody] TagForUpdateDto tagUpdateDto)
+    {
+        await _tagService.UpdateTagAsync(HttpContext.User.Identity!.Name,
+                                         guid, tagUpdateDto);
+        return StatusCode(201);
+    }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<TagOutDto>>> GetTags()

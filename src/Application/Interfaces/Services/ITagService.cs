@@ -6,5 +6,7 @@ public interface ITagService
 {
     public Task CreateTagAsync(string email, TagInDto tagIn);
     public Task DeleteTagAsync(string email, string guid);
+    public Task UpdateTagAsync(string email, string guid,
+                               TagForUpdateDto tagUpdate);
     public Task<IEnumerable<TagOutDto>> GetTagsAsync(string email);
 }
