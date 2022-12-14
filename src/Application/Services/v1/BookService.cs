@@ -190,15 +190,15 @@ public class BookService : IBookService
                                   Book book, User user)
     {
         // Delete all tags which no longer exist
-        foreach (var bookTag in book.Tags)
+        foreach (var tag in book.Tags)
         {
-            if (tags.All(tag => new Guid(tag.Guid) != bookTag.TagId))
-                book.Tags.Remove(bookTag);
+            if (tags.All(t => new Guid(t.Guid) != tag.TagId))
+                book.Tags.Remove(tag);
         }
 
         foreach (var tag in tags)
         {
-            // Update existing tag
+            // Skip if already has tag
             var existingTag = book.Tags.SingleOrDefault(
                 t => t.TagId == new Guid(tag.Guid));
             if (existingTag != default)
@@ -206,7 +206,7 @@ public class BookService : IBookService
                 existingTag.Name = tag.Name;
                 continue;
             }
-            
+
             // Create new tag
             var newTag = user.Tags.SingleOrDefault(t => t.TagId == new Guid(tag.Guid));
             if (newTag == default)
