@@ -64,68 +64,6 @@ public class BookService : IBookService
             .ToListAsync();
     }
 
-    public async Task AddTagsToBookAsync(string email, string bookGuid,
-                                         TagInDto tagIn)
-    {
-        var user = await _userRepository.GetAsync(email, trackChanges: true);
-
-        var book = user.Books.Single(book => book.BookId.ToString() == bookGuid);
-        await _bookRepository.LoadRelationShipsAsync(book);
-
-        CheckIfBookOwnsTag(book, tagIn.Guid);
-        
-        var tag = GetTagIfExistElseCreate(user, tagIn);
-        book.Tags.Add(tag);
-
-        await _bookRepository.SaveChangesAsync();
-    }
-
-    private static void CheckIfBookOwnsTag(Book book, string guid)
-    {
-        if (book.Tags.All(t => t.TagId != new Guid(guid)))
-            return;
-
-        const string message = "The book already owns the given tag";
-        throw new InvalidParameterException(message);
-    }
-
-    private static Tag GetTagIfExistElseCreate(User user, TagInDto tagIn)
-    {
-        var tag = user.Tags.SingleOrDefault(tag => tag.TagId == 
-                                                   new Guid(tagIn.Guid));
-        if (tag == default)
-        {
-            tag = new Tag
-            {
-                TagId = new Guid(tagIn.Guid),
-                Name = tagIn.Name,
-                CreationDate = DateTime.UtcNow,
-                UserId = user.Id
-            };
-        }
-
-        return tag;
-    }
-
-    public async Task RemoveTagFromBookAsync(string email, string bookGuid,
-                                             string tagGuid)
-    {
-        var user = await _userRepository.GetAsync(email, trackChanges: true);
-
-        var book = user.Books.Single(book => book.BookId.ToString() == bookGuid);
-        await _bookRepository.LoadRelationShipsAsync(book);
-
-        var tag = book.Tags.SingleOrDefault(tag => tag.TagId == new Guid(tagGuid));
-        if (tag == default)
-        {
-            const string message = "The book does not own the given tag";
-            throw new InvalidParameterException(message);
-        }
-
-        book.Tags.Remove(tag);
-        await _bookRepository.SaveChangesAsync();
-    }
-
     public async Task DeleteBooksAsync(string email,
                                        IEnumerable<string> bookGuids)
     {

@@ -51,36 +51,7 @@ public class BookController : ControllerBase
         
         return Ok(books);
     }
-
-    [HttpPost("tags/{bookGuid}")]
-    [ServiceFilter(typeof(BookExistsAttribute))]
-    public async Task<ActionResult> AddTagsToBook(string bookGuid,
-                                                  [FromBody] TagInDto tagIn)
-    {
-        try
-        {
-            var userName = HttpContext.User.Identity!.Name;
-            await _bookService.AddTagsToBookAsync(userName, bookGuid, tagIn);
-            return Ok();
-        }
-        catch (InvalidParameterException e)
-        {
-            _logger.LogWarning("{ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
-        }
-    }
-
-    [HttpDelete("tags/{bookGuid}/{tagGuid}")]
-    [ServiceFilter(typeof(BookExistsAttribute))]
-    [ServiceFilter(typeof(BookHasTagAttribute))]
-    public async Task<ActionResult> RemoveTagFromBook(string bookGuid,
-                                                      string tagGuid)
-    {
-        var userName = HttpContext.User.Identity!.Name;
-        await _bookService.RemoveTagFromBookAsync(userName, bookGuid, tagGuid);
-        return Ok();
-    }
-
+    
     [HttpDelete]
     public async Task<ActionResult> DeleteBooks([FromBody] ICollection<string> bookGuids)
     {
