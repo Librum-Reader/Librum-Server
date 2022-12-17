@@ -23,7 +23,7 @@ public class TagController : ControllerBase
     }
 
 
-    [HttpPost("create")]
+    [HttpPost]
     [TypeFilter(typeof(TagNameDoesNotExistAttribute))]
     public async Task<ActionResult> CreateTag([FromBody] TagInDto tagInDto)
     {
