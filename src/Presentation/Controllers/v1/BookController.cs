@@ -1,6 +1,5 @@
 using Application.Common.ActionFilters;
 using Application.Common.DTOs.Books;
-using Application.Common.DTOs.Tags;
 using Application.Common.Exceptions;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
