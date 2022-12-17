@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Threading.Tasks;
 using Application.Common.DTOs.Books;
-using Application.Common.DTOs.Tags;
 using Application.Common.Exceptions;
 using Application.Common.Mappings;
 using Application.Interfaces.Repositories;
@@ -68,140 +67,6 @@ public class BookServiceTests
         // Act
         await _bookService.CreateBookAsync("JohnDoe@gmail.com", bookDto,
                                            Guid.NewGuid().ToString());
-
-        // Assert
-        _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
-    }
-
-    [Fact]
-    public async Task ABookService_SucceedsAddingTagToBook()
-    {
-        // Arrange
-        const string firstTagName = "TagOne";
-        const string secondTagName = "TagTwo";
-
-        var bookGuid = Guid.NewGuid();
-        var user = new User
-        {
-            Books = new List<Book>
-            {
-                new Book { BookId = bookGuid, Tags = new List<Tag>() }
-            },
-            Tags = new List<Tag>
-            {
-                new Tag { Name = firstTagName },
-                new Tag { Name = secondTagName }
-            }
-        };
-
-        var tagIn = new TagInDto()
-        {
-            Name = "SomeTag",
-            Guid = Guid.NewGuid().ToString()
-        };
-
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
-                                                  It.IsAny<bool>()))
-            .ReturnsAsync(user);
-
-        _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
-            .ReturnsAsync(1);
-
-
-        // Act
-        await _bookService.AddTagsToBookAsync("JohnDoe@gmail.com",
-                                              bookGuid.ToString(),
-                                              tagIn);
-
-        // Assert
-        _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
-    }
-    
-    [Fact]
-    public async Task ABookService_FailsAddingTagToBookIfTagAlreadyExist()
-    {
-        // Arrange
-        var bookGuid = Guid.NewGuid();
-        var tagIn = new TagInDto()
-        {
-            Name = "SomeTag",
-            Guid = Guid.NewGuid().ToString()
-        };
-        
-        var user = new User
-        {
-            Books = new List<Book>
-            {
-                new Book
-                {
-                    BookId = bookGuid, 
-                    Tags = new List<Tag>
-                    {
-                        new Tag
-                        {
-                            TagId = new Guid(tagIn.Guid),
-                            Name = tagIn.Name
-                        }
-                    } 
-                }
-            },
-            Tags = new List<Tag>
-            {
-                new Tag
-                {
-                    TagId = new Guid(tagIn.Guid),
-                    Name = tagIn.Name
-                }
-            }
-        };
-        
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
-                                                  It.IsAny<bool>()))
-            .ReturnsAsync(user);
-
-
-        // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() =>
-            _bookService.AddTagsToBookAsync("JohnDoe@gmail.com",
-                                            bookGuid.ToString(),
-                                            tagIn));
-    }
-
-    [Fact]
-    public async Task ABookService_SucceedsRemovingTagFromBook()
-    {
-        // Arrange
-        var tagGuid = Guid.NewGuid();
-        var bookGuid = Guid.NewGuid();
-
-        var user = new User
-        {
-            Books = new List<Book>
-            {
-                new Book
-                {
-                    BookId = bookGuid,
-                    Tags = new List<Tag>
-                    {
-                        new Tag
-                        {
-                            TagId = tagGuid,
-                            Name = "SomeName"
-                        }
-                    }
-                },
-            }
-        };
-
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
-                                                  It.IsAny<bool>()))
-            .ReturnsAsync(user);
-
-
-        // Act
-        await _bookService.RemoveTagFromBookAsync("JohnDoe@gmail.com",
-                                                  bookGuid.ToString(),
-                                                  tagGuid.ToString());
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
@@ -282,9 +147,6 @@ public class BookServiceTests
                 {
                     BookId = bookGuid,
                     Tags = new List<Tag>()
-                    {
-                        
-                    }
                 }
             }
         };
