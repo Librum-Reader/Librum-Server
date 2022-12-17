@@ -86,7 +86,7 @@ public class BookService : IBookService
         await _bookRepository.SaveChangesAsync();
     }
 
-    public async Task PatchBookAsync(string email,
+    public async Task UpdateBookAsync(string email,
                                      BookForUpdateDto bookUpdateDto,
                                      string bookGuid)
     {

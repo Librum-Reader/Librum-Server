@@ -134,7 +134,7 @@ public class BookServiceTests
     }
 
     [Fact]
-    public async Task ABookService_SucceedsPatchingABook()
+    public async Task ABookService_SucceedsUpdatingABook()
     {
         // Arrange
         var bookGuid = Guid.NewGuid();
@@ -164,7 +164,7 @@ public class BookServiceTests
             .ReturnsAsync(1);
 
         // Act
-        await _bookService.PatchBookAsync("JohnDoe@gmail.com", bookUpdateDto,
+        await _bookService.UpdateBookAsync("JohnDoe@gmail.com", bookUpdateDto,
                                           bookGuid.ToString());
 
         // Assert
