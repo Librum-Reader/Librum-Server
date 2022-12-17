@@ -28,7 +28,7 @@ public class BookController : ControllerBase
     }
 
 
-    [HttpPost("create")]
+    [HttpPost]
     [TypeFilter(typeof(BookDoesNotExistAttribute))]
     public async Task<ActionResult> CreateBook([FromBody] BookInDto bookInDto)
     {
@@ -43,7 +43,7 @@ public class BookController : ControllerBase
         return StatusCode(201);
     }
 
-    [HttpGet("get")]
+    [HttpGet]
     public async Task<ActionResult<IList<BookOutDto>>> GetBooks()
     {
         var userName = HttpContext.User.Identity!.Name;
