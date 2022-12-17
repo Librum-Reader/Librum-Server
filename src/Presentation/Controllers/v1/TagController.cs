@@ -41,7 +41,7 @@ public class TagController : ControllerBase
     
     [HttpPut("{guid}")]
     [ServiceFilter(typeof(TagExistsAttribute))]
-    public async Task<ActionResult> CreateTag(string guid, 
+    public async Task<ActionResult> UpdateTag(string guid, 
                                               [FromBody] TagForUpdateDto tagUpdateDto)
     {
         await _tagService.UpdateTagAsync(HttpContext.User.Identity!.Name,
