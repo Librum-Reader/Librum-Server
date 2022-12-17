@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Application.Common.DTOs.Tags;
 using Application.Common.Mappings;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
@@ -29,32 +28,6 @@ public class TagServiceTests
 
         _tagService = new TagService(mapper, _tagRepositoryMock.Object,
                                      _userRepositoryMock.Object);
-    }
-
-
-    [Fact]
-    public async Task ATagService_SucceedsCreatingTag()
-    {
-        // Arrange
-        var user = new User
-        {
-            Tags = new List<Tag>()
-        };
-        
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
-                                                  It.IsAny<bool>()))
-            .ReturnsAsync(user);
-
-
-        _tagRepositoryMock.Setup(x => x.SaveChangesAsync())
-            .ReturnsAsync(1);
-        
-        
-        // Act
-        await _tagService.CreateTagAsync("JohnDoe@gmial.com", new TagInDto());
-
-        // Assert
-        _tagRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
 
     [Fact]

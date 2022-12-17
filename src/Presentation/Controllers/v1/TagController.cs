@@ -21,15 +21,7 @@ public class TagController : ControllerBase
     {
         _tagService = tagService;
     }
-
-
-    [HttpPost]
-    [TypeFilter(typeof(TagNameDoesNotExistAttribute))]
-    public async Task<ActionResult> CreateTag([FromBody] TagInDto tagInDto)
-    {
-        await _tagService.CreateTagAsync(HttpContext.User.Identity!.Name, tagInDto);
-        return StatusCode(201);
-    }
+    
     
     [HttpDelete("{guid}")]
     [ServiceFilter(typeof(TagExistsAttribute))]

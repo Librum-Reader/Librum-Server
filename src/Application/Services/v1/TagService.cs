@@ -3,7 +3,6 @@ using Application.Common.Exceptions;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using AutoMapper;
-using Domain.Entities;
 
 
 namespace Application.Services.v1;
@@ -22,18 +21,6 @@ public class TagService : ITagService
         _mapper = mapper;
         _userRepository = userRepository;
         _tagRepository = tagRepository;
-    }
-
-
-    public async Task CreateTagAsync(string email, TagInDto tagIn)
-    {
-        var user = await _userRepository.GetAsync(email, trackChanges: true);
-        
-        var tag = _mapper.Map<Tag>(tagIn);
-        tag!.UserId = user.Id;
-
-        _tagRepository.Add(tag);
-        await _tagRepository.SaveChangesAsync();
     }
 
     public async Task DeleteTagAsync(string email, string guid)
