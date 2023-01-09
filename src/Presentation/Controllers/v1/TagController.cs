@@ -33,8 +33,8 @@ public class TagController : ControllerBase
     
     [HttpPut("{guid}")]
     [ServiceFilter(typeof(TagExistsAttribute))]
-    public async Task<ActionResult> UpdateTag(string guid, 
-                                              [FromBody] TagForUpdateDto tagUpdateDto)
+    public async Task<ActionResult> UpdateTag(
+        string guid, [FromBody] TagForUpdateDto tagUpdateDto)
     {
         await _tagService.UpdateTagAsync(HttpContext.User.Identity!.Name,
                                          guid, tagUpdateDto);
@@ -44,7 +44,8 @@ public class TagController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<TagOutDto>>> GetTags()
     {
-        var result = await _tagService.GetTagsAsync(HttpContext.User.Identity!.Name);
+        var userName = HttpContext.User.Identity!.Name;
+        var result = await _tagService.GetTagsAsync(userName);
         return Ok(result);
     }
 }

@@ -20,7 +20,8 @@ public class UserController : ControllerBase
     private readonly ILogger<UserController> _logger;
 
 
-    public UserController(IUserService userService, ILogger<UserController> logger)
+    public UserController(IUserService userService, 
+                          ILogger<UserController> logger)
     {
         _userService = userService;
         _logger = logger;
@@ -35,11 +36,13 @@ public class UserController : ControllerBase
     }
 
     [HttpPatch]
-    public async Task<ActionResult> PatchUser([FromBody] JsonPatchDocument<UserForUpdateDto> patchDoc)
+    public async Task<ActionResult> PatchUser(
+        [FromBody] JsonPatchDocument<UserForUpdateDto> patchDoc)
     {
         try
         {
-            await _userService.PatchUserAsync(HttpContext.User.Identity!.Name, patchDoc, this);
+            await _userService.PatchUserAsync(HttpContext.User.Identity!.Name,
+                                              patchDoc, this);
             return Ok();
         }
         catch (InvalidParameterException e)

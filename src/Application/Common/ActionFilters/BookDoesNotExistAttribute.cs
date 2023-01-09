@@ -45,14 +45,14 @@ public class BookDoesNotExistAttribute : IAsyncActionFilter
         
         if (user.Books.Any(book => book.BookId.ToString() == bookGuid))
         {
-            _logger.LogWarning("A book with this GUID already exists");
+            var errorMessage = "A book with this GUID already exists";
+            _logger.LogWarning(errorMessage);
 
             context.HttpContext.Response.ContentType = "application/json";
-            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            var badRequest = (int)HttpStatusCode.BadRequest;
+            context.HttpContext.Response.StatusCode = badRequest;
 
-            var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode, 
-                                               "A book with this GUID already exists");
-
+            var response = new ApiExceptionDto(badRequest, errorMessage);
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;
         }

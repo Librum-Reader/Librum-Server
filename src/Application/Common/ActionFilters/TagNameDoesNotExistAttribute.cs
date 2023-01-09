@@ -16,17 +16,17 @@ public class TagNameDoesNotExistAttribute : IAsyncActionFilter
 
 
     public TagNameDoesNotExistAttribute(IUserRepository userRepository,
-                                    ILogger<TagNameDoesNotExistAttribute> logger)
+                                        ILogger<TagNameDoesNotExistAttribute>
+                                            logger)
     {
         _userRepository = userRepository;
         _logger = logger;
     }
-    
-    
+
+
     public async Task OnActionExecutionAsync(ActionExecutingContext context,
                                              ActionExecutionDelegate next)
     {
-
         var tagInDto = (TagInDto)context.ActionArguments.SingleOrDefault(
             arg => arg.Key.Contains("Dto")).Value;
         if (tagInDto == null)
@@ -35,27 +35,27 @@ public class TagNameDoesNotExistAttribute : IAsyncActionFilter
                                    "parameter containing 'Dto'";
             throw new InternalServerException(message);
         }
-        
+
         var tagName = tagInDto.Name;
 
         var userName = context.HttpContext.User.Identity!.Name;
         var user = await _userRepository.GetAsync(userName, trackChanges: true);
-        
+
         if (user.Tags.Any(tag => tag.Name == tagName))
         {
-            _logger.LogWarning("A tag with this name already exists");
-            
-            context.HttpContext.Response.ContentType = "application/json";
-            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            
-            var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode, 
-                                               "A tag with this name already exists");
+            var errorMessage = "A tag with this name already exists";
+            _logger.LogWarning(errorMessage);
 
+            context.HttpContext.Response.ContentType = "application/json";
+            var badRequest = (int)HttpStatusCode.BadRequest;
+            context.HttpContext.Response.StatusCode = badRequest;
+
+            var response = new ApiExceptionDto(badRequest, errorMessage);
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;
         }
-        
-            
+
+
         await next();
     }
 }

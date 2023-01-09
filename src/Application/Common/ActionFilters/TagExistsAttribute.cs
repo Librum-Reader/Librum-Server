@@ -20,12 +20,11 @@ public class TagExistsAttribute : IAsyncActionFilter
         _userRepository = userRepository;
         _logger = logger;
     }
-    
-    
+
+
     public async Task OnActionExecutionAsync(ActionExecutingContext context,
                                              ActionExecutionDelegate next)
     {
-
         if (!context.ActionArguments.TryGetValue("guid",
                                                  out object guidObject))
         {
@@ -33,7 +32,7 @@ public class TagExistsAttribute : IAsyncActionFilter
                                    " parameter 'guid'";
             throw new InternalServerException(message);
         }
-        
+
         var guid = guidObject.ToString();
         if (guid == null)
         {
@@ -46,19 +45,19 @@ public class TagExistsAttribute : IAsyncActionFilter
 
         if (user.Tags.All(tag => tag.TagId != new Guid(guid)))
         {
-            _logger.LogWarning("No tag with this guid exists");
-            
-            context.HttpContext.Response.ContentType = "application/json";
-            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            
-            var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode,
-                                               "No tag with this guid exists");
+            var errorMessage = "No tag with this guid exists";
+            _logger.LogWarning(errorMessage);
 
+            context.HttpContext.Response.ContentType = "application/json";
+            var badRequest = (int)HttpStatusCode.BadRequest;
+            context.HttpContext.Response.StatusCode = badRequest;
+
+            var response = new ApiExceptionDto(badRequest, errorMessage);
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;
         }
-        
-            
+
+
         await next();
     }
 }

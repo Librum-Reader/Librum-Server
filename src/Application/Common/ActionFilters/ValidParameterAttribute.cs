@@ -15,22 +15,22 @@ public class ValidParameterAttribute : IAsyncActionFilter
     {
         _logger = logger;
     }
-    
-    
+
+
     public async Task OnActionExecutionAsync(ActionExecutingContext context,
                                              ActionExecutionDelegate next)
     {
         if (context.ActionArguments.Any(arg => arg.Value == null ||
                                                IsInvalidString(arg.Value)))
         {
-            _logger.LogWarning("The given string parameter was invalid");
-            
-            context.HttpContext.Response.ContentType = "application/json";
-            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            
-            var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode, 
-                                               "The given string parameter was invalid");
+            var errorMessage = "The given string parameter was invalid";
+            _logger.LogWarning(errorMessage);
 
+            context.HttpContext.Response.ContentType = "application/json";
+            var badRequest = (int)HttpStatusCode.BadRequest;
+            context.HttpContext.Response.StatusCode = badRequest;
+
+            var response = new ApiExceptionDto(badRequest, errorMessage);
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;
         }
@@ -45,11 +45,6 @@ public class ValidParameterAttribute : IAsyncActionFilter
             return false;
         }
 
-        if (string.IsNullOrEmpty(str) || string.IsNullOrWhiteSpace(str))
-        {
-            return true;
-        }
-
-        return false;
+        return string.IsNullOrEmpty(str) || string.IsNullOrWhiteSpace(str);
     }
 }

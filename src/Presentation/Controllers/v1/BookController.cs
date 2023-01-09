@@ -52,7 +52,8 @@ public class BookController : ControllerBase
     }
     
     [HttpDelete]
-    public async Task<ActionResult> DeleteBooks([FromBody] ICollection<string> bookGuids)
+    public async Task<ActionResult> DeleteBooks(
+        [FromBody] ICollection<string> bookGuids)
     {
         try
         {

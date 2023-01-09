@@ -17,14 +17,14 @@ public class BookHasTagAttribute : IAsyncActionFilter
 
     public BookHasTagAttribute(IUserRepository userRepository,
                                IBookRepository bookRepository,
-        ILogger<BookHasTagAttribute> logger)
+                               ILogger<BookHasTagAttribute> logger)
     {
         _userRepository = userRepository;
         _bookRepository = bookRepository;
         _logger = logger;
     }
-    
-    
+
+
     public async Task OnActionExecutionAsync(ActionExecutingContext context,
                                              ActionExecutionDelegate next)
     {
@@ -35,7 +35,7 @@ public class BookHasTagAttribute : IAsyncActionFilter
                                    " 'bookGuid' does not exist";
             throw new InternalServerException(message);
         }
-        
+
         if (!context.ActionArguments.TryGetValue("tagGuid",
                                                  out object tagGuidObject))
         {
@@ -43,7 +43,7 @@ public class BookHasTagAttribute : IAsyncActionFilter
                                    " 'tagGuid' does not exist";
             throw new InternalServerException(message);
         }
-        
+
         var bookGuid = bookGuidObject.ToString();
         var tagGuid = tagGuidObject.ToString();
         if (tagGuid == null || bookGuid == null)
@@ -54,24 +54,25 @@ public class BookHasTagAttribute : IAsyncActionFilter
 
         var userName = context.HttpContext.User.Identity!.Name;
         var user = await _userRepository.GetAsync(userName, trackChanges: true);
-        
+
         var book = user.Books.Single(book => book.BookId == new Guid(bookGuid));
         await _bookRepository.LoadRelationShipsAsync(book);
 
         if (book.Tags.All(tag => tag.TagId != new Guid(tagGuid)))
         {
-            _logger.LogWarning("No tag with this guid exists");
-            
+            var errorMessage = "No tag with this guid exists";
+            _logger.LogWarning(errorMessage);
+
             context.HttpContext.Response.ContentType = "application/json";
-            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            
-            var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode, 
-                                               "No tag with this guid exists");
+            var badRequest = (int)HttpStatusCode.BadRequest;
+            context.HttpContext.Response.StatusCode = badRequest;
+
+            var response = new ApiExceptionDto(badRequest, errorMessage);
 
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;
         }
-        
+
         await next();
     }
 }

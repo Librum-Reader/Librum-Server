@@ -19,26 +19,27 @@ public class UserExistsAttribute : IAsyncActionFilter
         _userRepository = userRepository;
         _logger = logger;
     }
-    
-    
+
+
     public async Task OnActionExecutionAsync(ActionExecutingContext context,
                                              ActionExecutionDelegate next)
     {
-        var userEmail = context.HttpContext.User.Identity!.Name;
-        if (await _userRepository.GetAsync(userEmail, trackChanges: false) == null)
+        var email = context.HttpContext.User.Identity!.Name;
+        var user = await _userRepository.GetAsync(email, trackChanges: false);
+        if (user == null)
         {
-            _logger.LogWarning("No user with this email exists");
-            
-            context.HttpContext.Response.ContentType = "application/json";
-            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            
-            var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode, 
-                                               "No user with this email exists");
+            var errorMessage = "No user with this email exists";
+            _logger.LogWarning(errorMessage);
 
+            context.HttpContext.Response.ContentType = "application/json";
+            var unauthorized = (int)HttpStatusCode.Unauthorized;
+            context.HttpContext.Response.StatusCode = unauthorized;
+
+            var response = new ApiExceptionDto(unauthorized, errorMessage);
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;
         }
-        
+
         await next();
     }
 }

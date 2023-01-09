@@ -21,7 +21,7 @@ public class BookExistsAttribute : IAsyncActionFilter
         _logger = logger;
     }
 
-    
+
     public async Task OnActionExecutionAsync(ActionExecutingContext context,
                                              ActionExecutionDelegate next)
     {
@@ -32,22 +32,22 @@ public class BookExistsAttribute : IAsyncActionFilter
                                    " 'bookGuid' does not exist";
             throw new InternalServerException(message);
         }
-        
+
         var bookGuid = bookGuidObject.ToString();
 
         var userName = context.HttpContext.User.Identity!.Name;
         var user = await _userRepository.GetAsync(userName, trackChanges: true);
-        
+
         if (user.Books.All(book => book.BookId.ToString() != bookGuid))
         {
-            _logger.LogWarning("No book with this GUID exists");
+            var errorMessage = "No book with this GUID exists";
+            _logger.LogWarning(errorMessage);
 
             context.HttpContext.Response.ContentType = "application/json";
-            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            var badRequest = (int)HttpStatusCode.BadRequest;
+            context.HttpContext.Response.StatusCode = badRequest;
 
-            var response = new ApiExceptionDto(context.HttpContext.Response.StatusCode, 
-                                               "No book with this GUID exists");
-
+            var response = new ApiExceptionDto(badRequest, errorMessage);
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;
         }

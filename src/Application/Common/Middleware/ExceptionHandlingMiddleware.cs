@@ -37,8 +37,10 @@ public class ExceptionHandlingMiddleware
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
             var response = _env.IsDevelopment()
-                ? new ApiExceptionDto(context.Response.StatusCode, ex.Message, ex.StackTrace)
-                : new ApiExceptionDto(context.Response.StatusCode, "An error occured");
+                ? new ApiExceptionDto(context.Response.StatusCode, 
+                                      ex.Message, ex.StackTrace)
+                : new ApiExceptionDto(context.Response.StatusCode,
+                                      "An error occured");
 
             await context.Response.WriteAsync(response.ToString());
         }
