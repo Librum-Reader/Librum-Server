@@ -153,6 +153,7 @@ public class BookServiceTests
 
         var bookUpdateDto = new BookForUpdateDto
         {
+            Guid = bookGuid.ToString(),
             Title = "SomeNewTitle"
         };
         
@@ -164,8 +165,7 @@ public class BookServiceTests
             .ReturnsAsync(1);
 
         // Act
-        await _bookService.UpdateBookAsync("JohnDoe@gmail.com", bookUpdateDto,
-                                          bookGuid.ToString());
+        await _bookService.UpdateBookAsync("JohnDoe@gmail.com", bookUpdateDto);
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
