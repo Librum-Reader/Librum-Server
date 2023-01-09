@@ -87,18 +87,26 @@ public class BookService : IBookService
     }
 
     public async Task UpdateBookAsync(string email,
-                                     BookForUpdateDto bookUpdateDto,
-                                     string bookGuid)
+                                     BookForUpdateDto bookUpdateDto)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
-        var book = user.Books.Single(book => book.BookId.ToString() == bookGuid);
+        var book = user.Books.Single(book => book.BookId.ToString() == bookUpdateDto.Guid);
+        if (book == null)
+        {
+            const string message = "No book with this uuid exists";
+            throw new InvalidParameterException(message);
+        }
         await _bookRepository.LoadRelationShipsAsync(book);
+        
 
         var type = bookUpdateDto.GetType();
         var properties = type.GetProperties();
 
         foreach (var property in properties)
         {
+            if(property.Name.Equals("Guid", StringComparison.InvariantCultureIgnoreCase))
+                continue;
+            
             if (property.Name.Equals("Tags", StringComparison.InvariantCultureIgnoreCase))
             {
                 MergeTags(bookUpdateDto.Tags, book, user);

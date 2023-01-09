@@ -5,6 +5,8 @@ namespace Application.Common.DTOs.Books;
 
 public class BookForUpdateDto
 {
+        public string Guid { get; set; }
+        
         [MinLength(4, ErrorMessage = "The title is too short")]
         [MaxLength(200, ErrorMessage = "The title is too long")]
         public string Title { get; set; }

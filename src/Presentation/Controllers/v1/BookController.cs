@@ -67,15 +67,13 @@ public class BookController : ControllerBase
         }
     }
 
-    [HttpPut("{bookGuid}")]
-    [ServiceFilter(typeof(BookExistsAttribute))]
-    public async Task<ActionResult> UpdateBook([FromBody]BookForUpdateDto bookDto,
-                                              string bookGuid)
+    [HttpPut]
+    public async Task<ActionResult> UpdateBook([FromBody]BookForUpdateDto bookDto)
     {
         try
         {
             var userName = HttpContext.User.Identity!.Name;
-            await _bookService.UpdateBookAsync(userName, bookDto, bookGuid);
+            await _bookService.UpdateBookAsync(userName, bookDto);
             return Ok();
         }
         catch (InvalidParameterException e)
