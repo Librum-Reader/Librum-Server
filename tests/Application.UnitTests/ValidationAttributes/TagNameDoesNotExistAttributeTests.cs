@@ -27,8 +27,9 @@ public class TagNameDoesNotExistAttributeTests
     
     public TagNameDoesNotExistAttributeTests()
     {
-        _tagNameDoesNotExistAttribute = new TagNameDoesNotExistAttribute(_userRepositoryMock.Object,
-                                                                 _loggerMock.Object);
+        _tagNameDoesNotExistAttribute = 
+            new TagNameDoesNotExistAttribute(_userRepositoryMock.Object, 
+                                             _loggerMock.Object);
     }
     
     

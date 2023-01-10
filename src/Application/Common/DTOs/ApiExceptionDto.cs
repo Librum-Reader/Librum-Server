@@ -18,5 +18,6 @@ public class ApiExceptionDto
         StackTrace = stackTrace;
     }
 
-    public override string ToString() => JsonConvert.SerializeObject(this, new JsonSerializerSettings());
+    public override string ToString() => 
+        JsonConvert.SerializeObject(this, new JsonSerializerSettings());
 }

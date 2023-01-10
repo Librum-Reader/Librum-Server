@@ -20,8 +20,8 @@ namespace Presentation;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services,
-        IConfiguration configuration)
+    public static IServiceCollection AddApplicationServices(
+        this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserService, UserService>();
@@ -69,13 +69,17 @@ public static class DependencyInjection
             opt.User.RequireUniqueEmail = true;
         });
 
-        builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
+        builder = new IdentityBuilder(builder.UserType, 
+                                      typeof(IdentityRole), 
+                                      builder.Services);
         builder.AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
     }
 
-    public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration)
+    public static void ConfigureJwt(this IServiceCollection services, 
+                                    IConfiguration configuration)
     {
-        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]));
+        var signingKey = 
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]));
         
         services.AddAuthentication(opt =>
         {

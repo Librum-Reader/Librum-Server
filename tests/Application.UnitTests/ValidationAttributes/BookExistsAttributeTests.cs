@@ -28,7 +28,7 @@ public class BookExistsAttributeTests
     public BookExistsAttributeTests()
     {
         _bookExistsAttribute = new BookExistsAttribute(_userRepositoryMock.Object, 
-            _loggerMock.Object);
+                                                       _loggerMock.Object);
     }
 
 

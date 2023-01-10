@@ -65,7 +65,8 @@ public class AuthenticationManagerTests
     }
     
     [Fact]
-    public async Task AnAuthenticationManager_FailsCheckingIfAUserExistsIfPasswordIsWrong()
+    public async Task 
+        AnAuthenticationManager_FailsCheckingIfAUserExistsIfPasswordIsWrong()
     {
         // Arrange
         _userManagerMock.Setup(x => x.FindByEmailAsync(It.IsAny<string>()))

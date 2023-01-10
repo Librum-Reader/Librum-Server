@@ -90,7 +90,8 @@ public class BookService : IBookService
                                      BookForUpdateDto bookUpdateDto)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
-        var book = user.Books.Single(book => book.BookId.ToString() == bookUpdateDto.Guid);
+        var book = 
+            user.Books.Single(book => book.BookId.ToString() == bookUpdateDto.Guid);
         if (book == null)
         {
             const string message = "No book with this uuid exists";
@@ -104,10 +105,12 @@ public class BookService : IBookService
 
         foreach (var property in properties)
         {
-            if(property.Name.Equals("Guid", StringComparison.InvariantCultureIgnoreCase))
+            if(property.Name.Equals("Guid",
+                                    StringComparison.InvariantCultureIgnoreCase))
                 continue;
             
-            if (property.Name.Equals("Tags", StringComparison.InvariantCultureIgnoreCase))
+            if (property.Name.Equals("Tags",
+                                     StringComparison.InvariantCultureIgnoreCase))
             {
                 MergeTags(bookUpdateDto.Tags, book, user);
                 continue;
@@ -154,7 +157,8 @@ public class BookService : IBookService
             }
 
             // Create new tag
-            var newTag = user.Tags.SingleOrDefault(t => t.TagId == new Guid(tag.Guid));
+            var newTag = user.Tags.SingleOrDefault(t => t.TagId == 
+                                                       new Guid(tag.Guid));
             if (newTag == default)
             {
                 newTag = _mapper.Map<Tag>(tag);

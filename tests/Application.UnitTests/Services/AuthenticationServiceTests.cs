@@ -29,9 +29,10 @@ public class AuthenticationServiceTests
         });
         var mapper = new Mapper(mapperConfig);
         
-        _authenticationService = new AuthenticationService(mapper,
-                                                           _authenticationManagerMock.Object,
-                                                           _userManagerMock.Object);
+        _authenticationService = 
+            new AuthenticationService(mapper, 
+                                      _authenticationManagerMock.Object, 
+                                      _userManagerMock.Object);
     }
     
     
@@ -98,7 +99,8 @@ public class AuthenticationServiceTests
                                                                 It.IsAny<string>()))
             .ReturnsAsync(false);
         
-        _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
+        _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>(), 
+                                                  It.IsAny<string>()))
             .ReturnsAsync(IdentityResult.Success);
         
 
@@ -112,7 +114,8 @@ public class AuthenticationServiceTests
     }
 
     [Fact]
-    public async Task AnAuthenticationService_FailsRegisteringAUserIfUserAlreadyExists()
+    public async Task 
+        AnAuthenticationService_FailsRegisteringAUserIfUserAlreadyExists()
     {
         // Arrange
         var registerDto = new RegisterDto
@@ -176,7 +179,8 @@ public class AuthenticationServiceTests
                                                                 It.IsAny<string>()))
             .ReturnsAsync(false);
         
-        _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
+        _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>(),
+                                                  It.IsAny<string>()))
             .ReturnsAsync(IdentityResult.Success);
         
     

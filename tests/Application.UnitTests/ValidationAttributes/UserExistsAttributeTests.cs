@@ -25,7 +25,8 @@ public class UserExistsAttributeTests
 
     public UserExistsAttributeTests()
     {
-        _filterAttribute = new UserExistsAttribute(_userRepositoryMock.Object, _loggerMock.Object);
+        _filterAttribute = new UserExistsAttribute(_userRepositoryMock.Object,
+                                                   _loggerMock.Object);
     }
     
     
