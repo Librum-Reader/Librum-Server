@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Common.DTOs.Tags;
+using Application.Common.Exceptions;
 using Application.Common.Mappings;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
@@ -68,6 +70,86 @@ public class TagServiceTests
         _tagRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
 
+    [Fact]
+    public async Task ATagService_SucceedsUpdatingATag()
+    {
+        // Arrange
+        var tagGuid = Guid.NewGuid();
+        
+        var user = new User
+        {
+            Tags = new List<Tag>
+            {
+                new Tag
+                {
+                    TagId = tagGuid,
+                    Name = "SomeName"
+                },
+                new Tag
+                {
+                    TagId = Guid.NewGuid(),
+                    Name = "SomeOtherName"
+                }
+            }
+        };
+
+        var tagForUpdate = new TagForUpdateDto
+        {
+            Name = "NewName"
+        };
+
+
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
+            .ReturnsAsync(user);
+        
+        _tagRepositoryMock.Setup(x => x.SaveChangesAsync())
+            .ReturnsAsync(1);
+        
+        // Act
+        await _tagService.UpdateTagAsync("JohnDoe@gmail.com", 
+                                         tagGuid.ToString(),
+                                         tagForUpdate);
+        
+        // Assert
+        _tagRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
+    }
+    
+    [Fact]
+    public async Task ATagService_FailsUpdatingATagIfTagDoesNotExist()
+    {
+        // Arrange
+        var nonExistentTagGuid = Guid.NewGuid();
+        
+        var user = new User
+        {
+            Tags = new List<Tag>
+            {
+                new Tag
+                {
+                    TagId = Guid.NewGuid(),
+                    Name = "SomeOtherName"
+                }
+            }
+        };
+
+        var tagForUpdate = new TagForUpdateDto
+        {
+            Name = "NewName"
+        };
+
+
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
+            .ReturnsAsync(user);
+        
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(
+            () => _tagService.UpdateTagAsync("JohnDoe@gmail.com", 
+                                             nonExistentTagGuid.ToString(),
+                                             tagForUpdate));
+    }
+    
     [Fact]
     public async Task ATagService_SucceedsGettingTags()
     {
