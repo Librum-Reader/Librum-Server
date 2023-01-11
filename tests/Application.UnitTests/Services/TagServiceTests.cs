@@ -44,6 +44,11 @@ public class TagServiceTests
                 {
                     TagId = tagGuid,
                     Name = "someName"
+                },
+                new Tag
+                {
+                    TagId = Guid.NewGuid(),
+                    Name = "someOtherName"
                 }
             }
         };
@@ -64,7 +69,7 @@ public class TagServiceTests
     }
 
     [Fact]
-    public async Task ATagService_SucceedsGettingAllTags()
+    public async Task ATagService_SucceedsGettingTags()
     {
         // Arrange
         var tagNames = new[] { "FirstTag", "SecondTag", "ThirdTag" };
@@ -84,7 +89,7 @@ public class TagServiceTests
             .ReturnsAsync(user);
         
         // Act
-        var result = await _tagService.GetTagsAsync("JohnDoe@gmail.com");
+        var result = (await _tagService.GetTagsAsync("JohnDoe@gmail.com")).ToList();
 
         // Assert
         for(var i = 0; i < tagNames.Length; ++i)
