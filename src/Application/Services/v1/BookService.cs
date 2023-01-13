@@ -59,9 +59,9 @@ public class BookService : IBookService
         var books = _bookRepository.GetAllAsync(user.Id);
         await _bookRepository.LoadRelationShipsAsync(books);
 
-        return await books
+        return books
             .Select(book => _mapper.Map<BookOutDto>(book))
-            .ToListAsync();
+            .ToList();
     }
 
     public async Task DeleteBooksAsync(string email,
@@ -91,7 +91,8 @@ public class BookService : IBookService
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
         var book = 
-            user.Books.Single(book => book.BookId.ToString() == bookUpdateDto.Guid);
+            user.Books.SingleOrDefault(book => book.BookId.ToString() ==
+                                               bookUpdateDto.Guid);
         if (book == null)
         {
             const string message = "No book with this uuid exists";
