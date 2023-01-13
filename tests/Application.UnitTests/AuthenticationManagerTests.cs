@@ -52,10 +52,6 @@ public class AuthenticationManagerTests
         _userManagerMock.Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
             .ReturnsAsync(() => null);
 
-        _userManagerMock.Setup(x => x.CheckPasswordAsync(It.IsAny<User>(),
-                                                         It.IsAny<string>()))
-            .ReturnsAsync(true);
-
         // Act
         var result = await _authenticationManager.UserExistsAsync("JohnDoe@gmail.com",
                                                                   "MyPassword123");
@@ -79,6 +75,39 @@ public class AuthenticationManagerTests
         // Act
         var result = await _authenticationManager.UserExistsAsync("JohnDoe@gmail.com",
                                                                   "MyPassword123");
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task AnAuthenticationManager_SucceedsCheckingIfTheEmailExists()
+    {
+        // Arrange
+        string email = "SomeEmail";
+
+        _userManagerMock.Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
+            .ReturnsAsync(new User());
+
+        // Act
+        var result = await _authenticationManager.EmailAlreadyExistsAsync(email);
+
+        // Assert
+        Assert.True(result);
+    }
+    
+    [Fact]
+    public async Task
+        AnAuthenticationManager_FailsCheckingIfTheEmailExistsIfEmailDoesNotExist()
+    {
+        // Arrange
+        string email = "SomeEmail";
+
+        _userManagerMock.Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
+            .ReturnsAsync(() => null);
+
+        // Act
+        var result = await _authenticationManager.EmailAlreadyExistsAsync(email);
 
         // Assert
         Assert.False(result);
