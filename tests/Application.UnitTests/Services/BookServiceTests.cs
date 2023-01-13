@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Application.Common.DTOs.Books;
+using Application.Common.DTOs.Tags;
 using Application.Common.Exceptions;
 using Application.Common.Mappings;
 using Application.Interfaces.Repositories;
@@ -51,23 +53,23 @@ public class BookServiceTests
             PageCount = 1200,
             CurrentPage = 2
         };
-
+    
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
                                                   It.IsAny<bool>()))
             .ReturnsAsync(new User { Books = new Collection<Book>() });
-
+    
         _bookRepositoryMock.Setup(x => x.ExistsAsync(It.IsAny<string>(),
                                                      It.IsAny<string>()))
             .ReturnsAsync(false);
         
         _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
             .ReturnsAsync(1);
-
-
+    
+    
         // Act
         await _bookService.CreateBookAsync("JohnDoe@gmail.com", bookDto,
                                            Guid.NewGuid().ToString());
-
+    
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
     }
@@ -108,6 +110,41 @@ public class BookServiceTests
     }
 
     [Fact]
+    public async Task ABookService_SucceedsGettingBooks()
+    {
+        // Arrange
+        var bookGuids = new List<Guid>
+        {
+            Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()
+        };
+
+        var user = new User
+        {
+            Books = new List<Book>
+            {
+                new Book { BookId = bookGuids[0] },
+                new Book { BookId = bookGuids[1] },
+                new Book { BookId = bookGuids[2] }
+            }
+        };
+
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
+            .ReturnsAsync(user);
+        _bookRepositoryMock.Setup(x => x.GetAllAsync(It.IsAny<string>()))
+            .Returns(user.Books.AsQueryable());
+
+
+        // Act
+        var result = await _bookService.GetBooksAsync("JohnDoe@gmail.com");
+
+        // Assert
+        Assert.Contains(result, book => Guid.Parse(book.Guid) == bookGuids[0]);
+        Assert.Contains(result, book => Guid.Parse(book.Guid) == bookGuids[1]);
+        Assert.Contains(result, book => Guid.Parse(book.Guid) == bookGuids[2]);
+    }
+    
+    [Fact]
     public async Task ABookService_FailsDeletingBooksIfBooksDontExist()
     {
         // Arrange
@@ -129,8 +166,7 @@ public class BookServiceTests
 
         // Assert
         await Assert.ThrowsAsync<InvalidParameterException>(
-            () => _bookService.DeleteBooksAsync("JohnDoe@gmail.com",
-                                                bookNames));
+            () => _bookService.DeleteBooksAsync("JohnDoe@gmail.com", bookNames));
     }
 
     [Fact]
@@ -169,5 +205,39 @@ public class BookServiceTests
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
+    }
+    
+    [Fact]
+    public async Task ABookService_FailsUpdatingABookIfItDoesNotExist()
+    {
+        // Arrange
+        var bookGuid = Guid.NewGuid();
+        
+        var user = new User
+        {
+            Books = new List<Book>
+            {
+                new Book
+                {
+                    BookId = bookGuid,
+                    Tags = new List<Tag>()
+                }
+            }
+        };
+
+        var bookUpdateDto = new BookForUpdateDto
+        {
+            Guid = Guid.NewGuid().ToString(),
+            Title = "SomeNewTitle"
+        };
+        
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
+            .ReturnsAsync(user);
+
+        
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(
+            () => _bookService.UpdateBookAsync("JohnDoe@gmail.com", bookUpdateDto));
     }
 }
