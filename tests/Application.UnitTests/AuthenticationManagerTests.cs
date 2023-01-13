@@ -50,7 +50,7 @@ public class AuthenticationManagerTests
     {
         // Arrange
         _userManagerMock.Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
-            .ReturnsAsync(() => null!);
+            .ReturnsAsync(() => null);
 
         _userManagerMock.Setup(x => x.CheckPasswordAsync(It.IsAny<User>(),
                                                          It.IsAny<string>()))
