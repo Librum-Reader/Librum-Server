@@ -30,7 +30,6 @@ public class TagController : ControllerBase
     }
     
     [HttpPut]
-    [TypeFilter(typeof(TagExistsFilter))]
     public async Task<ActionResult> UpdateTag(TagForUpdateDto tagUpdateDto)
     {
         await _tagService.UpdateTagAsync(HttpContext.User.Identity!.Name,
