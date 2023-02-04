@@ -28,7 +28,6 @@ public class BookInDto
     [MaxLength(60, ErrorMessage = "The format is too long")]
     public string Format { get; set; }
 
-    [MinLength(2, ErrorMessage = "The language is too short")]
     [MaxLength(60, ErrorMessage = "The language is too long")]
     public string Language { get; set; }
 
@@ -42,15 +41,12 @@ public class BookInDto
     [MaxLength(60, ErrorMessage = "The pages size is too long")]
     public string PagesSize { get; set; }
     
-    [MinLength(2, ErrorMessage = "The creator is too short")]
     [MaxLength(200, ErrorMessage = "The creator is too long")]
     public string Creator { get; set; }
     
-    [MinLength(2, ErrorMessage = "The authors are too short")]
     [MaxLength(400, ErrorMessage = "The authors are too long")]
     public string Authors { get; set; }
     
-    [MinLength(4, ErrorMessage = "The creation date is too short")]
     [MaxLength(40, ErrorMessage = "The creation date is too long")]
     public string CreationDate { get; set; }
     
@@ -59,7 +55,6 @@ public class BookInDto
     [MaxLength(40, ErrorMessage = "The added to library date is too long")]
     public string AddedToLibrary { get; set; }
     
-    [MinLength(4, ErrorMessage = "The last opened is too short")]
     [MaxLength(40, ErrorMessage = "The last opened is too long")]
     public string LastOpened { get; set; }
     
