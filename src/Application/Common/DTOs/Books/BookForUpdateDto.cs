@@ -32,7 +32,7 @@ public class BookForUpdateDto
     [MaxLength(100, ErrorMessage = "The creation date is too long")]
     public string CreationDate { get; set; }
 
-    [MinLength(4, ErrorMessage = "The last opened is too short")]
+    [EmptyOrMinLength(4, ErrorMessage = "The last opened is too short")]
     [MaxLength(100, ErrorMessage = "The last opened is too long")]
     public string LastOpened { get; set; }
 
