@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Common.DTOs.Books;
-using Application.Common.DTOs.Tags;
 using Application.Common.Exceptions;
 using Application.Common.Mappings;
 using Application.Interfaces.Repositories;
@@ -59,7 +58,7 @@ public class BookServiceTests
             .ReturnsAsync(new User { Books = new Collection<Book>() });
     
         _bookRepositoryMock.Setup(x => x.ExistsAsync(It.IsAny<string>(),
-                                                     It.IsAny<string>()))
+                                                     It.IsAny<Guid>()))
             .ReturnsAsync(false);
         
         _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
@@ -67,11 +66,37 @@ public class BookServiceTests
     
     
         // Act
-        await _bookService.CreateBookAsync("JohnDoe@gmail.com", bookDto,
-                                           Guid.NewGuid().ToString());
+        await _bookService.CreateBookAsync("JohnDoe@gmail.com", bookDto);
     
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
+    }
+    
+    [Fact]
+    public async Task ABookService_FailsCreatingABookIfBookAlreadyExists()
+    {
+        // Arrange
+        var bookDto = new BookInDto
+        {
+            Title = "Some book",
+            CreationDate = DateTime.Now.ToString(CultureInfo.InvariantCulture),
+            Format = "Pdf",
+            PageCount = 1200,
+            CurrentPage = 2
+        };
+    
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
+            .ReturnsAsync(new User { Books = new Collection<Book>() });
+    
+        _bookRepositoryMock.Setup(x => x.ExistsAsync(It.IsAny<string>(),
+                                                     It.IsAny<Guid>()))
+            .ReturnsAsync(true);
+    
+    
+        // Assert
+        await Assert.ThrowsAsync<InvalidParameterException>(() =>
+            _bookService.CreateBookAsync("JohnDoe@gmail.com", bookDto));
     }
 
     [Fact]
@@ -79,13 +104,6 @@ public class BookServiceTests
     {
         // Arrange
         var bookGuids = new[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
-        var bookGuidsAsString = new List<string>
-        {
-            bookGuids[0].ToString(),
-            bookGuids[1].ToString(),
-            bookGuids[2].ToString()
-        };
-
         var user = new User
         {
             Books = new List<Book>
@@ -103,7 +121,7 @@ public class BookServiceTests
 
         // Act
         await _bookService.DeleteBooksAsync("JohnDoe@gmail.com",
-                                            bookGuidsAsString);
+                                            bookGuids);
 
         // Assert
         _bookRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
@@ -148,14 +166,13 @@ public class BookServiceTests
     public async Task ABookService_FailsDeletingBooksIfBooksDontExist()
     {
         // Arrange
-        var bookNames = new[] { "FirstBook", "SecondBook", "ANonExistentBook" };
-
+        var bookGuids = new[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
         var user = new User
         {
             Books = new List<Book>
             {
-                new Book { Title = bookNames[0] },
-                new Book { Title = bookNames[1] }
+                new Book { BookId = bookGuids[0] },
+                new Book { BookId = bookGuids[1] }
             }
         };
 
@@ -166,7 +183,7 @@ public class BookServiceTests
 
         // Assert
         await Assert.ThrowsAsync<InvalidParameterException>(
-            () => _bookService.DeleteBooksAsync("JohnDoe@gmail.com", bookNames));
+            () => _bookService.DeleteBooksAsync("JohnDoe@gmail.com", bookGuids));
     }
 
     [Fact]
@@ -189,7 +206,7 @@ public class BookServiceTests
 
         var bookUpdateDto = new BookForUpdateDto
         {
-            Guid = bookGuid.ToString(),
+            Guid = bookGuid,
             Title = "SomeNewTitle"
         };
         
@@ -227,7 +244,7 @@ public class BookServiceTests
 
         var bookUpdateDto = new BookForUpdateDto
         {
-            Guid = Guid.NewGuid().ToString(),
+            Guid = Guid.NewGuid(),
             Title = "SomeNewTitle"
         };
         

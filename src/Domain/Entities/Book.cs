@@ -66,9 +66,9 @@ public class Book
 
     [Required]
     public string LastModified { get; set; }
-    
 
-    public ICollection<Tag> Tags { get; set; }
+
+    public ICollection<Tag> Tags { get; set; } = new List<Tag>();
 
     public string UserId { get; set; }
     public User User { get; set; }

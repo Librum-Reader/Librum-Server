@@ -1,6 +1,6 @@
 using System.Net;
 using Application.Common.DTOs;
-using Application.Common.DTOs.Books;
+using Application.Common.DTOs.Tags;
 using Application.Common.Exceptions;
 using Application.Interfaces.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -9,43 +9,41 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Common.ActionFilters;
 
-public class BookDoesNotExistAttribute : IAsyncActionFilter
+public class TagNameDoesNotExistFilter : IAsyncActionFilter
 {
     private readonly IUserRepository _userRepository;
-    private readonly ILogger<BookDoesNotExistAttribute> _logger;
+    private readonly ILogger<TagNameDoesNotExistFilter> _logger;
 
 
-    public BookDoesNotExistAttribute(IUserRepository userRepository,
-                                     ILogger<BookDoesNotExistAttribute> logger)
+    public TagNameDoesNotExistFilter(IUserRepository userRepository,
+                                        ILogger<TagNameDoesNotExistFilter>
+                                            logger)
     {
         _userRepository = userRepository;
         _logger = logger;
     }
 
-    
+
     public async Task OnActionExecutionAsync(ActionExecutingContext context,
                                              ActionExecutionDelegate next)
     {
-        var bookInDto = (BookInDto)context
-            .ActionArguments
-            .SingleOrDefault(arg => arg.Key.Contains("Dto"))
-            .Value;
-        if (bookInDto == null)
+        var tagInDto = (TagInDto)context.ActionArguments.SingleOrDefault(
+            arg => arg.Key.Contains("Dto")).Value;
+        if (tagInDto == null)
         {
-            const string message = "Action filter: Expected parameter" +
-                                   " containing 'Dto' does not exist";
+            const string message = "Action filter: Expected " +
+                                   "parameter containing 'Dto'";
             throw new InternalServerException(message);
         }
 
-        
-        var bookGuid = bookInDto.Guid;
+        var tagName = tagInDto.Name;
 
         var userName = context.HttpContext.User.Identity!.Name;
         var user = await _userRepository.GetAsync(userName, trackChanges: true);
-        
-        if (user.Books.Any(book => book.BookId.ToString() == bookGuid))
+
+        if (user.Tags.Any(tag => tag.Name == tagName))
         {
-            var errorMessage = "A book with this GUID already exists";
+            var errorMessage = "A tag with this name already exists";
             _logger.LogWarning(errorMessage);
 
             context.HttpContext.Response.ContentType = "application/json";
@@ -56,6 +54,7 @@ public class BookDoesNotExistAttribute : IAsyncActionFilter
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;
         }
+
 
         await next();
     }

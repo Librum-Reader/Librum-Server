@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application.Common.ActionFilters;
-using Application.Common.Exceptions;
-using Application.Interfaces.Repositories;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,36 +12,23 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace Application.UnitTests.ValidationAttributes;
+namespace Application.UnitTests.ValidationFilters;
 
-public class BookExistsAttributeTests
+public class ValidParameterFilterTests
 {
-    private readonly Mock<IUserRepository> _userRepositoryMock = new();
-    private readonly Mock<ILogger<BookExistsAttribute>> _loggerMock = new();
+    private readonly Mock<ILogger<ValidParameterFilter>> _loggerMock = new();
+    private readonly ValidParameterFilter _filterFilter;
+    
 
-    private readonly BookExistsAttribute _bookExistsAttribute;
-
-
-    public BookExistsAttributeTests()
+    public ValidParameterFilterTests()
     {
-        _bookExistsAttribute = new BookExistsAttribute(_userRepositoryMock.Object, 
-                                                       _loggerMock.Object);
+        _filterFilter = new ValidParameterFilter(_loggerMock.Object);
     }
 
 
     [Fact]
-    public async Task ABookExistsAttribute_Succeeds()
+    public async Task AValidParameterAttribute_Succeeds()
     {
-        // Arrange
-        var bookGuid = Guid.NewGuid();
-        var user = new User
-        {
-            Books = new List<Book>
-            {
-                new Book { BookId = bookGuid }
-            }
-        };
-
         var modelState = new ModelStateDictionary();
         var httpContextMock = new DefaultHttpContext();
 
@@ -62,18 +46,16 @@ public class BookExistsAttributeTests
             modelState
         );
 
-        executingContext.ActionArguments.Add("bookGuid", bookGuid.ToString());
-
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
-                                                  It.IsAny<bool>()))
-            .ReturnsAsync(user);
-
+        executingContext.ActionArguments.Add("SomeValidString",
+                                             "this is an valid string");
+        executingContext.ActionArguments.Add("AnotherValidString",
+                                             "SomePassword123");
 
         // Act
         var context = new ActionExecutedContext(executingContext,
                                                 new List<IFilterMetadata>(),
                                                 Mock.Of<Controller>());
-        await _bookExistsAttribute.OnActionExecutionAsync(executingContext,
+        await _filterFilter.OnActionExecutionAsync(executingContext,
                     () => Task.FromResult(context));
 
         // Assert
@@ -81,17 +63,8 @@ public class BookExistsAttributeTests
     }
     
     [Fact]
-    public async Task ABookExistsAttribute_FailsIfBookDoesNotExist()
+    public async Task AValidParameterAttribute_FailsIfNoParameterExists()
     {
-        // Arrange
-        var user = new User
-        {
-            Books = new List<Book>
-            {
-                new Book { BookId = Guid.NewGuid() }
-            }
-        };
-
         var modelState = new ModelStateDictionary();
         var httpContextMock = new DefaultHttpContext();
 
@@ -109,19 +82,47 @@ public class BookExistsAttributeTests
             modelState
         );
 
-        // Different Guid
-        executingContext.ActionArguments.Add("bookGuid", Guid.NewGuid());
-
-        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
-                                                  It.IsAny<bool>()))
-            .ReturnsAsync(user);
-
+        executingContext.ActionArguments.Add("SomeValidString", new User());
+        executingContext.ActionArguments.Add("AnotherValidString", 32);
 
         // Act
         var context = new ActionExecutedContext(executingContext,
                                                 new List<IFilterMetadata>(),
                                                 Mock.Of<Controller>());
-        await _bookExistsAttribute.OnActionExecutionAsync(executingContext,
+        await _filterFilter.OnActionExecutionAsync(executingContext,
+                    () => Task.FromResult(context));
+
+        // Assert
+        Assert.Equal(200, executingContext.HttpContext.Response.StatusCode);
+    }
+    
+    [Fact]
+    public async Task AValidParameterAttribute_FailsIfParameterIsNull()
+    {
+        var modelState = new ModelStateDictionary();
+        var httpContextMock = new DefaultHttpContext();
+
+        var actionContext = new ActionContext(
+            httpContextMock,
+            Mock.Of<RouteData>(),
+            Mock.Of<ActionDescriptor>(),
+            modelState
+        );
+
+        var executingContext = new ActionExecutingContext(
+            actionContext,
+            new List<IFilterMetadata>(),
+            new Dictionary<string, object>()!,
+            modelState
+        );
+
+        executingContext.ActionArguments.Add("SomeValidString", null);
+
+        // Act
+        var context = new ActionExecutedContext(executingContext,
+                                                new List<IFilterMetadata>(),
+                                                Mock.Of<Controller>());
+        await _filterFilter.OnActionExecutionAsync(executingContext,
                     () => Task.FromResult(context));
 
         // Assert
@@ -129,9 +130,8 @@ public class BookExistsAttributeTests
     }
     
     [Fact]
-    public async Task ABookExistsAttribute_FailsIfNoGuidParameterExists()
+    public async Task AValidParameterAttribute_FailsIfParameterIsOnlyWhitespaces()
     {
-        // Arrange
         var modelState = new ModelStateDictionary();
         var httpContextMock = new DefaultHttpContext();
 
@@ -149,15 +149,16 @@ public class BookExistsAttributeTests
             modelState
         );
 
+        executingContext.ActionArguments.Add("SomeValidString", "   ");
 
         // Act
         var context = new ActionExecutedContext(executingContext,
                                                 new List<IFilterMetadata>(),
                                                 Mock.Of<Controller>());
+        await _filterFilter.OnActionExecutionAsync(executingContext,
+                    () => Task.FromResult(context));
 
         // Assert
-        await Assert.ThrowsAsync<InternalServerException>(() => 
-            _bookExistsAttribute.OnActionExecutionAsync(executingContext,
-                    () => Task.FromResult(context)));
+        Assert.Equal(400, executingContext.HttpContext.Response.StatusCode);
     }
 }

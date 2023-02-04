@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application.Common.ActionFilters;
-using Application.Common.DTOs.Books;
+using Application.Common.DTOs.Tags;
 using Application.Common.Exceptions;
 using Application.Interfaces.Repositories;
 using Domain.Entities;
@@ -16,38 +16,32 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace Application.UnitTests.ValidationAttributes;
+namespace Application.UnitTests.ValidationFilters;
 
-public class BookDoesNotExistAttributeTests
+public class TagNameDoesNotExistAttributeTests
 {
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
+    private readonly Mock<ILogger<TagNameDoesNotExistFilter>> _loggerMock = new();
+    private readonly TagNameDoesNotExistFilter _tagNameDoesNotExistFilter;
     
-    private readonly Mock<ILogger<BookDoesNotExistAttribute>> _loggerMock = new();
-    private readonly BookDoesNotExistAttribute _bookDoesNotExistAttribute;
-
-
-    public BookDoesNotExistAttributeTests()
+    
+    public TagNameDoesNotExistAttributeTests()
     {
-        _bookDoesNotExistAttribute = 
-            new BookDoesNotExistAttribute(_userRepositoryMock.Object,
-                                          _loggerMock.Object);
+        _tagNameDoesNotExistFilter = 
+            new TagNameDoesNotExistFilter(_userRepositoryMock.Object, 
+                                             _loggerMock.Object);
     }
     
     
-        [Fact]
-    public async Task ABookDoesNotExistAttribute_Succeeds()
+    [Fact]
+    public async Task ATagNameDoesNotExistAttribute_Succeeds()
     {
         // Arrange
-        var bookInDto = new BookInDto
-        {
-            Title = "SomeOtherBook"
-        };
-        
         var user = new User
         {
-            Books = new List<Book>
+            Tags = new List<Tag>
             {
-                new Book { Title = "SomeBook" }
+                new Tag {  Name = "SomeTagName" }
             }
         };
 
@@ -68,7 +62,8 @@ public class BookDoesNotExistAttributeTests
             modelState
         );
 
-        executingContext.ActionArguments.Add("SomeDto", bookInDto);
+        var tagInDto = new TagInDto { Name = "SomeTag" };
+        executingContext.ActionArguments.Add("someDto", tagInDto);
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
                                                   It.IsAny<bool>()))
@@ -79,7 +74,7 @@ public class BookDoesNotExistAttributeTests
         var context = new ActionExecutedContext(executingContext,
                                                 new List<IFilterMetadata>(),
                                                 Mock.Of<Controller>());
-        await _bookDoesNotExistAttribute.OnActionExecutionAsync(executingContext,
+        await _tagNameDoesNotExistFilter.OnActionExecutionAsync(executingContext,
                     () => Task.FromResult(context));
 
         // Assert
@@ -87,24 +82,28 @@ public class BookDoesNotExistAttributeTests
     }
     
     [Fact]
-    public async Task ABookDoesNotExistAttribute_FailsIfBookExists()
+    public async Task ATagNameDoesNotExistAttribute_FailsIfTagExists()
     {
         // Arrange
-        var bookGuid = Guid.NewGuid();
-        
-        var bookInDto = new BookInDto
+        const string tagName = "SomeTag";
+
+        var tagInDto = new TagInDto
         {
-            Guid = bookGuid.ToString()
-        };
-        
-        var user = new User
-        {
-            Books = new List<Book>
-            {
-                new Book { BookId = bookGuid }
-            }
+            Name = tagName
         };
 
+        var user = new User
+        {
+            Tags = new List<Tag>
+            {
+                new Tag
+                {
+                    TagId = Guid.NewGuid(),
+                    Name = tagName
+                }
+            }
+        };
+        
         var modelState = new ModelStateDictionary();
         var httpContextMock = new DefaultHttpContext();
 
@@ -122,7 +121,7 @@ public class BookDoesNotExistAttributeTests
             modelState
         );
 
-        executingContext.ActionArguments.Add("someDto", bookInDto);
+        executingContext.ActionArguments.Add("someDto", tagInDto);
 
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
                                                   It.IsAny<bool>()))
@@ -133,7 +132,7 @@ public class BookDoesNotExistAttributeTests
         var context = new ActionExecutedContext(executingContext,
                                                 new List<IFilterMetadata>(),
                                                 Mock.Of<Controller>());
-        await _bookDoesNotExistAttribute.OnActionExecutionAsync(executingContext,
+        await _tagNameDoesNotExistFilter.OnActionExecutionAsync(executingContext,
                     () => Task.FromResult(context));
 
         // Assert
@@ -141,7 +140,7 @@ public class BookDoesNotExistAttributeTests
     }
     
     [Fact]
-    public async Task ABookDoesNotExistAttribute_FailsIfNoGuidParameterExists()
+    public async Task ATagNameDoesNotExistAttribute_FailsIfNoTagInDtoFound()
     {
         // Arrange
         var modelState = new ModelStateDictionary();
@@ -161,7 +160,11 @@ public class BookDoesNotExistAttributeTests
             modelState
         );
         
-        
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
+            .ReturnsAsync(new User());
+
+
         // Act
         var context = new ActionExecutedContext(executingContext,
                                                 new List<IFilterMetadata>(),
@@ -169,7 +172,7 @@ public class BookDoesNotExistAttributeTests
 
         // Assert
         await Assert.ThrowsAsync<InternalServerException>(() => 
-            _bookDoesNotExistAttribute.OnActionExecutionAsync(executingContext,
+            _tagNameDoesNotExistFilter.OnActionExecutionAsync(executingContext,
                     () => Task.FromResult(context)));
     }
 }

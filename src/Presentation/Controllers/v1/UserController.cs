@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Controllers.v1;
 
 [Authorize]
-[ServiceFilter(typeof(UserExistsAttribute))]
-[ServiceFilter(typeof(ValidParameterAttribute))]
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/[controller]")]
@@ -37,7 +35,7 @@ public class UserController : ControllerBase
 
     [HttpPatch]
     public async Task<ActionResult> PatchUser(
-        [FromBody] JsonPatchDocument<UserForUpdateDto> patchDoc)
+        JsonPatchDocument<UserForUpdateDto> patchDoc)
     {
         try
         {

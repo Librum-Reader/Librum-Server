@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application.Common.ActionFilters;
+using Application.Common.Exceptions;
+using Application.Interfaces.Repositories;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,23 +15,39 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace Application.UnitTests.ValidationAttributes;
+namespace Application.UnitTests.ValidationFilters;
 
-public class ValidParameterAttributeTests
+public class TagExistsFilterTests
 {
-    private readonly Mock<ILogger<ValidParameterAttribute>> _loggerMock = new();
-    private readonly ValidParameterAttribute _filterAttribute;
-    
+    private readonly Mock<IUserRepository> _userRepositoryMock = new();
+    private readonly Mock<ILogger<TagExistsFilter>> _loggerMock = new();
+    private readonly TagExistsFilter _tagExistsFilterFilter;
 
-    public ValidParameterAttributeTests()
+
+    public TagExistsFilterTests()
     {
-        _filterAttribute = new ValidParameterAttribute(_loggerMock.Object);
+        _tagExistsFilterFilter = new TagExistsFilter(_userRepositoryMock.Object, 
+                                                           _loggerMock.Object);
     }
 
 
     [Fact]
-    public async Task AValidParameterAttribute_Succeeds()
+    public async Task ATagExistsAttribute_Succeeds()
     {
+        // Arrange
+        var tagGuid = Guid.NewGuid();
+        var user = new User
+        {
+            Tags = new List<Tag>
+            {
+                new Tag
+                {
+                    TagId = tagGuid,
+                    Name = "SomeTag"
+                }
+            }
+        };
+
         var modelState = new ModelStateDictionary();
         var httpContextMock = new DefaultHttpContext();
 
@@ -46,16 +65,18 @@ public class ValidParameterAttributeTests
             modelState
         );
 
-        executingContext.ActionArguments.Add("SomeValidString",
-                                             "this is an valid string");
-        executingContext.ActionArguments.Add("AnotherValidString",
-                                             "SomePassword123");
+        executingContext.ActionArguments.Add("guid", tagGuid.ToString());
+
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
+            .ReturnsAsync(user);
+
 
         // Act
         var context = new ActionExecutedContext(executingContext,
                                                 new List<IFilterMetadata>(),
                                                 Mock.Of<Controller>());
-        await _filterAttribute.OnActionExecutionAsync(executingContext,
+        await _tagExistsFilterFilter.OnActionExecutionAsync(executingContext,
                     () => Task.FromResult(context));
 
         // Assert
@@ -63,8 +84,21 @@ public class ValidParameterAttributeTests
     }
     
     [Fact]
-    public async Task AValidParameterAttribute_FailsIfNoParameterExists()
+    public async Task ATagExistsAttribute_FailsIfTagDoesNotExist()
     {
+        // Arrange
+        var user = new User
+        {
+            Tags = new List<Tag>
+            {
+                new Tag
+                {
+                    TagId = Guid.NewGuid(),
+                    Name = "SomeTag"
+                }
+            }
+        };
+        
         var modelState = new ModelStateDictionary();
         var httpContextMock = new DefaultHttpContext();
 
@@ -82,47 +116,18 @@ public class ValidParameterAttributeTests
             modelState
         );
 
-        executingContext.ActionArguments.Add("SomeValidString", new User());
-        executingContext.ActionArguments.Add("AnotherValidString", 32);
+        executingContext.ActionArguments.Add("guid", Guid.NewGuid().ToString());
+
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
+            .ReturnsAsync(user);
+
 
         // Act
         var context = new ActionExecutedContext(executingContext,
                                                 new List<IFilterMetadata>(),
                                                 Mock.Of<Controller>());
-        await _filterAttribute.OnActionExecutionAsync(executingContext,
-                    () => Task.FromResult(context));
-
-        // Assert
-        Assert.Equal(200, executingContext.HttpContext.Response.StatusCode);
-    }
-    
-    [Fact]
-    public async Task AValidParameterAttribute_FailsIfParameterIsNull()
-    {
-        var modelState = new ModelStateDictionary();
-        var httpContextMock = new DefaultHttpContext();
-
-        var actionContext = new ActionContext(
-            httpContextMock,
-            Mock.Of<RouteData>(),
-            Mock.Of<ActionDescriptor>(),
-            modelState
-        );
-
-        var executingContext = new ActionExecutingContext(
-            actionContext,
-            new List<IFilterMetadata>(),
-            new Dictionary<string, object>()!,
-            modelState
-        );
-
-        executingContext.ActionArguments.Add("SomeValidString", null);
-
-        // Act
-        var context = new ActionExecutedContext(executingContext,
-                                                new List<IFilterMetadata>(),
-                                                Mock.Of<Controller>());
-        await _filterAttribute.OnActionExecutionAsync(executingContext,
+        await _tagExistsFilterFilter.OnActionExecutionAsync(executingContext,
                     () => Task.FromResult(context));
 
         // Assert
@@ -130,8 +135,9 @@ public class ValidParameterAttributeTests
     }
     
     [Fact]
-    public async Task AValidParameterAttribute_FailsIfParameterIsOnlyWhitespaces()
+    public async Task ATagExistsAttribute_FailsIfNoTagGuidParameterExists()
     {
+        // Arrange
         var modelState = new ModelStateDictionary();
         var httpContextMock = new DefaultHttpContext();
 
@@ -148,17 +154,20 @@ public class ValidParameterAttributeTests
             new Dictionary<string, object>()!,
             modelState
         );
+        
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
+            .ReturnsAsync(new User());
 
-        executingContext.ActionArguments.Add("SomeValidString", "   ");
 
         // Act
         var context = new ActionExecutedContext(executingContext,
                                                 new List<IFilterMetadata>(),
                                                 Mock.Of<Controller>());
-        await _filterAttribute.OnActionExecutionAsync(executingContext,
-                    () => Task.FromResult(context));
 
         // Assert
-        Assert.Equal(400, executingContext.HttpContext.Response.StatusCode);
+        await Assert.ThrowsAsync<InternalServerException>(() => 
+            _tagExistsFilterFilter.OnActionExecutionAsync(executingContext,
+                    () => Task.FromResult(context)));
     }
 }

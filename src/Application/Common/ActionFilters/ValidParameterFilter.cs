@@ -6,12 +6,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Common.ActionFilters;
 
-public class ValidParameterAttribute : IAsyncActionFilter
+public class ValidParameterFilter : IAsyncActionFilter
 {
-    private readonly ILogger<ValidParameterAttribute> _logger;
+    private readonly ILogger<ValidParameterFilter> _logger;
 
 
-    public ValidParameterAttribute(ILogger<ValidParameterAttribute> logger)
+    public ValidParameterFilter(ILogger<ValidParameterFilter> logger)
     {
         _logger = logger;
     }

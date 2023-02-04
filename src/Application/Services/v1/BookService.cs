@@ -5,7 +5,6 @@ using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services.v1;
 
@@ -24,31 +23,32 @@ public class BookService : IBookService
     }
 
 
-    public async Task CreateBookAsync(string email, BookInDto bookInDto,
-                                      string guid)
+    public async Task CreateBookAsync(string email, BookInDto bookInDto)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
-
         var book = _mapper.Map<Book>(bookInDto);
-        book.BookId = new Guid(guid);
+        book.BookId = bookInDto.Guid;
 
-        // Add the tags
+        if (await _bookRepository.ExistsAsync(user.Id, book.BookId))
+        {
+            const string message = "A book with this guid already exists";
+            throw new InvalidParameterException(message);
+        }
+
+        // Add tags
         foreach (var tag in bookInDto.Tags)
         {
-            var newTag = user.Tags.SingleOrDefault(t => t.TagId == 
-                                                        new Guid(tag.Guid));
+            var newTag = user.Tags.SingleOrDefault(t => t.TagId == tag.Guid);
             if (newTag == default)
             {
                 newTag = _mapper.Map<Tag>(tag);
                 newTag.UserId = user.Id;
             }
-
-            book.Tags ??= new List<Tag>();
+            
             book.Tags.Add(newTag);
         }
         
         user.Books.Add(book);
-
         await _bookRepository.SaveChangesAsync();
     }
 
@@ -59,23 +59,19 @@ public class BookService : IBookService
         var books = _bookRepository.GetAllAsync(user.Id);
         await _bookRepository.LoadRelationShipsAsync(books);
 
-        return books
-            .Select(book => _mapper.Map<BookOutDto>(book))
-            .ToList();
+        return books.Select(book => _mapper.Map<BookOutDto>(book)).ToList();
     }
 
-    public async Task DeleteBooksAsync(string email,
-                                       IEnumerable<string> bookGuids)
+    public async Task DeleteBooksAsync(string email, IEnumerable<Guid> bookGuids)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
 
         foreach (var bookGuid in bookGuids)
         {
-            var book = user.Books.SingleOrDefault(book => book.BookId
-                                                      .ToString() == bookGuid);
-            if (book == null)
+            var book = user.Books.SingleOrDefault(book => book.BookId == bookGuid);
+            if (book == default)
             {
-                const string message = "No book with this title exists";
+                const string message = "No book with this guid exists";
                 throw new InvalidParameterException(message);
             }
 
@@ -90,42 +86,35 @@ public class BookService : IBookService
                                      BookForUpdateDto bookUpdateDto)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
-        var book = 
-            user.Books.SingleOrDefault(book => book.BookId.ToString() ==
-                                               bookUpdateDto.Guid);
+        var book = user.Books.SingleOrDefault(book => book.BookId == bookUpdateDto.Guid);
         if (book == null)
         {
-            const string message = "No book with this uuid exists";
+            const string message = "No book with this guid exists";
             throw new InvalidParameterException(message);
         }
         await _bookRepository.LoadRelationShipsAsync(book);
         
 
-        var type = bookUpdateDto.GetType();
-        var properties = type.GetProperties();
-
-        foreach (var property in properties)
+        var bookProperties = bookUpdateDto.GetType().GetProperties();
+        foreach (var property in bookProperties)
         {
-            if(property.Name.Equals("Guid",
-                                    StringComparison.InvariantCultureIgnoreCase))
+            if(property.Name.Equals("Guid"))
                 continue;
             
-            if (property.Name.Equals("Tags",
-                                     StringComparison.InvariantCultureIgnoreCase))
+            if (property.Name.Equals("Tags"))
             {
                 MergeTags(bookUpdateDto.Tags, book, user);
                 continue;
             }
 
             var value = property.GetValue(bookUpdateDto);
-
-            if (value == default || (value is int i && i == 0))
+            if (value is null || (value is int i && i == 0))
                 continue;
 
             var bookProperty = book.GetType().GetProperty(property.Name);
             if (bookProperty == null)
             {
-                var message = "The book class does not  contain a property" +
+                var message = "The book class does not contain a property" +
                               " called: " + property.Name;
                 throw new InvalidParameterException(message);
             }
@@ -136,21 +125,20 @@ public class BookService : IBookService
         await _bookRepository.SaveChangesAsync();
     }
 
-    private void MergeTags(ICollection<TagInDto> tags, 
-                                  Book book, User user)
+    private void MergeTags(ICollection<TagInDto> tags, Book book, User user)
     {
         // Delete all tags which no longer exist
         foreach (var tag in book.Tags)
         {
-            if (tags.All(t => new Guid(t.Guid) != tag.TagId))
+            if (tags.All(t => t.Guid != tag.TagId))
                 book.Tags.Remove(tag);
         }
 
+        // Add tags
         foreach (var tag in tags)
         {
             // Skip if already has tag
-            var existingTag = book.Tags.SingleOrDefault(
-                t => t.TagId == new Guid(tag.Guid));
+            var existingTag = book.Tags.SingleOrDefault(t => t.TagId == tag.Guid);
             if (existingTag != default)
             {
                 existingTag.Name = tag.Name;
@@ -158,8 +146,7 @@ public class BookService : IBookService
             }
 
             // Create new tag
-            var newTag = user.Tags.SingleOrDefault(t => t.TagId == 
-                                                       new Guid(tag.Guid));
+            var newTag = user.Tags.SingleOrDefault(t => t.TagId == tag.Guid);
             if (newTag == default)
             {
                 newTag = _mapper.Map<Tag>(tag);

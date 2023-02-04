@@ -4,12 +4,11 @@ using Application.Common.Exceptions;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Presentation.Controllers.v1;
 
 [Authorize]
-[ServiceFilter(typeof(UserExistsAttribute))]
-[ServiceFilter(typeof(ValidParameterAttribute))]
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/[controller]")]
@@ -28,8 +27,7 @@ public class BookController : ControllerBase
 
 
     [HttpPost]
-    [TypeFilter(typeof(BookDoesNotExistAttribute))]
-    public async Task<ActionResult> CreateBook([FromBody] BookInDto bookInDto)
+    public async Task<ActionResult> CreateBook(BookInDto bookInDto)
     {
         if (!bookInDto.IsValid)
         {
@@ -37,9 +35,17 @@ public class BookController : ControllerBase
             return BadRequest("The provided data is invalid");
         }
 
-        await _bookService.CreateBookAsync(HttpContext.User.Identity!.Name,
-                                           bookInDto, bookInDto.Guid);
-        return StatusCode(201);
+        try
+        {
+            await _bookService.CreateBookAsync(HttpContext.User.Identity!.Name,
+                                               bookInDto);
+            return StatusCode(201);
+        }
+        catch (InvalidParameterException e)
+        {
+            _logger.LogWarning("{ErrorMessage}", e.Message);
+            return BadRequest(e.Message);
+        }
     }
 
     [HttpGet]
@@ -52,9 +58,14 @@ public class BookController : ControllerBase
     }
     
     [HttpDelete]
-    public async Task<ActionResult> DeleteBooks(
-        [FromBody] ICollection<string> bookGuids)
+    public async Task<ActionResult> DeleteBooks(ICollection<Guid> bookGuids)
     {
+        if (bookGuids.IsNullOrEmpty())
+        {
+            _logger.LogWarning("Deleting book failed: no book guids provided");
+            return BadRequest("No books provided");
+        }
+        
         try
         {
             var userName = HttpContext.User.Identity!.Name;
@@ -69,7 +80,7 @@ public class BookController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult> UpdateBook([FromBody]BookForUpdateDto bookDto)
+    public async Task<ActionResult> UpdateBook([FromBody] BookForUpdateDto bookDto)
     {
         try
         {

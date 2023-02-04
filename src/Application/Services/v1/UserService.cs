@@ -24,7 +24,6 @@ public class UserService : IUserService
     public async Task<UserOutDto> GetUserAsync(string email)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: false);
-        
         return _mapper.Map<UserOutDto>(user);
     }
 

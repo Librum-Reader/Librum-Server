@@ -8,16 +8,19 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Common.ActionFilters;
 
-public class TagExistsAttribute : IAsyncActionFilter
+public class BookHasTagFilter : IAsyncActionFilter
 {
     private readonly IUserRepository _userRepository;
-    private readonly ILogger<TagExistsAttribute> _logger;
+    private readonly IBookRepository _bookRepository;
+    private readonly ILogger<BookHasTagFilter> _logger;
 
 
-    public TagExistsAttribute(IUserRepository userRepository,
-                              ILogger<TagExistsAttribute> logger)
+    public BookHasTagFilter(IUserRepository userRepository,
+                               IBookRepository bookRepository,
+                               ILogger<BookHasTagFilter> logger)
     {
         _userRepository = userRepository;
+        _bookRepository = bookRepository;
         _logger = logger;
     }
 
@@ -25,16 +28,25 @@ public class TagExistsAttribute : IAsyncActionFilter
     public async Task OnActionExecutionAsync(ActionExecutingContext context,
                                              ActionExecutionDelegate next)
     {
-        if (!context.ActionArguments.TryGetValue("guid",
-                                                 out object guidObject))
+        if (!context.ActionArguments.TryGetValue("bookGuid",
+                                                 out object bookGuidObject))
         {
-            const string message = "Action filter: Expected" +
-                                   " parameter 'guid'";
+            const string message = "Action filter: Expected parameter" +
+                                   " 'bookGuid' does not exist";
             throw new InternalServerException(message);
         }
 
-        var guid = guidObject.ToString();
-        if (guid == null)
+        if (!context.ActionArguments.TryGetValue("tagGuid",
+                                                 out object tagGuidObject))
+        {
+            const string message = "Action filter: Expected parameter" +
+                                   " 'tagGuid' does not exist";
+            throw new InternalServerException(message);
+        }
+
+        var bookGuid = bookGuidObject.ToString();
+        var tagGuid = tagGuidObject.ToString();
+        if (tagGuid == null || bookGuid == null)
         {
             const string message = "Action filter: Parameter is null";
             throw new InternalServerException(message);
@@ -43,7 +55,10 @@ public class TagExistsAttribute : IAsyncActionFilter
         var userName = context.HttpContext.User.Identity!.Name;
         var user = await _userRepository.GetAsync(userName, trackChanges: true);
 
-        if (user.Tags.All(tag => tag.TagId != new Guid(guid)))
+        var book = user.Books.Single(book => book.BookId == new Guid(bookGuid));
+        await _bookRepository.LoadRelationShipsAsync(book);
+
+        if (book.Tags.All(tag => tag.TagId != new Guid(tagGuid)))
         {
             var errorMessage = "No tag with this guid exists";
             _logger.LogWarning(errorMessage);
@@ -53,10 +68,10 @@ public class TagExistsAttribute : IAsyncActionFilter
             context.HttpContext.Response.StatusCode = badRequest;
 
             var response = new ApiExceptionDto(badRequest, errorMessage);
+
             await context.HttpContext.Response.WriteAsync(response.ToString());
             return;
         }
-
 
         await next();
     }

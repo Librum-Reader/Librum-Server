@@ -4,8 +4,7 @@ namespace Application.Interfaces.Services;
 
 public interface ITagService
 {
-    public Task DeleteTagAsync(string email, string guid);
-    public Task UpdateTagAsync(string email, string guid,
-                               TagForUpdateDto tagUpdate);
+    public Task DeleteTagAsync(string email, Guid guid);
+    public Task UpdateTagAsync(string email, TagForUpdateDto tagDto);
     public Task<IEnumerable<TagOutDto>> GetTagsAsync(string email);
 }

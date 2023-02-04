@@ -38,10 +38,10 @@ public class BookRepository : IBookRepository
         return _context.Books.Where(book => book.UserId == userId);
     }
 
-    public async Task<bool> ExistsAsync(string userId, string bookTitle)
+    public async Task<bool> ExistsAsync(string userId, Guid bookGuid)
     {
         return await _context.Books.AnyAsync(book => book.UserId == userId &&
-                                                     book.Title == bookTitle);
+                                                     book.BookId == bookGuid);
     }
 
     public void DeleteBook(Book book)

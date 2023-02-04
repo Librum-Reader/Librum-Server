@@ -8,6 +8,6 @@ public interface IBookRepository
     public Task LoadRelationShipsAsync(Book book);
     public Task LoadRelationShipsAsync(IEnumerable<Book> books);
     public IQueryable<Book> GetAllAsync(string userId);
-    public Task<bool> ExistsAsync(string userId, string bookTitle);
+    public Task<bool> ExistsAsync(string userId, Guid bookGuid);
     void DeleteBook(Book book);
 }

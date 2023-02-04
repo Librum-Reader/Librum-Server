@@ -39,5 +39,5 @@ public class BookOutDto
     public string Cover { get; set; }
     
 
-    public ICollection<TagOutDto> Tags { get; set; }
+    public ICollection<TagOutDto> Tags { get; set; } = new List<TagOutDto>();
 }

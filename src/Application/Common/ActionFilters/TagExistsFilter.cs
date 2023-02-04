@@ -1,6 +1,5 @@
 using System.Net;
 using Application.Common.DTOs;
-using Application.Common.DTOs.Tags;
 using Application.Common.Exceptions;
 using Application.Interfaces.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -9,15 +8,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Common.ActionFilters;
 
-public class TagNameDoesNotExistAttribute : IAsyncActionFilter
+public class TagExistsFilter : IAsyncActionFilter
 {
     private readonly IUserRepository _userRepository;
-    private readonly ILogger<TagNameDoesNotExistAttribute> _logger;
+    private readonly ILogger<TagExistsFilter> _logger;
 
 
-    public TagNameDoesNotExistAttribute(IUserRepository userRepository,
-                                        ILogger<TagNameDoesNotExistAttribute>
-                                            logger)
+    public TagExistsFilter(IUserRepository userRepository,
+                              ILogger<TagExistsFilter> logger)
     {
         _userRepository = userRepository;
         _logger = logger;
@@ -27,23 +25,27 @@ public class TagNameDoesNotExistAttribute : IAsyncActionFilter
     public async Task OnActionExecutionAsync(ActionExecutingContext context,
                                              ActionExecutionDelegate next)
     {
-        var tagInDto = (TagInDto)context.ActionArguments.SingleOrDefault(
-            arg => arg.Key.Contains("Dto")).Value;
-        if (tagInDto == null)
+        if (!context.ActionArguments.TryGetValue("guid",
+                                                 out object guidObject))
         {
-            const string message = "Action filter: Expected " +
-                                   "parameter containing 'Dto'";
+            const string message = "Action filter: Expected" +
+                                   " parameter 'guid'";
             throw new InternalServerException(message);
         }
 
-        var tagName = tagInDto.Name;
+        var guid = guidObject.ToString();
+        if (guid == null)
+        {
+            const string message = "Action filter: Parameter is null";
+            throw new InternalServerException(message);
+        }
 
         var userName = context.HttpContext.User.Identity!.Name;
         var user = await _userRepository.GetAsync(userName, trackChanges: true);
 
-        if (user.Tags.Any(tag => tag.Name == tagName))
+        if (user.Tags.All(tag => tag.TagId != new Guid(guid)))
         {
-            var errorMessage = "A tag with this name already exists";
+            var errorMessage = "No tag with this guid exists";
             _logger.LogWarning(errorMessage);
 
             context.HttpContext.Response.ContentType = "application/json";

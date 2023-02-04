@@ -10,7 +10,7 @@ public class TagAutoMapperProfile : Profile
     {
         CreateMap<TagInDto, Tag>()
             .ForMember(dest => dest.CreationDate, temp => temp.MapFrom(src => DateTime.UtcNow))
-            .ForMember(dest => dest.TagId, temp => temp.MapFrom(src => new Guid(src.Guid)));
+            .ForMember(dest => dest.TagId, temp => temp.MapFrom(src => src.Guid));
         
         CreateMap<Tag, TagOutDto>()
             .ForMember(dest => dest.Guid, temp => temp.MapFrom(src => src.TagId.ToString()));

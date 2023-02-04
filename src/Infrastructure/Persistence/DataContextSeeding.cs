@@ -44,7 +44,7 @@ public static class DataContextSeeding
         {
             new BookInDto
             {
-                Guid = Guid.NewGuid().ToString(),
+                Guid = Guid.NewGuid(),
                 Title = "LukesRandomBook",
                 PageCount = 1200,
                 CurrentPage = 2,
@@ -57,7 +57,7 @@ public static class DataContextSeeding
             },
             new BookInDto
             {
-                Guid = Guid.NewGuid().ToString(),
+                Guid = Guid.NewGuid(),
                 Title = "LisasRandomBook",
                 PageCount = 409,
                 CurrentPage = 211,
@@ -70,7 +70,7 @@ public static class DataContextSeeding
             },
             new BookInDto
             {
-                Guid = Guid.NewGuid().ToString(),
+                Guid = Guid.NewGuid(),
                 Title = "KaktorsRandomBook",
                 PageCount = 931200,
                 Format = "Epub",
@@ -87,8 +87,7 @@ public static class DataContextSeeding
         for (int i = 0; i < users.Count; ++i)
         {
             await authenticationService.RegisterUserAsync(users[i]);
-            await bookService.CreateBookAsync(users[i].Email, books[i],
-                                              Guid.NewGuid().ToString());
+            await bookService.CreateBookAsync(users[i].Email, books[i]);
         }
     }
 }

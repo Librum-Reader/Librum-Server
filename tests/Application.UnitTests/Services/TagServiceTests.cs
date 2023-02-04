@@ -63,11 +63,38 @@ public class TagServiceTests
             .ReturnsAsync(1);
         
         // Act
-        await _tagService.DeleteTagAsync("JohnDoe@gmail.com", tagGuid.ToString());
+        await _tagService.DeleteTagAsync("JohnDoe@gmail.com", tagGuid);
         
         // Assert
         _tagRepositoryMock.Verify(x => x.Delete(It.IsAny<Tag>()), Times.Once);
         _tagRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
+    }
+    
+    [Fact]
+    public async Task ATagService_FailsDeletingATagIfTagDoesNotExist()
+    {
+        // Arrange
+        var nonExistentGuid = Guid.NewGuid();
+        
+        var user = new User
+        {
+            Tags = new List<Tag>
+            {
+                new Tag
+                {
+                    TagId = Guid.NewGuid(),
+                    Name = "someOtherName"
+                }
+            }
+        };
+        
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
+            .ReturnsAsync(user);
+        
+        // Act
+        await Assert.ThrowsAsync<InvalidParameterException>(
+            () => _tagService.DeleteTagAsync("JohnDoe@gmail.com", nonExistentGuid));
     }
 
     [Fact]
@@ -95,6 +122,7 @@ public class TagServiceTests
 
         var tagForUpdate = new TagForUpdateDto
         {
+            Guid = tagGuid,
             Name = "NewName"
         };
 
@@ -107,9 +135,7 @@ public class TagServiceTests
             .ReturnsAsync(1);
         
         // Act
-        await _tagService.UpdateTagAsync("JohnDoe@gmail.com", 
-                                         tagGuid.ToString(),
-                                         tagForUpdate);
+        await _tagService.UpdateTagAsync("JohnDoe@gmail.com", tagForUpdate);
         
         // Assert
         _tagRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
@@ -135,6 +161,7 @@ public class TagServiceTests
 
         var tagForUpdate = new TagForUpdateDto
         {
+            Guid = nonExistentTagGuid,
             Name = "NewName"
         };
 
@@ -145,9 +172,7 @@ public class TagServiceTests
         
         // Assert
         await Assert.ThrowsAsync<InvalidParameterException>(
-            () => _tagService.UpdateTagAsync("JohnDoe@gmail.com", 
-                                             nonExistentTagGuid.ToString(),
-                                             tagForUpdate));
+            () => _tagService.UpdateTagAsync("JohnDoe@gmail.com", tagForUpdate));
     }
     
     [Fact]

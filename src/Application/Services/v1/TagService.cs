@@ -23,30 +23,35 @@ public class TagService : ITagService
         _tagRepository = tagRepository;
     }
 
-    public async Task DeleteTagAsync(string email, string guid)
+    public async Task DeleteTagAsync(string email, Guid guid)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
         
-        var tag = user.Tags.SingleOrDefault(tag => tag.TagId == new Guid(guid));
-        tag!.UserId = user.Id;
+        var tag = user.Tags.SingleOrDefault(tag => tag.TagId == guid);
+        if (tag == default)
+        {
+            const string message = "No tag with this guid exists";
+            throw new InvalidParameterException(message);
+        }
 
+        tag.UserId = user.Id;
         _tagRepository.Delete(tag);
+        
         await _tagRepository.SaveChangesAsync();
     }
 
-    public async Task UpdateTagAsync(string email, string guid,
-                                     TagForUpdateDto tagUpdate)
+    public async Task UpdateTagAsync(string email, TagForUpdateDto tagDto)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
         
-        var tag = user.Tags.SingleOrDefault(tag => tag.TagId == new Guid(guid));
+        var tag = user.Tags.SingleOrDefault(tag => tag.TagId == tagDto.Guid);
         if (tag == default)
         {
             const string message = "No tag with this guid exists";
             throw new InvalidParameterException(message);
         }
         
-        tag.Name = tagUpdate.Name;
+        tag.Name = tagDto.Name;
         await _tagRepository.SaveChangesAsync();
     }
 

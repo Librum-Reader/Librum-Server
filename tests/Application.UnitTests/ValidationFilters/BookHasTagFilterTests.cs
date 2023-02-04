@@ -15,19 +15,19 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace Application.UnitTests.ValidationAttributes;
+namespace Application.UnitTests.ValidationFilters;
 
-public class BookHasTagAttributeTests
+public class BookHasTagFilterTests
 {
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly Mock<IBookRepository> _bookRepositoryMock = new();
-    private readonly Mock<ILogger<BookHasTagAttribute>> _loggerMock = new();
+    private readonly Mock<ILogger<BookHasTagFilter>> _loggerMock = new();
 
-    private readonly BookHasTagAttribute _bookHasTagAttribute;
+    private readonly BookHasTagFilter _bookHasTagFilter;
 
-    public BookHasTagAttributeTests()
+    public BookHasTagFilterTests()
     {
-        _bookHasTagAttribute = new BookHasTagAttribute(_userRepositoryMock.Object,
+        _bookHasTagFilter = new BookHasTagFilter(_userRepositoryMock.Object,
                                                        _bookRepositoryMock.Object,
                                                        _loggerMock.Object);
     }
@@ -89,7 +89,7 @@ public class BookHasTagAttributeTests
         var context = new ActionExecutedContext(executingContext,
                                                 new List<IFilterMetadata>(),
                                                 Mock.Of<Controller>());
-        await _bookHasTagAttribute.OnActionExecutionAsync(executingContext,
+        await _bookHasTagFilter.OnActionExecutionAsync(executingContext,
                     () => Task.FromResult(context));
 
         // Assert
@@ -151,7 +151,7 @@ public class BookHasTagAttributeTests
         var context = new ActionExecutedContext(executingContext,
                                                 new List<IFilterMetadata>(),
                                                 Mock.Of<Controller>());
-        await _bookHasTagAttribute.OnActionExecutionAsync(executingContext,
+        await _bookHasTagFilter.OnActionExecutionAsync(executingContext,
                     () => Task.FromResult(context));
 
         // Assert
@@ -187,7 +187,7 @@ public class BookHasTagAttributeTests
                                                 new List<IFilterMetadata>(),
                                                 Mock.Of<Controller>());
         await Assert.ThrowsAsync<InternalServerException>(() => 
-            _bookHasTagAttribute.OnActionExecutionAsync(executingContext,
+            _bookHasTagFilter.OnActionExecutionAsync(executingContext,
                     () => Task.FromResult(context)));
         
     }
@@ -221,7 +221,7 @@ public class BookHasTagAttributeTests
                                                 new List<IFilterMetadata>(),
                                                 Mock.Of<Controller>());
         await Assert.ThrowsAsync<InternalServerException>(() => 
-            _bookHasTagAttribute.OnActionExecutionAsync(executingContext,
+            _bookHasTagFilter.OnActionExecutionAsync(executingContext,
                     () => Task.FromResult(context)));
         
     }

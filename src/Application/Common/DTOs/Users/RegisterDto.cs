@@ -15,6 +15,7 @@ public class RegisterDto
     public string LastName { get; set; }
 
     [Required]
+    [EmailAddress]
     [MinLength(6, ErrorMessage = "The email is too short")]
     [MaxLength(50, ErrorMessage = "The email is too long")]
     public string Email { get; set; }
