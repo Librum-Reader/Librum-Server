@@ -4,7 +4,6 @@ using Application.Interfaces;
 using Application.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
-using Microsoft.AspNetCore.Identity;
 
 namespace Application.Services.v1;
 
@@ -12,16 +11,13 @@ public class AuthenticationService : IAuthenticationService
 {
     private readonly IMapper _mapper;
     private readonly IAuthenticationManager _authenticationManager;
-    private readonly UserManager<User> _userManager;
 
 
     public AuthenticationService(IMapper mapper,
-                                 IAuthenticationManager authenticationManager,
-                                 UserManager<User> userManager)
+                                 IAuthenticationManager authenticationManager)
     {
         _mapper = mapper;
         _authenticationManager = authenticationManager;
-        _userManager = userManager;
     }
     
     
@@ -38,8 +34,7 @@ public class AuthenticationService : IAuthenticationService
     
     public async Task RegisterUserAsync(RegisterDto registerDto)
     {
-        if (await _authenticationManager
-                .EmailAlreadyExistsAsync(registerDto.Email))
+        if (await _authenticationManager.EmailAlreadyExistsAsync(registerDto.Email))
         {
             const string message = "A user with this email already exists";
             throw new InvalidParameterException(message);
@@ -47,14 +42,15 @@ public class AuthenticationService : IAuthenticationService
 
         var user = _mapper.Map<User>(registerDto);
 
-        var result = await _userManager.CreateAsync(user, registerDto.Password);
-        if (!result.Succeeded)
+        var success =
+            await _authenticationManager.CreateUserAsync(user, registerDto.Password);
+        if (!success)
         {
             const string message = "The provided data was invalid";
             throw new InvalidParameterException(message);
         }
 
         if(registerDto.Roles != null)
-            await _userManager.AddToRolesAsync(user, registerDto.Roles);
+            await _authenticationManager.AddRolesToUserAsync(user, registerDto.Roles);
     }
 }

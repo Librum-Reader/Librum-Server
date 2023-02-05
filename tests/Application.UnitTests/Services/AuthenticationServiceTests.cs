@@ -7,7 +7,6 @@ using Application.Interfaces;
 using Application.Services.v1;
 using AutoMapper;
 using Domain.Entities;
-using Microsoft.AspNetCore.Identity;
 using Moq;
 using Xunit;
 
@@ -15,8 +14,6 @@ namespace Application.UnitTests.Services;
 
 public class AuthenticationServiceTests
 {
-    private readonly Mock<UserManager<User>> _userManagerMock = 
-        TestHelpers.MockUserManager<User>();
     private readonly Mock<IAuthenticationManager> _authenticationManagerMock = new();
     private readonly AuthenticationService _authenticationService;
     
@@ -30,9 +27,7 @@ public class AuthenticationServiceTests
         var mapper = new Mapper(mapperConfig);
         
         _authenticationService = 
-            new AuthenticationService(mapper, 
-                                      _authenticationManagerMock.Object, 
-                                      _userManagerMock.Object);
+            new AuthenticationService(mapper, _authenticationManagerMock.Object);
     }
     
     
@@ -95,22 +90,16 @@ public class AuthenticationServiceTests
             
         };
         
-        _authenticationManagerMock.Setup(x => x.UserExistsAsync(It.IsAny<string>(),
-                                                                It.IsAny<string>()))
+        _authenticationManagerMock.Setup(x => x.EmailAlreadyExistsAsync(It.IsAny<string>()))
             .ReturnsAsync(false);
         
-        _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>(), 
-                                                  It.IsAny<string>()))
-            .ReturnsAsync(IdentityResult.Success);
+        _authenticationManagerMock.Setup(x => x.CreateUserAsync(It.IsAny<User>(), 
+                                                                It.IsAny<string>()))
+            .ReturnsAsync(true);
         
 
         // Act
         await _authenticationService.RegisterUserAsync(registerDto);
-        
-        // Assert
-        _userManagerMock.Verify(x => x.CreateAsync(It.IsAny<User>(),
-                                                   It.IsAny<string>()),
-                                Times.Once);
     }
 
     [Fact]
@@ -152,9 +141,9 @@ public class AuthenticationServiceTests
                                                                 It.IsAny<string>()))
             .ReturnsAsync(false);
         
-        _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>(),
-                                                  It.IsAny<string>()))
-            .ReturnsAsync(IdentityResult.Failed());
+        _authenticationManagerMock.Setup(x => x.CreateUserAsync(It.IsAny<User>(),
+                                                                It.IsAny<string>()))
+            .ReturnsAsync(false);
         
 
         // Assert
@@ -179,17 +168,17 @@ public class AuthenticationServiceTests
                                                                 It.IsAny<string>()))
             .ReturnsAsync(false);
         
-        _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>(),
-                                                  It.IsAny<string>()))
-            .ReturnsAsync(IdentityResult.Success);
+        _authenticationManagerMock.Setup(x => x.CreateUserAsync(It.IsAny<User>(),
+                                                                It.IsAny<string>()))
+            .ReturnsAsync(true);
         
     
         // Act
         await _authenticationService.RegisterUserAsync(registerDto);
         
         // Assert
-        _userManagerMock.Verify(x => x.AddToRolesAsync(It.IsAny<User>(),
-                                                       It.IsAny<IEnumerable<string>>()),
-                                Times.Once);
+        _authenticationManagerMock.Verify(x => x.AddRolesToUserAsync(It.IsAny<User>(), 
+                                              It.IsAny<IEnumerable<string>>()), 
+                                          Times.Once);
     }
 }

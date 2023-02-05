@@ -22,8 +22,19 @@ public class AuthenticationManager : IAuthenticationManager
         _configuration = configuration;
         _userManager = userManager;
     }
-    
-    
+
+
+    public async Task<bool> CreateUserAsync(User user, string password)
+    {
+        var result = await _userManager.CreateAsync(user, password);
+        return result.Succeeded;
+    }
+
+    public async Task AddRolesToUserAsync(User user, IEnumerable<string> roles)
+    {
+        await _userManager.AddToRolesAsync(user, roles);
+    }
+
     public async Task<bool> UserExistsAsync(string email, string password)
     {
         var user = await _userManager.FindByEmailAsync(email);
