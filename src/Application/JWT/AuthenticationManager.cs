@@ -30,11 +30,6 @@ public class AuthenticationManager : IAuthenticationManager
         return result.Succeeded;
     }
 
-    public async Task AddRolesToUserAsync(User user, IEnumerable<string> roles)
-    {
-        await _userManager.AddToRolesAsync(user, roles);
-    }
-
     public async Task<bool> UserExistsAsync(string email, string password)
     {
         var user = await _userManager.FindByEmailAsync(email);
@@ -81,12 +76,6 @@ public class AuthenticationManager : IAuthenticationManager
         {
             new Claim(ClaimTypes.Name, user.UserName)
         };
-
-        IEnumerable<string> roles = await _userManager.GetRolesAsync(user);
-        foreach (var role in roles)
-        {
-            claims.Add(new Claim(ClaimTypes.Role, role));
-        }
 
         return claims;
     }

@@ -49,8 +49,5 @@ public class AuthenticationService : IAuthenticationService
             const string message = "The provided data was invalid";
             throw new InvalidParameterException(message);
         }
-
-        if(registerDto.Roles != null)
-            await _authenticationManager.AddRolesToUserAsync(user, registerDto.Roles);
     }
 }

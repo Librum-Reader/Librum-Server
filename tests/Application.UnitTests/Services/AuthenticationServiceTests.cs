@@ -150,35 +150,4 @@ public class AuthenticationServiceTests
         await Assert.ThrowsAsync<InvalidParameterException>(
             () => _authenticationService.RegisterUserAsync(registerDto));
     }
-
-    [Fact]
-    public async Task AnAuthenticationService_SucceedsAddingRoles()
-    {
-        // Arrange
-        var registerDto = new RegisterDto
-        {
-            Email = "JohnDoe@gmail.com",
-            FirstName = "John",
-            LastName = "Doe",
-            Password = "SomePassword123",
-            Roles = new List<string>() {"Manager", "Client"}
-        };
-        
-        _authenticationManagerMock.Setup(x => x.UserExistsAsync(It.IsAny<string>(),
-                                                                It.IsAny<string>()))
-            .ReturnsAsync(false);
-        
-        _authenticationManagerMock.Setup(x => x.CreateUserAsync(It.IsAny<User>(),
-                                                                It.IsAny<string>()))
-            .ReturnsAsync(true);
-        
-    
-        // Act
-        await _authenticationService.RegisterUserAsync(registerDto);
-        
-        // Assert
-        _authenticationManagerMock.Verify(x => x.AddRolesToUserAsync(It.IsAny<User>(), 
-                                              It.IsAny<IEnumerable<string>>()), 
-                                          Times.Once);
-    }
 }
