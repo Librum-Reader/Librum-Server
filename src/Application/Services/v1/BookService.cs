@@ -128,10 +128,16 @@ public class BookService : IBookService
     private void MergeTags(ICollection<TagInDto> tags, Book book, User user)
     {
         // Delete all tags which no longer exist
+        var tagsToDelete = new List<Tag>();
         foreach (var tag in book.Tags)
         {
             if (tags.All(t => t.Guid != tag.TagId))
-                book.Tags.Remove(tag);
+                tagsToDelete.Add(tag);
+        }
+
+        foreach (var tag in tagsToDelete)
+        {
+            book.Tags.Remove(tag);
         }
 
         // Add tags
