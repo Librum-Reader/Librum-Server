@@ -150,6 +150,12 @@ public class BookService : IBookService
                 continue;
             }
 
+            if (book.Tags.Any(t => t.Name == tag.Name))
+            {
+                var message = "A tag with this name already exists";
+                throw new InvalidParameterException(message);
+            }
+
             AddTagDtoToBook(book, tag, user);
         }
     }
