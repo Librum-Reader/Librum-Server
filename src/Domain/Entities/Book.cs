@@ -12,7 +12,7 @@ public class Book
     public Guid BookId { get; set; }
 
     [Required]
-    [MinLength(4, ErrorMessage = "The book title is too short")]
+    [MinLength(2, ErrorMessage = "The book title is too short")]
     [MaxLength(200, ErrorMessage = "The book title is too long")]
     public string Title { get; set; }
     
