@@ -43,7 +43,14 @@ public static class DependencyInjection
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddDbContext<DataContext>(options =>
         {
-            options.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
+            var sqliteConnection = configuration.GetConnectionString("DefaultConnection");
+            if (sqliteConnection == null)
+            {
+                throw new InvalidDataException("Can not read 'DefaultConnection'" +
+                                               "from settings file");
+            }
+            
+            options.UseSqlite(sqliteConnection);
         });
 
 
@@ -69,8 +76,14 @@ public static class DependencyInjection
     public static void ConfigureJwt(this IServiceCollection services, 
                                     IConfiguration configuration)
     {
-        var signingKey = 
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]));
+        var secret = configuration["JWT:Secret"]!;
+        if (secret.IsNullOrEmpty())
+        {
+            throw new InvalidDataException("Can not read 'DefaultConnection'" +
+                                           "from settings file");
+        }
+        
+        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         
         services.AddAuthentication(opt =>
         {
