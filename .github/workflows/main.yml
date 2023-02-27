@@ -7,6 +7,11 @@ on:
     - dev/develop
     
     
+env:
+  AZURE_WEBAPP_NAME: librum-dev
+  AZURE_WEBAPP_PACKAGE_PATH: "./publish"
+    
+    
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -26,4 +31,11 @@ jobs:
         run: dotnet build ./Librum-Server.sln --configuration Release --no-restore
         
       - name: Publish
-        run: dotnet publish ./Librum-Server.sln --configuration Release --no-build
+        run: dotnet publish ./Librum-Server.sln --configuration Release --no-build --output ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+      
+      - name: Deploy
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
