@@ -50,6 +50,8 @@ public class AuthenticationController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<string>> LoginUser([FromBody] LoginDto loginDto)
     {
+        return BadRequest("Test failure");
+        
         try
         {
             var result = await _authenticationService.LoginUserAsync(loginDto);
