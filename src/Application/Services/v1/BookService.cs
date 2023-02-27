@@ -62,7 +62,7 @@ public class BookService : IBookService
     {
         var user = await _userRepository.GetAsync(email, trackChanges: false);
 
-        var books = _bookRepository.GetAllAsync(user.Id);
+        var books = _bookRepository.GetAllAsync(user.Id).ToList();
         await _bookRepository.LoadRelationShipsAsync(books);
 
         return books.Select(book => _mapper.Map<BookOutDto>(book)).ToList();

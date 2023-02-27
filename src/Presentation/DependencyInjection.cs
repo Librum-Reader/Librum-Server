@@ -50,7 +50,7 @@ public static class DependencyInjection
                                                "from settings file");
             }
             
-            options.UseSqlite(sqliteConnection);
+            options.UseSqlServer(sqliteConnection);
         });
 
 

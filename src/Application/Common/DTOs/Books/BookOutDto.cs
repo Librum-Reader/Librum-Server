@@ -24,10 +24,6 @@ public class BookOutDto
     
     public string Authors { get; set; }
     
-    public string DataLink { get; set; }
-    
-    public string CoverLink { get; set; }
-    
     public string CreationDate { get; set; }
     
     public string AddedToLibrary { get; set; }
