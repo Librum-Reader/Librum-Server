@@ -26,11 +26,6 @@ using (var scope = app.Services.CreateScope())
 
     var loggerFactory = services.GetRequiredService<ILoggerFactory>();
     loggerFactory.AddFile(Directory.GetCurrentDirectory() + "/Data/Logs/");
-
-    await DataContextSeeding.SeedDataContext(
-        services.GetRequiredService<DataContext>(),
-        services.GetRequiredService<IAuthenticationService>(),
-        services.GetRequiredService<IBookService>());
 }
 
 
