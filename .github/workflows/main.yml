@@ -28,7 +28,7 @@ jobs:
         run: dotnet restore ./Librum-Server.sln
         
       - name: Build
-        run: dotnet build ./Librum-Server.sln --configuration Release --no-restore
+        run: dotnet build ./src/Presentation --configuration Release --no-restore
         
       - name: Publish
         run: dotnet publish ./Librum-Server.sln --configuration Release --no-build --property PublishDir=${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
