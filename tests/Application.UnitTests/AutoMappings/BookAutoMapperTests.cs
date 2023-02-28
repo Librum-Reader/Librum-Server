@@ -44,7 +44,7 @@ public class BookAutoMapperTests
             PageCount = 200,
             Format = "Pdf",
             Authors = "Bob martin",
-            Cover = null,
+            // Cover = null,
             Creator = "SomeCreator",
             Data = null,
             Language = "German",
@@ -65,7 +65,7 @@ public class BookAutoMapperTests
         Assert.Equal(bookInDto.PageCount, result.PageCount);
         Assert.Equal(bookInDto.Format, result.Format);
         Assert.Equal(bookInDto.Authors, result.Authors);
-        Assert.Equal("none", result.CoverLink);
+        // Assert.Equal("none", result.CoverLink);
         Assert.Equal(bookInDto.Creator, result.Creator);
         Assert.Equal(bookInDto.DocumentSize, result.DocumentSize);
         Assert.Equal(bookInDto.LastModified, result.LastModified);

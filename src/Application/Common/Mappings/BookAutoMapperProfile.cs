@@ -11,9 +11,9 @@ public class BookAutoMapperProfile : Profile
     {
         CreateMap<BookInDto, Book>()
             .ForMember(dest => dest.DataLink, temp => temp.MapFrom(src => "none"))
-            .ForMember(dest => dest.CoverLink, temp => temp.MapFrom(src => src.Cover.IsNullOrEmpty() 
-                                                                        ? "none"
-                                                                        : src.Cover))
+            // .ForMember(dest => dest.CoverLink, temp => temp.MapFrom(src => src.Cover.IsNullOrEmpty() 
+                                                                        // ? "none"
+                                                                        // : src.Cover))
             .ForMember(dest => dest.Tags, temp => temp.Ignore());
 
         CreateMap<Book, BookOutDto>()

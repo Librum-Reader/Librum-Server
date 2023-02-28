@@ -52,7 +52,7 @@ public class Book
     [Required]
     public string DataLink { get; set; }
     
-    [Required]
+    // [Required]
     public string CoverLink { get; set; }
 
     [MinLength(8, ErrorMessage = "The creation date is too short")]

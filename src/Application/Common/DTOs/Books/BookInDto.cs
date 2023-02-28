@@ -68,7 +68,7 @@ public class BookInDto
     [MaxLength(100, ErrorMessage = "The last modified is too long")]
     public string LastModified { get; set; }
     
-    public string Cover { get; set; }
+    // public string Cover { get; set; }
     
     public string Data { get; set; }
 
