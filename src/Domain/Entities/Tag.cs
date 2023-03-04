@@ -15,9 +15,7 @@ public class Tag
 
     [Required]
     public DateTime CreationDate { get; set; }
-
     
-    public ICollection<Book> Books { get; set; }
     
     public string UserId { get; set; }
     public User User { get; set; }

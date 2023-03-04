@@ -53,11 +53,9 @@ public class Book
     [Required]
     public string DataLink { get; set; }
     
-    // [Required]
     [AllowNull]
     public string CoverLink { get; set; }
 
-    [Required]
     [MinLength(8, ErrorMessage = "The creation date is too short")]
     [MaxLength(140, ErrorMessage = "The creation date is too long")]
     public string CreationDate { get; set; }
