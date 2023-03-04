@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 
 namespace Domain.Entities;
@@ -53,6 +54,7 @@ public class Book
     public string DataLink { get; set; }
     
     // [Required]
+    [AllowNull]
     public string CoverLink { get; set; }
 
     [MinLength(8, ErrorMessage = "The creation date is too short")]
