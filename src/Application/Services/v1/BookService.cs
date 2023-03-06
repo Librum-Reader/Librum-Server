@@ -75,11 +75,11 @@ public class BookService : IBookService
         foreach (var bookGuid in bookGuids)
         {
             var book = user.Books.SingleOrDefault(book => book.BookId == bookGuid);
-            if (book == null)
-            {
-                const string message = "No book with this guid exists";
-                throw new InvalidParameterException(message);
-            }
+            // if (book == null)
+            // {
+            //     const string message = "No book with this guid exists";
+            //     throw new InvalidParameterException(message);
+            // }
 
             await _bookRepository.LoadRelationShipsAsync(book);
             _bookRepository.DeleteBook(book);
