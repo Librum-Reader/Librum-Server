@@ -1,0 +1,36 @@
+name: Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev/develop
+      - main
+  pull_request:
+    branches:
+      - dev/develop
+      - main
+
+    
+    
+    
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
+          
+      - name: Restore
+        run: dotnet restore ./Librum-Server.sln
+        
+      - name: Build
+        run: dotnet build src/Presentation --configuration Release --no-restore
+      
+      - name: Test
+        run: dotnet test --configuration Release

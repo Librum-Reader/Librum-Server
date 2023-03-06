@@ -1,11 +1,11 @@
-name: Publish
+name: Deploy
 
 on:
   workflow_dispatch:
   push:
     branches:
-    - dev/develop
-    
+      - dev/develop
+      - main
     
 env:
   AZURE_WEBAPP_NAME: librum-dev
@@ -13,7 +13,7 @@ env:
     
     
 jobs:
-  publish:
+  deploy:
     runs-on: ubuntu-latest
     
     steps:
@@ -29,9 +29,6 @@ jobs:
         
       - name: Build
         run: dotnet build src/Presentation --configuration Release --no-restore
-      
-      - name: Test
-        run: dotnet test --configuration Release
       
       - name: Publish
         run: dotnet publish src/Presentation --configuration Release --no-build --property PublishDir=${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
