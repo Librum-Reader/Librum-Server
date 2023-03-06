@@ -1,3 +1,4 @@
+# Deploys updated binaries to the test server
 name: Deploy
 
 on:

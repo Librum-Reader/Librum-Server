@@ -1,3 +1,4 @@
+# Runs all tests
 name: Test
 
 on:
