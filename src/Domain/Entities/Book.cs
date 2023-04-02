@@ -41,7 +41,7 @@ public class Book
 
     [Required]
     [MinLength(2, ErrorMessage = "The pages size is too short")]
-    [MaxLength(40, ErrorMessage = "The pages size is too long")]
+    [MaxLength(100, ErrorMessage = "The pages size is too long")]
     public string PagesSize { get; set; }
     
     [MinLength(2, ErrorMessage = "The creator is too short")]

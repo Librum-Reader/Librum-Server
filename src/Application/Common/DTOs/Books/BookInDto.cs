@@ -39,7 +39,7 @@ public class BookInDto
     public string DocumentSize { get; set; }
     
     [EmptyOrMinLength(2, ErrorMessage = "The pages size is too short")]
-    [MaxLength(60, ErrorMessage = "The pages size is too long")]
+    [MaxLength(100, ErrorMessage = "The pages size is too long")]
     public string PagesSize { get; set; }
     
     [EmptyOrMinLength(2, ErrorMessage = "The creator is too short")]
