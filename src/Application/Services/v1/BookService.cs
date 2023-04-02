@@ -34,28 +34,14 @@ public class BookService : IBookService
         
         var book = _mapper.Map<Book>(bookInDto);
         book.BookId = bookInDto.Guid;
-        AddTagDtosToBook(bookInDto.Tags, book, user);
+
+        foreach (var tag in bookInDto.Tags)
+        {
+            AddTagDtoToBook(book, tag, user);
+        }
 
         user.Books.Add(book);
         await _bookRepository.SaveChangesAsync();
-    }
-
-    private void AddTagDtosToBook(IEnumerable<TagInDto> tags, Book book, User user)
-    {
-        foreach (var tag in tags)
-        {
-            // If the tag already exists just add it to the book
-            var existingTag = user.Tags.SingleOrDefault(t => t.TagId == tag.Guid);
-            if (existingTag != null)
-            {
-                book.Tags.Add(existingTag);
-                continue;
-            }
-
-            var newTag = _mapper.Map<Tag>(tag);
-            newTag.UserId = user.Id;
-            book.Tags.Add(newTag);
-        }
     }
 
     public async Task<IList<BookOutDto>> GetBooksAsync(string email)
@@ -107,7 +93,7 @@ public class BookService : IBookService
             switch (dtoProperty.Name)
             {
                 case "Guid":
-                    continue;
+                    continue;     // Can't modify the GUID
                 case "Tags":
                     MergeTags(bookUpdateDto.Tags, book, user);
                     continue;
@@ -115,7 +101,7 @@ public class BookService : IBookService
                     continue;
             }
             
-            // Update the book value
+            // Update any other property via reflection
             var value = dtoProperty.GetValue(bookUpdateDto);
             SetPropertyOnBook(book, dtoProperty.Name, value);
         }
@@ -149,17 +135,15 @@ public class BookService : IBookService
                 existingTag.Name = tag.Name;
                 continue;
             }
-
-            if (book.Tags.Any(t => t.Name == tag.Name))
-            {
-                var message = "A tag with this name already exists";
-                throw new InvalidParameterException(message);
-            }
-
+            
             AddTagDtoToBook(book, tag, user);
         }
     }
     
+    /// When a book is updated, a list of tags is sent with it. This list of tags
+    /// is the "source of truth" and contains all tags that the book owns.
+    /// If the database book contains tags that the updated list of tags does not
+    /// contain, those old tags shall be deleted
     private void RemoveBookTagsWhichDontExistInNewTags(Book book, 
                                                        ICollection<TagInDto> newTags)
     {
@@ -175,6 +159,11 @@ public class BookService : IBookService
 
     private void AddTagDtoToBook(Book book, TagInDto tag, User user)
     {
+        // Return if the book already owns the tag
+        if (book.Tags.SingleOrDefault(t => t.TagId == tag.Guid) != null)
+            return;
+        
+        // If the tag already exists, just add it to the book
         var existingTag = user.Tags.SingleOrDefault(t => t.TagId == tag.Guid);
         if (existingTag != null)
         {
@@ -182,6 +171,14 @@ public class BookService : IBookService
             return;
         }
         
+        // If the book already has a tag with the same name, throw
+        if (book.Tags.Any(t => t.Name == tag.Name))
+        {
+            var message = "A tag with this name already exists";
+            throw new InvalidParameterException(message);
+        }
+        
+        // Create the tag from scratch
         var newTag = _mapper.Map<Tag>(tag);
         newTag.UserId = user.Id;
         book.Tags.Add(newTag);
