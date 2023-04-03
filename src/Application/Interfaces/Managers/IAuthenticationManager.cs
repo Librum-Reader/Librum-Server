@@ -1,7 +1,7 @@
 using Application.Common.DTOs.Users;
 using Domain.Entities;
 
-namespace Application.Interfaces;
+namespace Application.Interfaces.Managers;
 
 public interface IAuthenticationManager
 {
