@@ -1,0 +1,72 @@
+using Application.Common.Exceptions;
+using Application.Interfaces.Managers;
+using Azure.Core;
+using Azure.Storage.Blobs;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Net.Http.Headers;
+
+namespace Application.Managers;
+
+public class BookBlobStorageManager : IBookBlobStorageManager
+{
+    private readonly BlobServiceClient _blobServiceClient;
+
+    public BookBlobStorageManager(BlobServiceClient blobServiceClient)
+    {
+        _blobServiceClient = blobServiceClient;
+    }
+
+    public async Task GetBookBlob()
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task UploadBookBlob(Guid guid, MultipartReader reader)
+    {
+        var containerClient =
+            _blobServiceClient.GetBlobContainerClient("librumdev");
+        var blobClient = containerClient.GetBlobClient(guid.ToString());
+
+        await using var dest = await blobClient.OpenWriteAsync(true);
+
+        
+        var section = await reader.ReadNextSectionAsync();
+        while (section != null)
+        {
+            var hasContentDispositionHeader =
+                ContentDispositionHeaderValue.TryParse(
+                    section.ContentDisposition,
+                    out var contentDisposition);
+        
+            if (!hasContentDispositionHeader)
+                continue;
+        
+            if (!HasFileContentDisposition(contentDisposition))
+            {
+                var message = "Missing content disposition header";
+                throw new InvalidParameterException(message);
+            }
+            
+            await section.Body.CopyToAsync(dest);
+            
+            section = await reader.ReadNextSectionAsync();
+        }
+    }
+    
+    private static bool HasFileContentDisposition(
+        ContentDispositionHeaderValue contentDisposition)
+    {
+        // Content-Disposition: form-data; name="myfile1"; filename="Misc 002.jpg"
+        return contentDisposition != null &&
+               contentDisposition.DispositionType.Equals("form-data") &&
+               (!string.IsNullOrEmpty(contentDisposition.FileName.Value) ||
+                !string.IsNullOrEmpty(contentDisposition.FileNameStar.Value));
+    }
+    
+
+    public async Task DeleteBookBlob()
+    {
+        throw new NotImplementedException();
+    }
+}
