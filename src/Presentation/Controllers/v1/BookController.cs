@@ -2,7 +2,6 @@ using Application.Common.Attributes;
 using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
 using Application.Interfaces.Services;
-using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -19,15 +18,12 @@ public class BookController : ControllerBase
 {
     private readonly ILogger<BookController> _logger;
     private readonly IBookService _bookService;
-    private readonly BlobServiceClient _blobServiceClient;
 
     
-    public BookController(ILogger<BookController> logger, IBookService bookService,
-                          BlobServiceClient blobServiceClient)
+    public BookController(ILogger<BookController> logger, IBookService bookService)
     {
         _logger = logger;
         _bookService = bookService;
-        _blobServiceClient = blobServiceClient;
     }
 
     /// Books are created in two steps, first of all an entry containing all of their
@@ -51,50 +47,11 @@ public class BookController : ControllerBase
         var boundary = GetBoundary(MediaTypeHeaderValue.Parse(Request.ContentType));
         var reader = new MultipartReader(boundary, HttpContext.Request.Body);
         
-        // await _bookService.AddBookBinaryData(HttpContext.User.Identity!.Name, 
-        //                                      guid,
-        //                                      reader);
-        
-        var containerClient =
-            _blobServiceClient.GetBlobContainerClient("librumdev");
-        var blobClient = containerClient.GetBlobClient(guid.ToString());
+        await _bookService.AddBookBinaryData(HttpContext.User.Identity!.Name, 
+                                             guid,
+                                             reader);
 
-        await using var dest = await blobClient.OpenWriteAsync(true);
-
-        
-        var section = await reader.ReadNextSectionAsync();
-        while (section != null)
-        {
-            var hasContentDispositionHeader =
-                ContentDispositionHeaderValue.TryParse(
-                    section.ContentDisposition,
-                    out var contentDisposition);
-        
-            if (!hasContentDispositionHeader)
-                continue;
-        
-            if (!HasFileContentDisposition(contentDisposition))
-            {
-                var message = "Missing content disposition header";
-                throw new InvalidParameterException(message);
-            }
-            
-            await section.Body.CopyToAsync(dest);
-            
-            section = await reader.ReadNextSectionAsync();
-        }
-        
         return Ok();
-    }
-    
-    private static bool HasFileContentDisposition(
-        ContentDispositionHeaderValue contentDisposition)
-    {
-        // Content-Disposition: form-data; name="myfile1"; filename="Misc 002.jpg"
-        return contentDisposition != null &&
-               contentDisposition.DispositionType.Equals("form-data") &&
-               (!string.IsNullOrEmpty(contentDisposition.FileName.Value) ||
-                !string.IsNullOrEmpty(contentDisposition.FileNameStar.Value));
     }
     
     private static string GetBoundary(MediaTypeHeaderValue contentType)
