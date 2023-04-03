@@ -1,6 +1,6 @@
 using Application.Common.DTOs.Users;
 using Application.Common.Exceptions;
-using Application.Interfaces;
+using Application.Interfaces.Managers;
 using Application.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
