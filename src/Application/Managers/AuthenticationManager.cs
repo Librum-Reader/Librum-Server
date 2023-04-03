@@ -2,13 +2,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Application.Common.DTOs.Users;
-using Application.Interfaces;
+using Application.Interfaces.Managers;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Application.JWT;
+namespace Application.Managers;
 
 public class AuthenticationManager : IAuthenticationManager
 {
