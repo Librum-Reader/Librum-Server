@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
 using Application.Common.Mappings;
+using Application.Interfaces.Managers;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using Application.Services.v1;
@@ -23,8 +24,8 @@ public class BookServiceTests
 {
     private readonly Mock<IBookRepository> _bookRepositoryMock = new();
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
+    private readonly Mock<IBookBlobStorageManager> _bookBlobStorageManagerMock = new();
     private readonly IBookService _bookService;
-
 
     public BookServiceTests()
     {
@@ -36,7 +37,7 @@ public class BookServiceTests
         var mapper = new Mapper(mapperConfig);
 
         _bookService = new BookService(mapper, _bookRepositoryMock.Object,
-            _userRepositoryMock.Object);
+            _userRepositoryMock.Object, _bookBlobStorageManagerMock.Object);
     }
 
 

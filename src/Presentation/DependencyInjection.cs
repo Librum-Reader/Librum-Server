@@ -1,12 +1,13 @@
 using System.Text;
-using Application.Interfaces;
+using Application.Interfaces.Managers;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using Domain.Entities;
-using Application.JWT;
+using Application.Managers;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repository;
 using Application.Services.v1;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<IBookRepository, BookRepository>();
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<ITagRepository, TagRepository>();
+        services.AddSingleton<IBookBlobStorageManager, BookBlobStorageManager>(); 
 
         
         services.AddApiVersioning(options =>
@@ -38,6 +40,10 @@ public static class DependencyInjection
             options.DefaultApiVersion = ApiVersion.Default;
             options.ApiVersionReader = new HeaderApiVersionReader("X-Version");
         });
+
+        services.AddSingleton(x => new BlobServiceClient(
+                                  configuration.GetValue<string>(
+                                      "AzureBlobStorageConnectionString")));
         
         services.AddLogging();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

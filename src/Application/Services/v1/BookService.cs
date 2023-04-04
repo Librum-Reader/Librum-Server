@@ -1,10 +1,12 @@
 using Application.Common.DTOs.Books;
 using Application.Common.DTOs.Tags;
 using Application.Common.Exceptions;
+using Application.Interfaces.Managers;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace Application.Services.v1;
 
@@ -13,13 +15,16 @@ public class BookService : IBookService
     private readonly IMapper _mapper;
     private readonly IBookRepository _bookRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IBookBlobStorageManager _bookBlobStorageManager;
 
     public BookService(IMapper mapper, IBookRepository bookRepository,
-                       IUserRepository userRepository)
+                       IUserRepository userRepository, 
+                       IBookBlobStorageManager bookBlobStorageManager)
     {
         _mapper = mapper;
         _bookRepository = bookRepository;
         _userRepository = userRepository;
+        _bookBlobStorageManager = bookBlobStorageManager;
     }
 
 
@@ -107,6 +112,32 @@ public class BookService : IBookService
         }
 
         await _bookRepository.SaveChangesAsync();
+    }
+
+    public async Task AddBookBinaryData(string email, Guid guid, MultipartReader reader)
+    {
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        var book = user.Books.SingleOrDefault(book => book.BookId == guid);
+        if (book == null)
+        {
+            const string message = "No book with this guid exists";
+            throw new InvalidParameterException(message);
+        }
+
+        await _bookBlobStorageManager.UploadBookBlob(guid, reader);
+    }
+
+    public async Task<Stream> GetBookBinaryData(string email, Guid guid)
+    {
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        var book = user.Books.SingleOrDefault(book => book.BookId == guid);
+        if (book == null)
+        {
+            const string message = "No book with this guid exists";
+            throw new InvalidParameterException(message);
+        }
+
+        return await _bookBlobStorageManager.DownloadBookBlob(guid);
     }
 
     private void SetPropertyOnBook(Book book, string property, object value)

@@ -1,9 +1,8 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application.Common.DTOs.Users;
 using Application.Common.Exceptions;
 using Application.Common.Mappings;
-using Application.Interfaces;
+using Application.Interfaces.Managers;
 using Application.Services.v1;
 using AutoMapper;
 using Domain.Entities;
