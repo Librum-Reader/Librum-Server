@@ -76,6 +76,7 @@ public class BookController : ControllerBase
             return BadRequest(e.Message);
         }
 
+        Response.Headers.Add("Guid", guid.ToString());
         return File(stream, "application/octet-stream");
     }
     
