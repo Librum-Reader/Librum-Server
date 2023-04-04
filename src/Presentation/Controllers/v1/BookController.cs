@@ -46,12 +46,37 @@ public class BookController : ControllerBase
         
         var boundary = GetBoundary(MediaTypeHeaderValue.Parse(Request.ContentType));
         var reader = new MultipartReader(boundary, HttpContext.Request.Body);
-        
-        await _bookService.AddBookBinaryData(HttpContext.User.Identity!.Name, 
-                                             guid,
-                                             reader);
+
+        try
+        {
+            await _bookService.AddBookBinaryData(HttpContext.User.Identity!.Name,
+                                                 guid, reader);
+        }
+        catch (InvalidParameterException e)
+        {
+            _logger.LogWarning("{ErrorMessage}", e.Message);
+            return BadRequest(e.Message);
+        }
 
         return Ok();
+    }
+
+    [HttpGet("getBookBinaryData/{guid:guid}")]
+    public async Task<ActionResult> GetBookBinaryData(Guid guid)
+    {
+        Stream stream;
+        try
+        {
+            stream = await _bookService.GetBookBinaryData(HttpContext.User.Identity!.Name, 
+                                                          guid);
+        }
+        catch (InvalidParameterException e)
+        {
+            _logger.LogWarning("{ErrorMessage}", e.Message);
+            return BadRequest(e.Message);
+        }
+
+        return File(stream, "application/octet-stream");
     }
     
     private static string GetBoundary(MediaTypeHeaderValue contentType)

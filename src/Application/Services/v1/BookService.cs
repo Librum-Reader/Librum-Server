@@ -141,6 +141,19 @@ public class BookService : IBookService
         await _bookBlobStorageManager.UploadBookBlob(guid, reader);
     }
 
+    public async Task<Stream> GetBookBinaryData(string email, Guid guid)
+    {
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        var book = user.Books.SingleOrDefault(book => book.BookId == guid);
+        if (book == null)
+        {
+            const string message = "No book with this guid exists";
+            throw new InvalidParameterException(message);
+        }
+
+        return await _bookBlobStorageManager.DownloadBookBlob(guid);
+    }
+
     private void SetPropertyOnBook(Book book, string property, object value)
     {
         var bookProperty = book.GetType().GetProperty(property);

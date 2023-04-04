@@ -1,8 +1,6 @@
 using Application.Common.Exceptions;
 using Application.Interfaces.Managers;
-using Azure.Core;
 using Azure.Storage.Blobs;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 
@@ -17,9 +15,13 @@ public class BookBlobStorageManager : IBookBlobStorageManager
         _blobServiceClient = blobServiceClient;
     }
 
-    public async Task GetBookBlob()
+    public Task<Stream> DownloadBookBlob(Guid guid)
     {
-        throw new NotImplementedException();
+        var containerClient =
+            _blobServiceClient.GetBlobContainerClient("librumdev");
+        var blobClient = containerClient.GetBlobClient(guid.ToString());
+
+        return blobClient.OpenReadAsync();
     }
 
     public async Task UploadBookBlob(Guid guid, MultipartReader reader)
