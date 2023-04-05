@@ -29,7 +29,7 @@ public class BookController : ControllerBase
     /// Books are created in two steps, first of all an entry containing all of their
     /// meta data is created on the Database (See 'CreateBook()') and then their
     /// binary data, so their actual content is added to the existing book.
-    [HttpPost("addBookBinaryData/{guid:guid}")]
+    [HttpPost("bookData/{guid:guid}")]
     [DisableFormValueModelBinding]
     public async Task<ActionResult> AddBookBinaryData(Guid guid)
     {
@@ -61,7 +61,7 @@ public class BookController : ControllerBase
         return Ok();
     }
 
-    [HttpGet("getBookBinaryData/{guid:guid}")]
+    [HttpGet("bookData/{guid:guid}")]
     public async Task<ActionResult> GetBookBinaryData(Guid guid)
     {
         Stream stream;
