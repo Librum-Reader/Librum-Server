@@ -67,8 +67,12 @@ public class BookBlobStorageManager : IBookBlobStorageManager
     }
     
 
-    public async Task DeleteBookBlob()
+    public async Task DeleteBookBlob(Guid guid)
     {
-        throw new NotImplementedException();
+        var containerClient =
+            _blobServiceClient.GetBlobContainerClient("librumdev");
+        var blobClient = containerClient.GetBlobClient(guid.ToString());
+
+        await blobClient.DeleteAsync();
     }
 }
