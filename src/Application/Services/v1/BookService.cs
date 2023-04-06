@@ -125,7 +125,20 @@ public class BookService : IBookService
             throw new InvalidParameterException(message);
         }
 
-        await _bookBlobStorageManager.UploadBookBlob(guid, reader);
+        try
+        {
+            await _bookBlobStorageManager.UploadBookBlob(guid, reader);
+        }
+        catch (Exception e)
+        {
+            // If uploading the book's data fails, make sure to remove the book
+            // from the SQL Database, so that no invalid book exist
+            await _bookRepository.LoadRelationShipsAsync(book);
+            _bookRepository.DeleteBook(book);
+            await _bookRepository.SaveChangesAsync();
+
+            throw;
+        }
     }
 
     public async Task<Stream> GetBookBinaryData(string email, Guid guid)
