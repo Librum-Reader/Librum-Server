@@ -32,7 +32,9 @@ public class BookOutDto
     
     public string LastModified { get; set; }
     
-    public string Cover { get; set; }
+    public string CoverLastModified { get; set; }
+    
+    public bool HasCover { get; set; }
     
 
     public ICollection<TagOutDto> Tags { get; set; } = new List<TagOutDto>();

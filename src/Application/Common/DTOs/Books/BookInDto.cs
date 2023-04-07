@@ -67,11 +67,15 @@ public class BookInDto
     [MinLength(4, ErrorMessage = "The last modified is too short")]
     [MaxLength(100, ErrorMessage = "The last modified is too long")]
     public string LastModified { get; set; }
-    
-    // public string Cover { get; set; }
-    
-    public string Data { get; set; }
 
+    [Required]
+    [MinLength(4, ErrorMessage = "The cover last modified is too short")]
+    [MaxLength(100, ErrorMessage = "The cover last modified is too long")]
+    public string CoverLastModified { get; set; }
+    
+    [Required]
+    public bool HasCover { get; set; }
+    
     public ICollection<TagInDto> Tags { get; set; } = new List<TagInDto>();
 
 

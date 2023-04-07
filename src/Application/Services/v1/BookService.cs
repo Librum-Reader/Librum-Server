@@ -154,6 +154,32 @@ public class BookService : IBookService
         return await _bookBlobStorageManager.DownloadBookBlob(guid);
     }
 
+    public async Task DeleteBookCover(string email, Guid guid)
+    {
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        var book = user.Books.SingleOrDefault(book => book.BookId == guid);
+        if (book == null)
+        {
+            const string message = "No book with this guid exists";
+            throw new InvalidParameterException(message);
+        }
+
+        await _bookBlobStorageManager.DeleteBookBlob(guid);
+    }
+
+    public async Task ChangeBookCover(string email, Guid guid, MultipartReader reader)
+    {
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        var book = user.Books.SingleOrDefault(book => book.BookId == guid);
+        if (book == null)
+        {
+            const string message = "No book with this guid exists";
+            throw new InvalidParameterException(message);
+        }
+
+        await _bookBlobStorageManager.ChangeBookCover(guid, reader);
+    }
+    
     private void SetPropertyOnBook(Book book, string property, object value)
     {
         var bookProperty = book.GetType().GetProperty(property);

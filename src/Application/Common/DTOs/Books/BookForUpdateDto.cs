@@ -40,7 +40,12 @@ public class BookForUpdateDto
     [MaxLength(100, ErrorMessage = "The last modified is too long")]
     public string LastModified { get; set; }
 
-    public string CoverLink { get; set; }
-
+    [MinLength(4, ErrorMessage = "The cover last modified is too short")]
+    [MaxLength(100, ErrorMessage = "The cover last modified is too long")]
+    public string CoverLastModified { get; set; }
+    
+    public bool HasCover { get; set; }
+    
+    
     public ICollection<TagInDto> Tags { get; set; } = new List<TagInDto>();
 }

@@ -11,4 +11,6 @@ public interface IBookService
     Task UpdateBookAsync(string email, BookForUpdateDto bookUpdateDto);
     Task AddBookBinaryData(string email, Guid guid, MultipartReader reader);
     Task<Stream> GetBookBinaryData(string email, Guid guid);
+    Task ChangeBookCover(string email, Guid guid, MultipartReader reader);
+    public Task DeleteBookCover(string email, Guid guid);
 }

@@ -48,13 +48,8 @@ public class Book
     [MaxLength(140, ErrorMessage = "The creator is too long")]
     public string Creator { get; set; }
     
+    [MaxLength(400, ErrorMessage = "The authors are too long")]
     public string Authors { get; set; }
-    
-    [Required]
-    public string DataLink { get; set; }
-    
-    [AllowNull]
-    public string CoverLink { get; set; }
 
     [MinLength(8, ErrorMessage = "The creation date is too short")]
     [MaxLength(140, ErrorMessage = "The creation date is too long")]
@@ -68,6 +63,11 @@ public class Book
     [Required]
     public string LastModified { get; set; }
 
+    [Required]
+    public string CoverLastModified { get; set; }
+    
+    [Required]
+    public bool HasCover { get; set; }
 
     public ICollection<Tag> Tags { get; set; } = new List<Tag>();
 

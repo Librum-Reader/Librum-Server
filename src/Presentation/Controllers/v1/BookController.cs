@@ -81,6 +81,55 @@ public class BookController : ControllerBase
         return File(stream, "application/octet-stream");
     }
     
+    [HttpPost("cover/{guid:guid}")]
+    [DisableFormValueModelBinding]
+    [RequestSizeLimit(5242880)]   // Allow max 5MB
+    public async Task<ActionResult> ChangeCover(Guid guid)
+    {
+        // Check if the cover was sent in the correct format
+        var isMultiPart = !string.IsNullOrEmpty(Request.ContentType) &&
+                          Request.ContentType.IndexOf(
+                              "multipart/",
+                              StringComparison.OrdinalIgnoreCase) >= 0;
+        if (!isMultiPart)
+        {
+            var message = "The book binary data needs to be sent as multipart";
+            return BadRequest(message);
+        }
+        
+        var boundary = GetBoundary(MediaTypeHeaderValue.Parse(Request.ContentType));
+        var reader = new MultipartReader(boundary, HttpContext.Request.Body);
+
+        try
+        {
+            await _bookService.ChangeBookCover(HttpContext.User.Identity!.Name,
+                                                 guid, reader);
+        }
+        catch (InvalidParameterException e)
+        {
+            _logger.LogWarning("{ErrorMessage}", e.Message);
+            return BadRequest(e.Message);
+        }
+
+        return Ok();
+    }
+    
+    [HttpDelete("cover/{guid:guid}")]
+    public async Task<ActionResult> DeleteCover(Guid guid)
+    {
+        try
+        {
+            await _bookService.DeleteBookCover(HttpContext.User.Identity!.Name, guid);
+        }
+        catch (InvalidParameterException e)
+        {
+            _logger.LogWarning("{ErrorMessage}", e.Message);
+            return BadRequest(e.Message);
+        }
+
+        return Ok();
+    }
+    
     private static string GetBoundary(MediaTypeHeaderValue contentType)
     {
         var boundary = HeaderUtilities.RemoveQuotes(contentType.Boundary).Value;

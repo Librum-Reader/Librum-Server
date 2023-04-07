@@ -9,6 +9,7 @@ namespace Application.Managers;
 public class BookBlobStorageManager : IBookBlobStorageManager
 {
     private readonly BlobServiceClient _blobServiceClient;
+    private readonly string bookCoverPrefix = "cover_";
 
     public BookBlobStorageManager(BlobServiceClient blobServiceClient)
     {
@@ -71,8 +72,40 @@ public class BookBlobStorageManager : IBookBlobStorageManager
     {
         var containerClient =
             _blobServiceClient.GetBlobContainerClient("librumdev");
-        var blobClient = containerClient.GetBlobClient(guid.ToString());
+        var blobClient = containerClient.GetBlobClient(bookCoverPrefix + guid.ToString());
 
         await blobClient.DeleteAsync();
+    }
+
+    public async Task ChangeBookCover(Guid guid, MultipartReader reader)
+    {
+        var containerClient =
+            _blobServiceClient.GetBlobContainerClient("librumdev");
+        var blobClient = containerClient.GetBlobClient(bookCoverPrefix + guid.ToString());
+
+        await using var dest = await blobClient.OpenWriteAsync(true);
+
+        
+        var section = await reader.ReadNextSectionAsync();
+        while (section != null)
+        {
+            var hasContentDispositionHeader =
+                ContentDispositionHeaderValue.TryParse(
+                    section.ContentDisposition,
+                    out var contentDisposition);
+        
+            if (!hasContentDispositionHeader)
+                continue;
+        
+            if (!HasFileContentDisposition(contentDisposition))
+            {
+                var message = "Missing content disposition header";
+                throw new InvalidParameterException(message);
+            }
+            
+            await section.Body.CopyToAsync(dest);
+            
+            section = await reader.ReadNextSectionAsync();
+        }
     }
 }
