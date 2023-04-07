@@ -72,7 +72,7 @@ public class BookBlobStorageManager : IBookBlobStorageManager
     {
         var containerClient =
             _blobServiceClient.GetBlobContainerClient("librumdev");
-        var blobClient = containerClient.GetBlobClient(bookCoverPrefix + guid.ToString());
+        var blobClient = containerClient.GetBlobClient(guid.ToString());
 
         await blobClient.DeleteAsync();
     }
@@ -107,5 +107,14 @@ public class BookBlobStorageManager : IBookBlobStorageManager
             
             section = await reader.ReadNextSectionAsync();
         }
+    }
+    
+    public async Task DeleteBookCover(Guid guid)
+    {
+        var containerClient =
+            _blobServiceClient.GetBlobContainerClient("librumdev");
+        var blobClient = containerClient.GetBlobClient(bookCoverPrefix + guid.ToString());
+
+        await blobClient.DeleteAsync();
     }
 }

@@ -164,7 +164,7 @@ public class BookService : IBookService
             throw new InvalidParameterException(message);
         }
 
-        await _bookBlobStorageManager.DeleteBookBlob(guid);
+        await _bookBlobStorageManager.DeleteBookCover(guid);
     }
 
     public async Task ChangeBookCover(string email, Guid guid, MultipartReader reader)
