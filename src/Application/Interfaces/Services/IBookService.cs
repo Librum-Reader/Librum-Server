@@ -12,5 +12,8 @@ public interface IBookService
     Task AddBookBinaryData(string email, Guid guid, MultipartReader reader);
     Task<Stream> GetBookBinaryData(string email, Guid guid);
     Task ChangeBookCover(string email, Guid guid, MultipartReader reader);
-    public Task DeleteBookCover(string email, Guid guid);
+    Task<Stream> GetBookCover(string email, Guid guid);
+    Task DeleteBookCover(string email, Guid guid);
+
+    Task<string> GetFormatForBook(string email, Guid guid);
 }

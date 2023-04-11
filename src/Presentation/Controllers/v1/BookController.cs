@@ -65,20 +65,22 @@ public class BookController : ControllerBase
     [HttpGet("bookData/{guid:guid}")]
     public async Task<ActionResult> GetBookBinaryData(Guid guid)
     {
-        Stream stream;
         try
         {
-            stream = await _bookService.GetBookBinaryData(HttpContext.User.Identity!.Name, 
+            var email = HttpContext.User.Identity!.Name;
+            var stream = await _bookService.GetBookBinaryData(email, 
                                                           guid);
+            
+            Response.Headers.Add("Guid", guid.ToString());
+            Response.Headers.Add("Format",
+                                 await _bookService.GetFormatForBook(email, guid));
+            return File(stream, "application/octet-stream");
         }
         catch (InvalidParameterException e)
         {
             _logger.LogWarning("{ErrorMessage}", e.Message);
             return BadRequest(e.Message);
         }
-
-        Response.Headers.Add("Guid", guid.ToString());
-        return File(stream, "application/octet-stream");
     }
     
     [HttpPost("cover/{guid:guid}")]
@@ -112,6 +114,24 @@ public class BookController : ControllerBase
         }
 
         return Ok();
+    }
+
+    [HttpGet("cover/{guid:guid}")]
+    public async Task<ActionResult> GetCover(Guid guid)
+    {
+        try
+        {
+            var stream = await _bookService.GetBookCover(HttpContext.User.Identity!.Name, 
+                guid);
+            
+            Response.Headers.Add("Guid", guid.ToString());
+            return File(stream, "application/octet-stream");
+        }
+        catch (InvalidParameterException e)
+        {
+            _logger.LogWarning("{ErrorMessage}", e.Message);
+            return BadRequest(e.Message);
+        }
     }
     
     [HttpDelete("cover/{guid:guid}")]

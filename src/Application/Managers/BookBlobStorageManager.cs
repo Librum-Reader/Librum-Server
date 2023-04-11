@@ -108,7 +108,16 @@ public class BookBlobStorageManager : IBookBlobStorageManager
             section = await reader.ReadNextSectionAsync();
         }
     }
-    
+
+    public Task<Stream> DownloadBookCover(Guid guid)
+    {
+        var containerClient =
+            _blobServiceClient.GetBlobContainerClient("librumdev");
+        var blobClient = containerClient.GetBlobClient(bookCoverPrefix + guid.ToString());
+
+        return blobClient.OpenReadAsync();
+    }
+
     public async Task DeleteBookCover(Guid guid)
     {
         var containerClient =

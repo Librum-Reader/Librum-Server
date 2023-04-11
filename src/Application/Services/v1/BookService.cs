@@ -75,6 +75,7 @@ public class BookService : IBookService
             await _bookRepository.LoadRelationShipsAsync(book);
             _bookRepository.DeleteBook(book);
             await _bookBlobStorageManager.DeleteBookBlob(book.BookId);
+            await _bookBlobStorageManager.DeleteBookCover(book.BookId);
         }
 
         await _bookRepository.SaveChangesAsync();
@@ -102,8 +103,6 @@ public class BookService : IBookService
                     continue;     // Can't modify the GUID
                 case "Tags":
                     MergeTags(bookUpdateDto.Tags, book, user);
-                    continue;
-                case "CoverLink": // TODO: Implement CoverLink
                     continue;
             }
             
@@ -154,6 +153,19 @@ public class BookService : IBookService
         return await _bookBlobStorageManager.DownloadBookBlob(guid);
     }
 
+    public async Task<Stream> GetBookCover(string email, Guid guid)
+    {
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        var book = user.Books.SingleOrDefault(book => book.BookId == guid);
+        if (book == null)
+        {
+            const string message = "No book with this guid exists";
+            throw new InvalidParameterException(message);
+        }
+
+        return await _bookBlobStorageManager.DownloadBookCover(guid);
+    }
+
     public async Task DeleteBookCover(string email, Guid guid)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
@@ -165,6 +177,19 @@ public class BookService : IBookService
         }
 
         await _bookBlobStorageManager.DeleteBookCover(guid);
+    }
+
+    public async Task<string> GetFormatForBook(string email, Guid guid)
+    {
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        var book = user.Books.SingleOrDefault(book => book.BookId == guid);
+        if (book == null)
+        {
+            const string message = "No book with this guid exists";
+            throw new InvalidParameterException(message);
+        }
+
+        return book.Format;
     }
 
     public async Task ChangeBookCover(string email, Guid guid, MultipartReader reader)
