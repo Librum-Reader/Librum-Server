@@ -20,15 +20,12 @@ public class BookForUpdateDto
     [MaxLength(60, ErrorMessage = "The language is too long")]
     public string Language { get; set; }
 
-    [EmptyOrMinLength(2, ErrorMessage = "The creator is too short")]
     [MaxLength(200, ErrorMessage = "The creator is too long")]
     public string Creator { get; set; }
 
-    [EmptyOrMinLength(2, ErrorMessage = "The authors are too short")]
     [MaxLength(400, ErrorMessage = "The authors are too long")]
     public string Authors { get; set; }
 
-    [EmptyOrMinLength(4, ErrorMessage = "The creation date is too short")]
     [MaxLength(100, ErrorMessage = "The creation date is too long")]
     public string CreationDate { get; set; }
 

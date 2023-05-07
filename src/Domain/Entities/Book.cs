@@ -44,14 +44,12 @@ public class Book
     [MaxLength(100, ErrorMessage = "The pages size is too long")]
     public string PagesSize { get; set; }
     
-    [MinLength(2, ErrorMessage = "The creator is too short")]
     [MaxLength(140, ErrorMessage = "The creator is too long")]
     public string Creator { get; set; }
     
     [MaxLength(400, ErrorMessage = "The authors are too long")]
     public string Authors { get; set; }
 
-    [MinLength(8, ErrorMessage = "The creation date is too short")]
     [MaxLength(140, ErrorMessage = "The creation date is too long")]
     public string CreationDate { get; set; }
     
