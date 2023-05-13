@@ -37,3 +37,10 @@ The Librum-Server RestAPI is preconfigured with Librum's servers, which for obvi
     cd src/Presentation
     dotnet run
     ```
+    
+    
+# Contributing
+Feel free to reach out to us via email (contact@librumreader.com) or discord (m_david#0631) if you are interested in contributing.<br>
+<br>
+We are following a pull request workflow where every contribution is sent as a pull request and merged into the dev/develop branch for testing.
+Please make sure to keep to the conventions used throughout the application and ensure that all tests pass, before submitting any pull request. 
