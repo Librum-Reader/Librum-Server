@@ -88,7 +88,7 @@ public class AuthenticationManager : IAuthenticationManager
             issuer: _configuration["JWT:ValidIssuer"],
             audience: _configuration["JWT:ValidAudience"],
             claims: claims,
-            expires: DateTime.Now.AddYears(1),
+            expires: DateTime.Now.AddMonths(2),
             signingCredentials: signingCredentials
             );
 
