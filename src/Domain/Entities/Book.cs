@@ -63,6 +63,9 @@ public class Book
 
     [Required]
     public string CoverLastModified { get; set; }
+
+    [Required]
+    public long CoverSize { get; set; } = 0;
     
     [Required]
     public bool HasCover { get; set; }

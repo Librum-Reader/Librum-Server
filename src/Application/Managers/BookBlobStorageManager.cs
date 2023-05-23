@@ -77,7 +77,7 @@ public class BookBlobStorageManager : IBookBlobStorageManager
         await blobClient.DeleteAsync();
     }
 
-    public async Task ChangeBookCover(Guid guid, MultipartReader reader)
+    public async Task<long> ChangeBookCover(Guid guid, MultipartReader reader)
     {
         var containerClient =
             _blobServiceClient.GetBlobContainerClient("librumdev");
@@ -85,7 +85,7 @@ public class BookBlobStorageManager : IBookBlobStorageManager
 
         await using var dest = await blobClient.OpenWriteAsync(true);
 
-        
+        long coverSize = 0;
         var section = await reader.ReadNextSectionAsync();
         while (section != null)
         {
@@ -104,9 +104,12 @@ public class BookBlobStorageManager : IBookBlobStorageManager
             }
             
             await section.Body.CopyToAsync(dest);
+            coverSize += section.Body.Length;
             
             section = await reader.ReadNextSectionAsync();
         }
+
+        return coverSize;
     }
 
     public Task<Stream> DownloadBookCover(Guid guid)

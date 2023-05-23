@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Application.Interfaces.Repositories;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -47,5 +48,41 @@ public class BookRepository : IBookRepository
     public void DeleteBook(Book book)
     {
         _context.Remove(book);
+    }
+
+    public async Task<double> GetUsedBookStorage(string userId)
+    {
+        var coverStorage = await _context.Books.Where(book => book.UserId == userId).SumAsync(book => book.CoverSize);
+        var books = await _context.Books.Where(book => book.UserId == userId).ToListAsync();
+        var bookStorage = books.Sum(book => getBytesFromSizeString(book.DocumentSize));
+
+        return coverStorage + bookStorage;
+    }
+
+    private double getBytesFromSizeString(string size)
+    {
+        size = size.Replace(" ", string.Empty);
+        size = size.Replace(",", ".");
+        
+        int typeBegining = -1;
+        for (int i = 0; i < size.Length; i++)
+        {
+            if (!char.IsDigit(size[i]) && size[i] != '.')
+            {
+                typeBegining = i;
+                break;
+            }
+        }
+
+        var numberString = size.Substring(0, typeBegining);
+        var numbers = double.Parse(numberString);
+        var type = size[typeBegining..];
+
+        return type.ToLower() switch
+        {
+            "b" => numbers,
+            "kib" => numbers * 1024,
+            "mib" => numbers * 1024 * 1024
+        };
     }
 }

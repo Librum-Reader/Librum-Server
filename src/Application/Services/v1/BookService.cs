@@ -36,6 +36,10 @@ public class BookService : IBookService
             const string message = "A book with this guid already exists";
             throw new InvalidParameterException(message);
         }
+
+        // var usedStorage = await _bookRepository.GetUsedBookStorage(user.Id);
+        // if (usedStorage >= 200 * 1024 * 1024)
+        //     throw new InvalidParameterException("Out of storage");
         
         var book = _mapper.Map<Book>(bookInDto);
         book.BookId = bookInDto.Guid;
@@ -202,7 +206,10 @@ public class BookService : IBookService
             throw new InvalidParameterException(message);
         }
 
-        await _bookBlobStorageManager.ChangeBookCover(guid, reader);
+        var coverSize = await _bookBlobStorageManager.ChangeBookCover(guid, reader);
+        book.CoverSize = coverSize;
+
+        await _bookRepository.SaveChangesAsync();
     }
     
     private void SetPropertyOnBook(Book book, string property, object value)
