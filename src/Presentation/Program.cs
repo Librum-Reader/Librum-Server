@@ -13,6 +13,12 @@ builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.ConfigureIdentity();
 builder.Services.ConfigureJwt(builder.Configuration);
+builder.Services.AddCors(p => p.AddPolicy("corspolicy",
+                                          build =>
+                                          {
+                                              build.WithOrigins("*").AllowAnyMethod()
+                                                  .AllowAnyHeader();
+                                          }));
 
 
 var app = builder.Build();
@@ -33,6 +39,7 @@ using (var scope = app.Services.CreateScope())
 // Http pipeline
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
+app.UseCors("corspolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
