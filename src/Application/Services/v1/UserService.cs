@@ -11,12 +11,15 @@ namespace Application.Services.v1;
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IBookRepository _bookRepository;
     private readonly IMapper _mapper;
 
 
-    public UserService(IUserRepository userRepository, IMapper mapper)
+    public UserService(IUserRepository userRepository, IBookRepository bookRepository,
+                       IMapper mapper)
     {
         _userRepository = userRepository;
+        _bookRepository = bookRepository;
         _mapper = mapper;
     }
     
@@ -24,7 +27,10 @@ public class UserService : IUserService
     public async Task<UserOutDto> GetUserAsync(string email)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: false);
-        return _mapper.Map<UserOutDto>(user);
+        var userOut = _mapper.Map<UserOutDto>(user);
+        userOut.usedBookStorage = await _bookRepository.GetUsedBookStorage(user.Id);
+
+        return userOut;
     }
 
     public async Task DeleteUserAsync(string email)

@@ -11,6 +11,8 @@ public class UserOutDto
     public string Email { get; set; }
 
     public DateTime AccountCreation { get; set; }
+    
+    public double usedBookStorage { get; set; }
 
     public ICollection<TagOutDto> Tags { get; set; } = new List<TagOutDto>();
 }

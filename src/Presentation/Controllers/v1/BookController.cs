@@ -182,6 +182,11 @@ public class BookController : ControllerBase
             _logger.LogWarning("{ErrorMessage}", e.Message);
             return BadRequest(e.Message);
         }
+        catch (StorageLimitExceededException e)
+        {
+            _logger.LogWarning("{ErrorMessage}", e.Message);
+            return StatusCode(426);
+        }
     }
 
     [HttpGet]

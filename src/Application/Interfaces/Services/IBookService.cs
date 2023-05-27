@@ -1,4 +1,5 @@
 using Application.Common.DTOs.Books;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace Application.Interfaces.Services;
@@ -14,6 +15,5 @@ public interface IBookService
     Task ChangeBookCover(string email, Guid guid, MultipartReader reader);
     Task<Stream> GetBookCover(string email, Guid guid);
     Task DeleteBookCover(string email, Guid guid);
-
     Task<string> GetFormatForBook(string email, Guid guid);
 }

@@ -20,6 +20,7 @@ public class UserServiceTests
 {
     private readonly IMapper _mapper;
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
+    private readonly Mock<IBookRepository> _bookRepositoryMock = new();
     private readonly Mock<ControllerBase> _controllerBaseMock = new();
     private readonly UserService _userService;
     
@@ -32,7 +33,9 @@ public class UserServiceTests
         });
         
         _mapper = new Mapper(mapperConfig);
-        _userService = new UserService(_userRepositoryMock.Object, _mapper);
+        _userService = new UserService(_userRepositoryMock.Object, 
+                                       _bookRepositoryMock.Object,
+                                       _mapper);
     }
     
     
