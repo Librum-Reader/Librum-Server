@@ -99,6 +99,40 @@ public class BookServiceTests
         await Assert.ThrowsAsync<InvalidParameterException>(() =>
             _bookService.CreateBookAsync("JohnDoe@gmail.com", bookDto));
     }
+    
+    [Fact]
+    public async Task ABookService_FailsCreatingABookIfNoBookStorageAvailable()
+    {
+        // Arrange
+        var bookDto = new BookInDto
+        {
+            Title = "Some book",
+            CreationDate = DateTime.Now.ToString(CultureInfo.InvariantCulture),
+            Format = "Pdf",
+            PageCount = 1200,
+            CurrentPage = 2,
+            DocumentSize = "10MiB"
+        };
+
+        _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
+                                                  It.IsAny<bool>()))
+            .ReturnsAsync(new User { Books = new Collection<Book>() });
+    
+        _bookRepositoryMock.Setup(x => x.ExistsAsync(It.IsAny<string>(),
+                                                     It.IsAny<Guid>()))
+            .ReturnsAsync(false);
+        
+        _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
+            .ReturnsAsync(1);
+
+        _bookRepositoryMock.Setup(x => x.GetUsedBookStorage(It.IsAny<string>()))
+            .ReturnsAsync(999999999999); // Library is FULL!
+            
+
+            // Assert
+        await Assert.ThrowsAsync<StorageLimitExceededException>(
+            () => _bookService.CreateBookAsync("JohnDoe@gmail.com", bookDto));
+    }
 
     [Fact]
     public async Task ABookService_SucceedsDeletingBooks()
