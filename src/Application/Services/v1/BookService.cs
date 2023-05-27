@@ -37,8 +37,9 @@ public class BookService : IBookService
             throw new InvalidParameterException(message);
         }
 
-        EnsureUserHasEnoughStorageSpaceAvailable(user);
-
+        if(!await UserHasEnoughStorageSpaceAvailable(user))
+            throw new StorageLimitExceededException("Out of storage");
+            
         var book = _mapper.Map<Book>(bookInDto);
         book.BookId = bookInDto.Guid;
 
@@ -51,11 +52,10 @@ public class BookService : IBookService
         await _bookRepository.SaveChangesAsync();
     }
 
-    private async void EnsureUserHasEnoughStorageSpaceAvailable(User user)
+    private async Task<bool> UserHasEnoughStorageSpaceAvailable(User user)
     {
         var usedStorage = await _bookRepository.GetUsedBookStorage(user.Id);
-        if (usedStorage >= 200 * 1024 * 1024)
-            throw new StorageLimitExceededException("Out of storage");
+        return usedStorage <= 200 * 1024 * 1024;
     }
 
     public async Task<IList<BookOutDto>> GetBooksAsync(string email)
