@@ -28,7 +28,7 @@ public class UserService : IUserService
     {
         var user = await _userRepository.GetAsync(email, trackChanges: false);
         var userOut = _mapper.Map<UserOutDto>(user);
-        userOut.usedBookStorage = await _bookRepository.GetUsedBookStorage(user.Id);
+        userOut.UsedBookStorage = await _bookRepository.GetUsedBookStorage(user.Id);
 
         return userOut;
     }

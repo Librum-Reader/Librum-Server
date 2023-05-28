@@ -137,7 +137,7 @@ public class BookService : IBookService
         {
             await _bookBlobStorageManager.UploadBookBlob(guid, reader);
         }
-        catch (Exception e)
+        catch (Exception _)
         {
             // If uploading the book's data fails, make sure to remove the book
             // from the SQL Database, so that no invalid book exist

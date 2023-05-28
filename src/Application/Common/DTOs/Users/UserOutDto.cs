@@ -12,7 +12,7 @@ public class UserOutDto
 
     public DateTime AccountCreation { get; set; }
     
-    public double usedBookStorage { get; set; }
+    public long UsedBookStorage { get; set; }
     
     public long BookStorageLimit { get; set; }
 

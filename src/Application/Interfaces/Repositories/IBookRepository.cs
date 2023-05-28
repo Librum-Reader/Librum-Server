@@ -10,5 +10,5 @@ public interface IBookRepository
     public IQueryable<Book> GetAllAsync(string userId);
     public Task<bool> ExistsAsync(string userId, Guid bookGuid);
     void DeleteBook(Book book);
-    public Task<double> GetUsedBookStorage(string userId);
+    public Task<long> GetUsedBookStorage(string userId);
 }

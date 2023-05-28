@@ -50,16 +50,16 @@ public class BookRepository : IBookRepository
         _context.Remove(book);
     }
 
-    public async Task<double> GetUsedBookStorage(string userId)
+    public async Task<long> GetUsedBookStorage(string userId)
     {
         var coverStorage = await _context.Books.Where(book => book.UserId == userId).SumAsync(book => book.CoverSize);
         var books = await _context.Books.Where(book => book.UserId == userId).ToListAsync();
-        var bookStorage = books.Sum(book => getBytesFromSizeString(book.DocumentSize));
+        var bookStorage = books.Sum(book => GetBytesFromSizeString(book.DocumentSize));
 
-        return coverStorage + bookStorage;
+        return coverStorage + (long)bookStorage;
     }
 
-    private double getBytesFromSizeString(string size)
+    private double GetBytesFromSizeString(string size)
     {
         size = size.Replace(" ", string.Empty);
         size = size.Replace(",", ".");
