@@ -1,4 +1,3 @@
-using Application.Common.ActionFilters;
 using Application.Common.DTOs.Tags;
 using Application.Common.Exceptions;
 using Application.Interfaces.Services;
@@ -25,7 +24,6 @@ public class TagController : ControllerBase
     
     
     [HttpDelete("{guid:guid}")]
-    [TypeFilter(typeof(TagExistsFilter))]
     public async Task<ActionResult> DeleteTag(Guid guid)
     {
         await _tagService.DeleteTagAsync(HttpContext.User.Identity!.Name, guid);

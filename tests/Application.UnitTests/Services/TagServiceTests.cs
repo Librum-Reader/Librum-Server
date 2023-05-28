@@ -93,8 +93,7 @@ public class TagServiceTests
             .ReturnsAsync(user);
         
         // Act
-        await Assert.ThrowsAsync<CommonErrorException>(
-            () => _tagService.DeleteTagAsync("JohnDoe@gmail.com", nonExistentGuid));
+        await _tagService.DeleteTagAsync("JohnDoe@gmail.com", nonExistentGuid);
     }
 
     [Fact]

@@ -1,4 +1,3 @@
-using Application.Common.ActionFilters;
 using Application.Common.DTOs.Users;
 using Application.Common.Exceptions;
 using Application.Interfaces.Services;
