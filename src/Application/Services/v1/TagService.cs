@@ -26,13 +26,9 @@ public class TagService : ITagService
     public async Task DeleteTagAsync(string email, Guid guid)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
-        
         var tag = user.Tags.SingleOrDefault(tag => tag.TagId == guid);
         if (tag == default)
-        {
-            const string message = "No tag with this guid exists";
-            throw new InvalidParameterException(message);
-        }
+            return;
 
         tag.UserId = user.Id;
         _tagRepository.Delete(tag);
@@ -47,8 +43,8 @@ public class TagService : ITagService
         var tag = user.Tags.SingleOrDefault(tag => tag.TagId == tagDto.Guid);
         if (tag == default)
         {
-            const string message = "No tag with this guid exists";
-            throw new InvalidParameterException(message);
+            const string message = "No tag with this name exists";
+            throw new CommonErrorException(404, message);
         }
         
         tag.Name = tagDto.Name;

@@ -2,6 +2,9 @@ using Newtonsoft.Json;
 
 namespace Application.Common.DTOs;
 
+/// <summary>
+/// API specific failures that require a stack trace for debugging
+/// </summary>
 public class ApiExceptionDto
 {
     public int StatusCode { get; set; }

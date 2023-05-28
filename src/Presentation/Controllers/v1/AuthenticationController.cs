@@ -39,10 +39,10 @@ public class AuthenticationController : ControllerBase
             await _authenticationService.RegisterUserAsync(registerDto);
             return StatusCode(201);
         }
-        catch (InvalidParameterException e)
+        catch (CommonErrorException e)
         {
             _logger.LogWarning("{ExceptionMessage}", e.Message);
-            return BadRequest(e.Message);
+            return StatusCode(e.Error.Status, e.Error);
         }
     }
     
@@ -55,10 +55,10 @@ public class AuthenticationController : ControllerBase
             var result = await _authenticationService.LoginUserAsync(loginDto);
             return Ok(result);
         }
-        catch (InvalidParameterException e)
+        catch (CommonErrorException e)
         {
             _logger.LogWarning("{ExceptionMessage}", e.Message);
-            return BadRequest(e.Message);
+            return StatusCode(e.Error.Status, e.Error);
         }
     }
     

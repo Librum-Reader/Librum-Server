@@ -53,10 +53,10 @@ public class BookController : ControllerBase
             await _bookService.AddBookBinaryData(HttpContext.User.Identity!.Name,
                                                  guid, reader);
         }
-        catch (InvalidParameterException e)
+        catch (CommonErrorException e)
         {
             _logger.LogWarning("{ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
+            return StatusCode(e.Error.Status, e.Error);
         }
 
         return Ok();
@@ -76,10 +76,10 @@ public class BookController : ControllerBase
                                  await _bookService.GetFormatForBook(email, guid));
             return File(stream, "application/octet-stream");
         }
-        catch (InvalidParameterException e)
+        catch (CommonErrorException e)
         {
             _logger.LogWarning("{ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
+            return StatusCode(e.Error.Status, e.Error);
         }
     }
     
@@ -107,10 +107,10 @@ public class BookController : ControllerBase
             await _bookService.ChangeBookCover(HttpContext.User.Identity!.Name,
                                                  guid, reader);
         }
-        catch (InvalidParameterException e)
+        catch (CommonErrorException e)
         {
             _logger.LogWarning("{ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
+            return StatusCode(e.Error.Status, e.Error);
         }
 
         return Ok();
@@ -127,10 +127,10 @@ public class BookController : ControllerBase
             Response.Headers.Add("Guid", guid.ToString());
             return File(stream, "application/octet-stream");
         }
-        catch (InvalidParameterException e)
+        catch (CommonErrorException e)
         {
             _logger.LogWarning("{ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
+            return StatusCode(e.Error.Status, e.Error);
         }
     }
     
@@ -141,10 +141,10 @@ public class BookController : ControllerBase
         {
             await _bookService.DeleteBookCover(HttpContext.User.Identity!.Name, guid);
         }
-        catch (InvalidParameterException e)
+        catch (CommonErrorException e)
         {
             _logger.LogWarning("{ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
+            return StatusCode(e.Error.Status, e.Error);
         }
 
         return Ok();
@@ -177,15 +177,10 @@ public class BookController : ControllerBase
                                                bookInDto);
             return StatusCode(201);
         }
-        catch (InvalidParameterException e)
+        catch (CommonErrorException e)
         {
             _logger.LogWarning("{ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
-        }
-        catch (StorageLimitExceededException e)
-        {
-            _logger.LogWarning("{ErrorMessage}", e.Message);
-            return StatusCode(426);
+            return StatusCode(e.Error.Status, e.Error);
         }
     }
 
@@ -213,10 +208,10 @@ public class BookController : ControllerBase
             await _bookService.DeleteBooksAsync(userName, bookGuids);
             return NoContent();
         }
-        catch (InvalidParameterException e)
+        catch (CommonErrorException e)
         {
             _logger.LogWarning("{ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
+            return StatusCode(e.Error.Status, e.Error);
         }
     }
 
@@ -229,10 +224,10 @@ public class BookController : ControllerBase
             await _bookService.UpdateBookAsync(userName, bookDto);
             return Ok();
         }
-        catch (InvalidParameterException e)
+        catch (CommonErrorException e)
         {
             _logger.LogWarning("{ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
+            return StatusCode(e.Error.Status, e.Error);
         }
     }
 }

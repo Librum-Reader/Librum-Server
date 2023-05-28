@@ -33,13 +33,16 @@ public class BookService : IBookService
         var user = await _userRepository.GetAsync(email, trackChanges: true);
         if (await _bookRepository.ExistsAsync(user.Id, bookInDto.Guid))
         {
-            const string message = "A book with this guid already exists";
-            throw new InvalidParameterException(message);
+            const string message = "A book with this id already exists";
+            throw new CommonErrorException(400, message);
         }
 
-        if(!await UserHasEnoughStorageSpaceAvailable(user))
-            throw new StorageLimitExceededException("Out of storage");
-            
+        if (!await UserHasEnoughStorageSpaceAvailable(user))
+        {
+            const string message = "Book storage space is insufficient";
+            throw new CommonErrorException(426, "");
+        }
+
         var book = _mapper.Map<Book>(bookInDto);
         book.BookId = bookInDto.Guid;
 
@@ -77,8 +80,8 @@ public class BookService : IBookService
             var book = user.Books.SingleOrDefault(book => book.BookId == bookGuid);
             if (book == null)
             {
-                const string message = "No book with this guid exists";
-                throw new InvalidParameterException(message);
+                const string message = "No book with this id exists";
+                throw new CommonErrorException(404, message);
             }
 
             await _bookRepository.LoadRelationShipsAsync(book);
@@ -96,8 +99,8 @@ public class BookService : IBookService
         var book = user.Books.SingleOrDefault(book => book.BookId == bookUpdateDto.Guid);
         if (book == null)
         {
-            const string message = "No book with this guid exists";
-            throw new InvalidParameterException(message);
+            const string message = "No book with this id exists";
+            throw new CommonErrorException(404, message);
         }
         await _bookRepository.LoadRelationShipsAsync(book);
         
@@ -129,8 +132,8 @@ public class BookService : IBookService
         var book = user.Books.SingleOrDefault(book => book.BookId == guid);
         if (book == null)
         {
-            const string message = "No book with this guid exists";
-            throw new InvalidParameterException(message);
+            const string message = "No book with this id exists";
+            throw new CommonErrorException(404, message);
         }
 
         try
@@ -155,8 +158,8 @@ public class BookService : IBookService
         var book = user.Books.SingleOrDefault(book => book.BookId == guid);
         if (book == null)
         {
-            const string message = "No book with this guid exists";
-            throw new InvalidParameterException(message);
+            const string message = "No book with this id exists";
+            throw new CommonErrorException(404, message);
         }
 
         return await _bookBlobStorageManager.DownloadBookBlob(guid);
@@ -168,8 +171,8 @@ public class BookService : IBookService
         var book = user.Books.SingleOrDefault(book => book.BookId == guid);
         if (book == null)
         {
-            const string message = "No book with this guid exists";
-            throw new InvalidParameterException(message);
+            const string message = "No book with this id exists";
+            throw new CommonErrorException(404, message);
         }
 
         return await _bookBlobStorageManager.DownloadBookCover(guid);
@@ -181,8 +184,8 @@ public class BookService : IBookService
         var book = user.Books.SingleOrDefault(book => book.BookId == guid);
         if (book == null)
         {
-            const string message = "No book with this guid exists";
-            throw new InvalidParameterException(message);
+            const string message = "No book with this id exists";
+            throw new CommonErrorException(404, message);
         }
 
         await _bookBlobStorageManager.DeleteBookCover(guid);
@@ -194,8 +197,8 @@ public class BookService : IBookService
         var book = user.Books.SingleOrDefault(book => book.BookId == guid);
         if (book == null)
         {
-            const string message = "No book with this guid exists";
-            throw new InvalidParameterException(message);
+            const string message = "No book with this id exists";
+            throw new CommonErrorException(404, message);
         }
 
         return book.Format;
@@ -207,8 +210,8 @@ public class BookService : IBookService
         var book = user.Books.SingleOrDefault(book => book.BookId == guid);
         if (book == null)
         {
-            const string message = "No book with this guid exists";
-            throw new InvalidParameterException(message);
+            const string message = "No book with this id exists";
+            throw new CommonErrorException(404, message);
         }
 
         var coverSize = await _bookBlobStorageManager.ChangeBookCover(guid, reader);
@@ -222,9 +225,8 @@ public class BookService : IBookService
         var bookProperty = book.GetType().GetProperty(property);
         if (bookProperty == null)
         {
-            var message = "The book class does not contain a property" +
-                          " called: " + property;
-            throw new InvalidParameterException(message);
+            var message = "Book contains no property called: " + property;
+            throw new CommonErrorException(400, message);
         }
         
         bookProperty.SetValue(book, value);
@@ -283,7 +285,7 @@ public class BookService : IBookService
         if (book.Tags.Any(t => t.Name == tag.Name))
         {
             var message = "A tag with this name already exists";
-            throw new InvalidParameterException(message);
+            throw new CommonErrorException(400, message);
         }
         
         // Create the tag from scratch

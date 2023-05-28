@@ -96,8 +96,8 @@ public class BookServiceTests
     
     
         // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(() =>
-            _bookService.CreateBookAsync("JohnDoe@gmail.com", bookDto));
+        await Assert.ThrowsAsync<CommonErrorException>(() => 
+                        _bookService.CreateBookAsync("JohnDoe@gmail.com", bookDto));
     }
     
     [Fact]
@@ -130,7 +130,7 @@ public class BookServiceTests
             
 
             // Assert
-        await Assert.ThrowsAsync<StorageLimitExceededException>(
+        await Assert.ThrowsAsync<CommonErrorException>(
             () => _bookService.CreateBookAsync("JohnDoe@gmail.com", bookDto));
     }
 
@@ -217,7 +217,7 @@ public class BookServiceTests
 
 
         // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(
+        await Assert.ThrowsAsync<CommonErrorException>(
             () => _bookService.DeleteBooksAsync("JohnDoe@gmail.com", bookGuids));
     }
 
@@ -289,7 +289,7 @@ public class BookServiceTests
 
         
         // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(
+        await Assert.ThrowsAsync<CommonErrorException>(
             () => _bookService.UpdateBookAsync("JohnDoe@gmail.com", bookUpdateDto));
     }
 }

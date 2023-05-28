@@ -93,7 +93,7 @@ public class TagServiceTests
             .ReturnsAsync(user);
         
         // Act
-        await Assert.ThrowsAsync<InvalidParameterException>(
+        await Assert.ThrowsAsync<CommonErrorException>(
             () => _tagService.DeleteTagAsync("JohnDoe@gmail.com", nonExistentGuid));
     }
 
@@ -171,7 +171,7 @@ public class TagServiceTests
             .ReturnsAsync(user);
         
         // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(
+        await Assert.ThrowsAsync<CommonErrorException>(
             () => _tagService.UpdateTagAsync("JohnDoe@gmail.com", tagForUpdate));
     }
     

@@ -1,5 +1,6 @@
 using Application.Common.ActionFilters;
 using Application.Common.DTOs.Tags;
+using Application.Common.Exceptions;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +14,13 @@ namespace Presentation.Controllers.v1;
 public class TagController : ControllerBase
 {
     private readonly ITagService _tagService;
+    private readonly ILogger<TagController> _logger;
 
 
-    public TagController(ITagService tagService)
+    public TagController(ILogger<TagController> logger, ITagService tagService)
     {
         _tagService = tagService;
+        _logger = logger;
     }
     
     
@@ -32,9 +35,17 @@ public class TagController : ControllerBase
     [HttpPut]
     public async Task<ActionResult> UpdateTag(TagForUpdateDto tagUpdateDto)
     {
-        await _tagService.UpdateTagAsync(HttpContext.User.Identity!.Name,
-                                         tagUpdateDto);
-        return StatusCode(201);
+        try
+        {
+            await _tagService.UpdateTagAsync(HttpContext.User.Identity!.Name,
+                                             tagUpdateDto);
+            return StatusCode(201);
+        }
+        catch (CommonErrorException e)
+        {
+            _logger.LogWarning("{ErrorMessage}", e.Message);
+            return StatusCode(e.Error.Status, e.Error);
+        }
     }
 
     [HttpGet]

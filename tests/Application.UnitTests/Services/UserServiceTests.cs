@@ -129,7 +129,7 @@ public class UserServiceTests
         
         
         // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(
+        await Assert.ThrowsAsync<CommonErrorException>(
             () => _userService.PatchUserAsync("JohnDoe@gmail.com", 
                                               new JsonPatchDocument<UserForUpdateDto>(),
                                               localControllerBaseMock.Object));

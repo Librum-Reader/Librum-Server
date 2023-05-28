@@ -28,8 +28,8 @@ public class AuthenticationService : IAuthenticationService
         if (await _authenticationManager.UserExistsAsync(email, password))
             return await _authenticationManager.CreateTokenAsync(loginDto);
         
-        const string message = "The login credentials are wrong";
-        throw new InvalidParameterException(message);
+        const string message = "Invalid email or password";
+        throw new CommonErrorException(401, message);
     }
     
     public async Task RegisterUserAsync(RegisterDto registerDto)
@@ -37,7 +37,7 @@ public class AuthenticationService : IAuthenticationService
         if (await _authenticationManager.EmailAlreadyExistsAsync(registerDto.Email))
         {
             const string message = "A user with this email already exists";
-            throw new InvalidParameterException(message);
+            throw new CommonErrorException(400, message);
         }
 
         var user = _mapper.Map<User>(registerDto);
@@ -47,7 +47,7 @@ public class AuthenticationService : IAuthenticationService
         if (!success)
         {
             const string message = "The provided data was invalid";
-            throw new InvalidParameterException(message);
+            throw new CommonErrorException(400, message);
         }
     }
 }

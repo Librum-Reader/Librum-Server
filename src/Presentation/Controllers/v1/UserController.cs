@@ -43,10 +43,10 @@ public class UserController : ControllerBase
                                               patchDoc, this);
             return Ok();
         }
-        catch (InvalidParameterException e)
+        catch (CommonErrorException e)
         {
             _logger.LogWarning("{ErrorMessage}", e.Message);
-            return BadRequest(e.Message);
+            return StatusCode(e.Error.Status, e.Error);
         }
     }
 

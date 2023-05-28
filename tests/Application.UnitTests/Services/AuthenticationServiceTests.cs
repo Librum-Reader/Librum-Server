@@ -72,7 +72,7 @@ public class AuthenticationServiceTests
         
         
         // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(
+        await Assert.ThrowsAsync<CommonErrorException>(
             () => _authenticationService.LoginUserAsync(loginDto));
     }
     
@@ -120,7 +120,7 @@ public class AuthenticationServiceTests
         
 
         // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(
+        await Assert.ThrowsAsync<CommonErrorException>(
             () => _authenticationService.RegisterUserAsync(registerDto));
     }
 
@@ -146,7 +146,7 @@ public class AuthenticationServiceTests
         
 
         // Assert
-        await Assert.ThrowsAsync<InvalidParameterException>(
+        await Assert.ThrowsAsync<CommonErrorException>(
             () => _authenticationService.RegisterUserAsync(registerDto));
     }
 }
