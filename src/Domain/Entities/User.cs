@@ -24,6 +24,9 @@ public class User : IdentityUser
 
     [Required]
     public DateTime AccountCreation { get; set; }
+
+    [Required]
+    public long BookStorageLimit { get; set; } = 200 * 1024 * 1024; // 200 MiB
     
     
     public ICollection<Book> Books { get; set; }

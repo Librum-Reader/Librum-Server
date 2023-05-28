@@ -55,7 +55,7 @@ public class BookService : IBookService
     private async Task<bool> UserHasEnoughStorageSpaceAvailable(User user)
     {
         var usedStorage = await _bookRepository.GetUsedBookStorage(user.Id);
-        return usedStorage <= 200 * 1024 * 1024;
+        return usedStorage <= user.BookStorageLimit;
     }
 
     public async Task<IList<BookOutDto>> GetBooksAsync(string email)
