@@ -34,13 +34,13 @@ public class BookService : IBookService
         if (await _bookRepository.ExistsAsync(user.Id, bookInDto.Guid))
         {
             const string message = "A book with this id already exists";
-            throw new CommonErrorException(400, message);
+            throw new CommonErrorException(400, message, 0);
         }
 
         if (!await UserHasEnoughStorageSpaceAvailable(user))
         {
             const string message = "Book storage space is insufficient";
-            throw new CommonErrorException(426, "");
+            throw new CommonErrorException(426, message, 5);
         }
 
         var book = _mapper.Map<Book>(bookInDto);
@@ -81,7 +81,7 @@ public class BookService : IBookService
             if (book == null)
             {
                 const string message = "No book with this id exists";
-                throw new CommonErrorException(404, message);
+                throw new CommonErrorException(404, message, 4);
             }
 
             await _bookRepository.LoadRelationShipsAsync(book);
@@ -100,7 +100,7 @@ public class BookService : IBookService
         if (book == null)
         {
             const string message = "No book with this id exists";
-            throw new CommonErrorException(404, message);
+            throw new CommonErrorException(404, message, 4);
         }
         await _bookRepository.LoadRelationShipsAsync(book);
         
@@ -133,7 +133,7 @@ public class BookService : IBookService
         if (book == null)
         {
             const string message = "No book with this id exists";
-            throw new CommonErrorException(404, message);
+            throw new CommonErrorException(404, message, 4);
         }
 
         try
@@ -159,7 +159,7 @@ public class BookService : IBookService
         if (book == null)
         {
             const string message = "No book with this id exists";
-            throw new CommonErrorException(404, message);
+            throw new CommonErrorException(404, message, 4);
         }
 
         return await _bookBlobStorageManager.DownloadBookBlob(guid);
@@ -172,7 +172,7 @@ public class BookService : IBookService
         if (book == null)
         {
             const string message = "No book with this id exists";
-            throw new CommonErrorException(404, message);
+            throw new CommonErrorException(404, message, 4);
         }
 
         return await _bookBlobStorageManager.DownloadBookCover(guid);
@@ -185,7 +185,7 @@ public class BookService : IBookService
         if (book == null)
         {
             const string message = "No book with this id exists";
-            throw new CommonErrorException(404, message);
+            throw new CommonErrorException(404, message, 4);
         }
 
         await _bookBlobStorageManager.DeleteBookCover(guid);
@@ -198,7 +198,7 @@ public class BookService : IBookService
         if (book == null)
         {
             const string message = "No book with this id exists";
-            throw new CommonErrorException(404, message);
+            throw new CommonErrorException(404, message, 4);
         }
 
         return book.Format;
@@ -211,7 +211,7 @@ public class BookService : IBookService
         if (book == null)
         {
             const string message = "No book with this id exists";
-            throw new CommonErrorException(404, message);
+            throw new CommonErrorException(404, message, 4);
         }
 
         var coverSize = await _bookBlobStorageManager.ChangeBookCover(guid, reader);
@@ -226,7 +226,7 @@ public class BookService : IBookService
         if (bookProperty == null)
         {
             var message = "Book contains no property called: " + property;
-            throw new CommonErrorException(400, message);
+            throw new CommonErrorException(400, message, 0);
         }
         
         bookProperty.SetValue(book, value);
@@ -285,7 +285,7 @@ public class BookService : IBookService
         if (book.Tags.Any(t => t.Name == tag.Name))
         {
             var message = "A tag with this name already exists";
-            throw new CommonErrorException(400, message);
+            throw new CommonErrorException(400, message, 6);
         }
         
         // Create the tag from scratch

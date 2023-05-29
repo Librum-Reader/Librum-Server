@@ -48,7 +48,7 @@ public class BookBlobStorageManager : IBookBlobStorageManager
             if (!HasFileContentDisposition(contentDisposition))
             {
                 var message = "Missing content disposition header";
-                throw new CommonErrorException(400, message);
+                throw new CommonErrorException(400, message, 0);
             }
             
             await section.Body.CopyToAsync(dest);
@@ -100,7 +100,7 @@ public class BookBlobStorageManager : IBookBlobStorageManager
             if (!HasFileContentDisposition(contentDisposition))
             {
                 var message = "Missing content disposition header";
-                throw new CommonErrorException(400, message);
+                throw new CommonErrorException(400, message, 0);
             }
             
             await section.Body.CopyToAsync(dest);

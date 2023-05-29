@@ -55,7 +55,7 @@ public class UserService : IUserService
         if (!controllerBase.ModelState.IsValid || !userToPatch.DataIsValid)
         {
             const string message = "Updating the user failed";
-            throw new CommonErrorException(400, message);
+            throw new CommonErrorException(400, message, 0);
         }
 
         _mapper.Map(userToPatch, user);

@@ -44,7 +44,7 @@ public class TagService : ITagService
         if (tag == default)
         {
             const string message = "No tag with this name exists";
-            throw new CommonErrorException(404, message);
+            throw new CommonErrorException(404, message, 7);
         }
         
         tag.Name = tagDto.Name;
