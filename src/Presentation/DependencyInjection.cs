@@ -1,4 +1,6 @@
+using System.Net;
 using System.Text;
+using Application.Common.DTOs;
 using Application.Interfaces.Managers;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
@@ -14,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using AuthenticationManager = Application.Managers.AuthenticationManager;
 
 
 namespace Presentation;
@@ -47,6 +50,7 @@ public static class DependencyInjection
         
         services.AddLogging();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        services.AddCustomInvalidModelStateResponseMessage();
         services.AddDbContext<DataContext>(options =>
         {
             var sqliteConnection = configuration.GetConnectionString("DefaultConnection");
@@ -108,5 +112,51 @@ public static class DependencyInjection
                 IssuerSigningKey = signingKey
             };
         });
+    }
+
+    /// <summary>
+    /// A handler that adds custom error messages to DataAnnotation failures.
+    /// The "ErrorMessage" strings passed to DataAnnotations look like:
+    /// "6 Some Error Message", where 6 is the code and the rest is the error message.
+    /// </summary>
+    public static void AddCustomInvalidModelStateResponseMessage(
+        this IServiceCollection services)
+    {
+        services.AddMvcCore().ConfigureApiBehaviorOptions(options => {
+            options.InvalidModelStateResponseFactory = (errorContext) =>
+            {
+                var errorString = errorContext.ModelState.Values.First().Errors.First().ErrorMessage;
+                var res = GetCodeAndMessageFromErrorString(errorString);
+                var (code, message) = res;
+                
+                var error = new CommonErrorDto((int)HttpStatusCode.BadRequest,
+                                               message,
+                                               code);
+                return new BadRequestObjectResult(error);
+            };
+        });
+    }
+
+    /// <summary>
+    /// Parses the code and the message from strings that look like this:
+    /// "6 Some Error Message", where 6 is the code and the rest is the error message.
+    /// </summary>
+    private static ValueTuple<int, string> GetCodeAndMessageFromErrorString(
+        string errorString)
+    {
+        int endOfDigits = 0;
+        foreach(char c in errorString)
+        {
+            if (char.IsDigit(c))
+                endOfDigits++;
+            else
+                break;
+        }
+
+        var codeAsString = errorString.Substring(0, endOfDigits + 1);
+        var code = int.Parse(codeAsString);
+        var message = errorString[(endOfDigits+1) ..];
+
+        return (code, message);
     }
 }
