@@ -153,8 +153,12 @@ public static class DependencyInjection
                 break;
         }
 
-        var codeAsString = errorString.Substring(0, endOfDigits + 1);
-        var code = int.Parse(codeAsString);
+        int code = 0;
+        if (endOfDigits > 0)
+        {
+            var codeAsString = errorString.Substring(0, endOfDigits + 1);
+            code = int.Parse(codeAsString);
+        }
         var message = errorString[(endOfDigits+1) ..];
 
         return (code, message);
