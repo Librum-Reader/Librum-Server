@@ -71,6 +71,8 @@ public static class DependencyInjection
     {
         var builder = services.AddIdentityCore<User>(opt =>
         {
+            opt.Password.RequireDigit = false;
+            opt.Password.RequireNonAlphanumeric = false;
             opt.Password.RequiredLength = 4;
             opt.User.RequireUniqueEmail = true;
         });
