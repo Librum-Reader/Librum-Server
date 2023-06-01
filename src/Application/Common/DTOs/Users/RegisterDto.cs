@@ -16,8 +16,7 @@ public class RegisterDto
 
     [Required]
     [EmailAddress(ErrorMessage = "8 Invalid email address format.")]
-    [MinLength(6, ErrorMessage = "9 The email is too short")]
-    [MaxLength(50, ErrorMessage = "10 The email is too long")]
+    [MaxLength(60, ErrorMessage = "10 The email is too long")]
     public string Email { get; set; }
 
     [Required]
