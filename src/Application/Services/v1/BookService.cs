@@ -87,7 +87,9 @@ public class BookService : IBookService
             await _bookRepository.LoadRelationShipsAsync(book);
             _bookRepository.DeleteBook(book);
             await _bookBlobStorageManager.DeleteBookBlob(book.BookId);
-            await _bookBlobStorageManager.DeleteBookCover(book.BookId);
+            
+            if(book.HasCover)
+                await _bookBlobStorageManager.DeleteBookCover(book.BookId);
         }
 
         await _bookRepository.SaveChangesAsync();
