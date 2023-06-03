@@ -6,7 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Application.Services.v1;
+namespace Application.Services;
 
 public class UserService : IUserService
 {

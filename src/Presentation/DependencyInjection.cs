@@ -8,12 +8,11 @@ using Domain.Entities;
 using Application.Managers;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repository;
-using Application.Services.v1;
+using Application.Services;
 using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using AuthenticationManager = Application.Managers.AuthenticationManager;
@@ -34,16 +33,7 @@ public static class DependencyInjection
         services.AddScoped<IBookRepository, BookRepository>();
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<ITagRepository, TagRepository>();
-        services.AddSingleton<IBookBlobStorageManager, BookBlobStorageManager>(); 
-
-        
-        services.AddApiVersioning(options =>
-        {
-            options.AssumeDefaultVersionWhenUnspecified = false;
-            options.DefaultApiVersion = ApiVersion.Default;
-            options.ApiVersionReader = new HeaderApiVersionReader("X-Version");
-        });
-
+        services.AddSingleton<IBookBlobStorageManager, BookBlobStorageManager>();
         services.AddSingleton(x => new BlobServiceClient(
                                   configuration.GetValue<string>(
                                       "AzureBlobStorageConnectionString")));

@@ -5,11 +5,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Presentation.Controllers.v1;
+namespace Presentation.Controllers;
 
 [Authorize]
 [ApiController]
-[ApiVersion("1.0")]
 [Route("api/[controller]")]
 public class UserController : ControllerBase
 {

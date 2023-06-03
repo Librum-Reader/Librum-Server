@@ -8,7 +8,7 @@ using Domain.Entities;
 using MailKit.Net.Smtp;
 using MimeKit;
 
-namespace Application.Services.v1;
+namespace Application.Services;
 
 public class AuthenticationService : IAuthenticationService
 {

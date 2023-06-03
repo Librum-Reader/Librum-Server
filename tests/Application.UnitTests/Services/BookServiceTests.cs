@@ -10,7 +10,7 @@ using Application.Common.Mappings;
 using Application.Interfaces.Managers;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
-using Application.Services.v1;
+using Application.Services;
 using AutoMapper;
 using Domain.Entities;
 using Moq;

@@ -8,7 +8,7 @@ using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace Application.Services.v1;
+namespace Application.Services;
 
 public class BookService : IBookService
 {

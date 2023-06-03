@@ -5,7 +5,7 @@ using Application.Interfaces.Services;
 using AutoMapper;
 
 
-namespace Application.Services.v1;
+namespace Application.Services;
 
 public class TagService : ITagService
 {

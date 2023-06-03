@@ -8,11 +8,10 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 
-namespace Presentation.Controllers.v1;
+namespace Presentation.Controllers;
 
 [Authorize]
 [ApiController]
-[ApiVersion("1.0")]
 [Route("api/[controller]")]
 public class BookController : ControllerBase
 {

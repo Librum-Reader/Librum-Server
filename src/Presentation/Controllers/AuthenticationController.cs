@@ -4,10 +4,9 @@ using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Presentation.Controllers.v1;
+namespace Presentation.Controllers;
 
 [ApiController]
-[ApiVersion("1.0")]
 [Route("api")]
 public class AuthenticationController : ControllerBase
 {
@@ -79,7 +78,6 @@ public class AuthenticationController : ControllerBase
     }
     
     [AllowAnonymous]
-    [ApiVersionNeutral]
     [HttpPost("recoverAccount/{email}")]
     public ActionResult RecoverAccount(string email)
     {

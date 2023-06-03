@@ -3,7 +3,7 @@ using Application.Common.DTOs.Users;
 using Application.Common.Exceptions;
 using Application.Common.Mappings;
 using Application.Interfaces.Managers;
-using Application.Services.v1;
+using Application.Services;
 using AutoMapper;
 using Domain.Entities;
 using Moq;
