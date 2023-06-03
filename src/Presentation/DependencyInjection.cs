@@ -75,6 +75,7 @@ public static class DependencyInjection
             opt.Password.RequireNonAlphanumeric = false;
             opt.Password.RequiredLength = 4;
             opt.User.RequireUniqueEmail = true;
+            opt.SignIn.RequireConfirmedEmail = true;
         });
 
         builder = new IdentityBuilder(builder.UserType, 

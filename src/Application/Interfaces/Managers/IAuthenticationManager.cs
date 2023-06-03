@@ -9,4 +9,6 @@ public interface IAuthenticationManager
     public Task<bool> UserExistsAsync(string email, string password);
     public Task<bool> EmailAlreadyExistsAsync(string email);
     public Task<string> CreateTokenAsync(LoginDto loginDto);
+    public Task<string> GetEmailConfirmationLinkAsync(User user);
+    public Task<bool> ConfirmEmailAsync(string email, string token);
 }

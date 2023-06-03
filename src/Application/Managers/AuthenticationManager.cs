@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Application.Common.DTOs.Users;
+using Application.Common.Exceptions;
 using Application.Interfaces.Managers;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -53,6 +54,22 @@ public class AuthenticationManager : IAuthenticationManager
         var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
     
         return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+    }
+
+    public async Task<string> GetEmailConfirmationLinkAsync(User user)
+    {
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        return token;
+    }
+
+    public async Task<bool> ConfirmEmailAsync(string email, string token)
+    {
+        var user = await _userManager.FindByNameAsync(email);
+        if (user == null)
+            throw new CommonErrorException(400, "No user with this email address was found", 0);
+        
+        var result = await _userManager.ConfirmEmailAsync(user, token);
+        return result.Succeeded;
     }
 
     private SigningCredentials GetSigningCredentials()

@@ -63,6 +63,23 @@ public class AuthenticationController : ControllerBase
     }
     
     [AllowAnonymous]
+    [HttpGet("confirmEmail/{email}")]
+    public async Task<ActionResult> ConfirmEmail(string email, [FromBody] string token)
+    {
+        try
+        {
+            await _authenticationService.ConfirmEmail(email, token);
+            return Ok();
+        }
+        catch (CommonErrorException e)
+        {
+            _logger.LogWarning("{ExceptionMessage}", e.Message);
+            return StatusCode(e.Error.Status, e.Error);
+        }
+    }
+    
+    [AllowAnonymous]
+    [ApiVersionNeutral]
     [HttpPost("recoverAccount/{email}")]
     public ActionResult RecoverAccount(string email)
     {
