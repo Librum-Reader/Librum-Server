@@ -37,7 +37,7 @@ public class EmailSender : IEmailSender
         message.Subject = "Confirm Your Librum Account";
         
         message.Body = new TextPart ("plain") {
-            Text = $"Hello { user.FirstName }.\n\nThank your for choosing Librum! " + 
+            Text = $"Hello { user.FirstName }.\n\nThank you for choosing Librum! " + 
                    "We are happy to tell you, that your account has successfully been created. " +
                    "The final step remaining is to confirm it, and you're all set to go.\n" + 
                    $"To confirm your account, please click the link below:\n{confirmationLink}\n\n" +
