@@ -11,4 +11,5 @@ public interface IAuthenticationManager
     public Task<string> CreateTokenAsync(LoginDto loginDto);
     public Task<string> GetEmailConfirmationLinkAsync(User user);
     public Task<bool> ConfirmEmailAsync(string email, string token);
+    public Task<bool> IsEmailConfirmed(string email);
 }

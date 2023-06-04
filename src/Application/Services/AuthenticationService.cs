@@ -29,11 +29,20 @@ public class AuthenticationService : IAuthenticationService
     {
         var email = loginDto.Email;
         var password = loginDto.Password;
-        if (await _authenticationManager.UserExistsAsync(email, password))
-            return await _authenticationManager.CreateTokenAsync(loginDto);
-        
-        const string message = "Invalid email or password";
-        throw new CommonErrorException(401, message, 1);
+
+        if (!await _authenticationManager.UserExistsAsync(email, password))
+        {
+            const string message = "Invalid email or password";
+            throw new CommonErrorException(401, message, 1);
+        }
+
+        if (!await _authenticationManager.IsEmailConfirmed(email))
+        {
+            const string message = "Account is not confirmed";
+            throw new CommonErrorException(401, message, 18);
+        }
+
+        return await _authenticationManager.CreateTokenAsync(loginDto);
     }
     
     public async Task RegisterUserAsync(RegisterDto registerDto)

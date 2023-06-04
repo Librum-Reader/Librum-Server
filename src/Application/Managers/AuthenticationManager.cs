@@ -66,10 +66,19 @@ public class AuthenticationManager : IAuthenticationManager
     {
         var user = await _userManager.FindByNameAsync(email);
         if (user == null)
-            throw new CommonErrorException(400, "No user with this email address was found", 0);
+            throw new CommonErrorException(400, "No user with this email address was found", 17);
         
         var result = await _userManager.ConfirmEmailAsync(user, token);
         return result.Succeeded;
+    }
+
+    public async Task<bool> IsEmailConfirmed(string email)
+    {
+        var user = await _userManager.FindByNameAsync(email);
+        if (user == null)
+            throw new CommonErrorException(400, "No user with this email address was found", 17);
+
+        return user.EmailConfirmed;
     }
 
     private SigningCredentials GetSigningCredentials()
@@ -103,6 +112,7 @@ public class AuthenticationManager : IAuthenticationManager
         var tokenOptions = new JwtSecurityToken
         (
             issuer: _configuration["JWTValidIssuer"],
+            audience: "librumapi",
             claims: claims,
             expires: DateTime.Now.AddMonths(2),
             signingCredentials: signingCredentials

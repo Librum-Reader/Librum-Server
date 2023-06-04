@@ -111,6 +111,7 @@ public static class DependencyInjection
                 ValidateIssuerSigningKey = true,
 
                 ValidIssuer = configuration["JWTValidIssuer"],
+                ValidAudience = "librumapi",
                 IssuerSigningKey = signingKey
             };
         });
