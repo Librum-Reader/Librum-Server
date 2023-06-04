@@ -62,8 +62,8 @@ public class AuthenticationController : ControllerBase
     }
     
     [AllowAnonymous]
-    [HttpGet("confirmEmail/{email}")]
-    public async Task<ActionResult> ConfirmEmail(string email, [FromBody] string token)
+    [HttpGet("confirmEmail")]
+    public async Task<ActionResult> ConfirmEmail(string email, string token)
     {
         try
         {

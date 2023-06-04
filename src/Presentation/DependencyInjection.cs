@@ -4,11 +4,13 @@ using Application.Common.DTOs;
 using Application.Interfaces.Managers;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
+using Application.Interfaces.Utility;
 using Domain.Entities;
 using Application.Managers;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repository;
 using Application.Services;
+using Application.Utility;
 using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -35,6 +37,7 @@ public static class DependencyInjection
         services.AddScoped<IBookRepository, BookRepository>();
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<ITagRepository, TagRepository>();
+        services.AddScoped<IEmailSender, EmailSender>();
         services.AddSingleton<IBookBlobStorageManager, BookBlobStorageManager>();
         services.AddSingleton(x => new BlobServiceClient(
                                   configuration.GetValue<string>(
