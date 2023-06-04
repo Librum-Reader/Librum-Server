@@ -3,6 +3,7 @@ using Application.Common.DTOs.Users;
 using Application.Common.Exceptions;
 using Application.Common.Mappings;
 using Application.Interfaces.Managers;
+using Application.Interfaces.Utility;
 using Application.Services;
 using AutoMapper;
 using Domain.Entities;
@@ -14,6 +15,7 @@ namespace Application.UnitTests.Services;
 public class AuthenticationServiceTests
 {
     private readonly Mock<IAuthenticationManager> _authenticationManagerMock = new();
+    private readonly Mock<IEmailSender> _emailSenderMock = new();
     private readonly AuthenticationService _authenticationService;
     
     
@@ -24,9 +26,11 @@ public class AuthenticationServiceTests
             cfg.AddProfile<UserAutoMapperProfile>();
         });
         var mapper = new Mapper(mapperConfig);
-        
-        _authenticationService = 
-            new AuthenticationService(mapper, _authenticationManagerMock.Object);
+
+        _authenticationService = new AuthenticationService(
+            mapper,
+            _authenticationManagerMock.Object,
+            _emailSenderMock.Object);
     }
     
     
@@ -95,6 +99,8 @@ public class AuthenticationServiceTests
         _authenticationManagerMock.Setup(x => x.CreateUserAsync(It.IsAny<User>(), 
                                                                 It.IsAny<string>()))
             .ReturnsAsync(true);
+        _emailSenderMock.Setup(
+            x => x.SendAccountConfirmationEmail(It.IsAny<User>()));
         
 
         // Act
