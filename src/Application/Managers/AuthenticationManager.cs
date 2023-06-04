@@ -74,7 +74,7 @@ public class AuthenticationManager : IAuthenticationManager
 
     private SigningCredentials GetSigningCredentials()
     {
-        var key = Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]);
+        var key = Encoding.UTF8.GetBytes(_configuration["JWTKey"]!);
         var secret = new SymmetricSecurityKey(key);
 
         return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
@@ -102,8 +102,7 @@ public class AuthenticationManager : IAuthenticationManager
     {
         var tokenOptions = new JwtSecurityToken
         (
-            issuer: _configuration["JWT:ValidIssuer"],
-            audience: _configuration["JWT:ValidAudience"],
+            issuer: _configuration["JWTValidIssuer"],
             claims: claims,
             expires: DateTime.Now.AddMonths(2),
             signingCredentials: signingCredentials

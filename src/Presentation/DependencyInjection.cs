@@ -13,6 +13,8 @@ using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using AuthenticationManager = Application.Managers.AuthenticationManager;
@@ -37,22 +39,28 @@ public static class DependencyInjection
         services.AddSingleton(x => new BlobServiceClient(
                                   configuration.GetValue<string>(
                                       "AzureBlobStorageConnectionString")));
+        services.AddHttpContextAccessor();
+        services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+        services.AddScoped<IUrlHelper>(x =>
+        {
+            var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
+            var factory = x.GetRequiredService<IUrlHelperFactory>();
+            return factory.GetUrlHelper(actionContext!);
+        });
         
         services.AddLogging();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddCustomInvalidModelStateResponseMessage();
         services.AddDbContext<DataContext>(options =>
         {
-            var sqliteConnection = configuration.GetConnectionString("DefaultConnection");
+            var sqliteConnection = configuration["DBConnectionString"];
             if (sqliteConnection == null)
             {
-                throw new InvalidDataException("Can not read 'DefaultConnection'" +
-                                               "from settings file");
+                throw new InvalidDataException("Failed getting the DBConnectionString");
             }
             
             options.UseSqlServer(sqliteConnection);
         });
-
 
         return services;
     }
@@ -77,11 +85,10 @@ public static class DependencyInjection
     public static void ConfigureJwt(this IServiceCollection services, 
                                     IConfiguration configuration)
     {
-        var secret = configuration["JWT:Secret"]!;
+        var secret = configuration["JWTKey"]!;
         if (secret.IsNullOrEmpty())
         {
-            throw new InvalidDataException("Can not read 'DefaultConnection'" +
-                                           "from settings file");
+            throw new InvalidDataException("Failed getting the JWT Key");
         }
         
         var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
@@ -100,8 +107,7 @@ public static class DependencyInjection
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
 
-                ValidIssuer = configuration["JWT:ValidIssuer"],
-                ValidAudience = configuration["JWT:ValidAudience"],
+                ValidIssuer = configuration["JWTValidIssuer"],
                 IssuerSigningKey = signingKey
             };
         });

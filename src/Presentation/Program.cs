@@ -1,11 +1,18 @@
 using Application.Common.Middleware;
 using Application.Interfaces.Services;
+using Azure.Identity;
 using Infrastructure.Persistence;
 using Presentation;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
+// Add AzureKeyVault as configuration provider
+var keyVaultUrl = new Uri(builder.Configuration.GetSection("AzureKeyVaultUri").Value!);
+var azureCredential = new DefaultAzureCredential();
+builder.Configuration.AddAzureKeyVault(keyVaultUrl, azureCredential);
 
 
 // Services
@@ -19,7 +26,6 @@ builder.Services.AddCors(p => p.AddPolicy("corspolicy",
                                               build.WithOrigins("*").AllowAnyMethod()
                                                   .AllowAnyHeader();
                                           }));
-
 
 var app = builder.Build();
 
