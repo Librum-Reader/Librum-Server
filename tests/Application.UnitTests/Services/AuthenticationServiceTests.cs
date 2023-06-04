@@ -52,6 +52,8 @@ public class AuthenticationServiceTests
         
         _authenticationManagerMock.Setup(x => x.CreateTokenAsync(loginDto))
             .ReturnsAsync(token);
+        _authenticationManagerMock.Setup(x => x.IsEmailConfirmed(loginDto.Email))
+            .ReturnsAsync(true);
 
         // Act
         var result = await _authenticationService.LoginUserAsync(loginDto);
@@ -77,6 +79,32 @@ public class AuthenticationServiceTests
         
         // Assert
         await Assert.ThrowsAsync<CommonErrorException>(
+            () => _authenticationService.LoginUserAsync(loginDto));
+    }
+
+    [Fact]
+    public async Task AnAuthenticationService_FailsAuthenticatingUserIfAccountIsNotConfirmed()
+    {
+        // Arrange
+        _authenticationManagerMock.Setup(x => x.UserExistsAsync(It.IsAny<string>(),
+                                             It.IsAny<string>()))
+            .ReturnsAsync(true);
+        
+        var loginDto = new LoginDto
+        {
+            Email = "JohnDoe@gmail.com",
+            Password = "SomePassword123"
+        };
+        
+        const string token = "KJ32ksMyGeneratedTokenBj2/3C";
+        
+        _authenticationManagerMock.Setup(x => x.CreateTokenAsync(loginDto))
+            .ReturnsAsync(token);
+        _authenticationManagerMock.Setup(x => x.IsEmailConfirmed(loginDto.Email))
+            .ReturnsAsync(false);
+
+        // Assert
+        await Assert.ThrowsAnyAsync<CommonErrorException>(
             () => _authenticationService.LoginUserAsync(loginDto));
     }
     
