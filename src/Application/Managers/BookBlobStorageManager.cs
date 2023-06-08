@@ -81,7 +81,7 @@ public class BookBlobStorageManager : IBookBlobStorageManager
     {
         var containerClient =
             _blobServiceClient.GetBlobContainerClient("librumdev");
-        var blobClient = containerClient.GetBlobClient(_bookCoverPrefix + guid.ToString());
+        var blobClient = containerClient.GetBlobClient(_bookCoverPrefix + guid);
 
         await using var dest = await blobClient.OpenWriteAsync(true);
 
@@ -116,7 +116,7 @@ public class BookBlobStorageManager : IBookBlobStorageManager
     {
         var containerClient =
             _blobServiceClient.GetBlobContainerClient("librumdev");
-        var blobClient = containerClient.GetBlobClient(_bookCoverPrefix + guid.ToString());
+        var blobClient = containerClient.GetBlobClient(_bookCoverPrefix + guid);
 
         return blobClient.OpenReadAsync();
     }
@@ -125,7 +125,7 @@ public class BookBlobStorageManager : IBookBlobStorageManager
     {
         var containerClient =
             _blobServiceClient.GetBlobContainerClient("librumdev");
-        var blobClient = containerClient.GetBlobClient(_bookCoverPrefix + guid.ToString());
+        var blobClient = containerClient.GetBlobClient(_bookCoverPrefix + guid);
 
         await blobClient.DeleteAsync();
     }
