@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Application.Common.DTOs.Users;
 using Application.Common.Exceptions;
 using Application.Common.Mappings;
+using Application.Interfaces.Managers;
 using Application.Interfaces.Repositories;
 using Application.Services;
 using AutoMapper;
@@ -21,6 +22,7 @@ public class UserServiceTests
     private readonly IMapper _mapper;
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly Mock<IBookRepository> _bookRepositoryMock = new();
+    private readonly Mock<IUserBlobStorageManager> _userBlobStorageManagerMock = new();
     private readonly Mock<ControllerBase> _controllerBaseMock = new();
     private readonly UserService _userService;
     
@@ -35,6 +37,7 @@ public class UserServiceTests
         _mapper = new Mapper(mapperConfig);
         _userService = new UserService(_userRepositoryMock.Object, 
                                        _bookRepositoryMock.Object,
+                                       _userBlobStorageManagerMock.Object,
                                        _mapper);
     }
     
