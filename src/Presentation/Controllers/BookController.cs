@@ -1,4 +1,5 @@
 using Application.Common.Attributes;
+using Application.Common.DTOs;
 using Application.Common.DTOs.Books;
 using Application.Common.Exceptions;
 using Application.Interfaces.Services;
@@ -41,7 +42,7 @@ public class BookController : ControllerBase
         if (!isMultiPart)
         {
             var message = "The book binary data needs to be sent as multipart";
-            return BadRequest(message);
+            return StatusCode(400, new CommonErrorDto(400, message, 0));
         }
         
         var boundary = GetBoundary(MediaTypeHeaderValue.Parse(Request.ContentType));
@@ -95,7 +96,7 @@ public class BookController : ControllerBase
         if (!isMultiPart)
         {
             var message = "The book binary data needs to be sent as multipart";
-            return BadRequest(message);
+            return StatusCode(400, new CommonErrorDto(400, message, 0));
         }
         
         var boundary = GetBoundary(MediaTypeHeaderValue.Parse(Request.ContentType));
