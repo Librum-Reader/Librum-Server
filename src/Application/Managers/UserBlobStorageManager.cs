@@ -32,11 +32,10 @@ public class UserBlobStorageManager : IUserBlobStorageManager
     {
         var containerClient =
             _blobServiceClient.GetBlobContainerClient("librumdev");
-        var blobClient = containerClient.GetBlobClient(_profilePicturePrefix);
+        var blobClient = containerClient.GetBlobClient(_profilePicturePrefix + guid);
 
         await using var dest = await blobClient.OpenWriteAsync(true);
 
-        long coverSize = 0;
         var section = await reader.ReadNextSectionAsync();
         while (section != null)
         {
@@ -55,8 +54,6 @@ public class UserBlobStorageManager : IUserBlobStorageManager
             }
             
             await section.Body.CopyToAsync(dest);
-            coverSize += section.Body.Length;
-            
             section = await reader.ReadNextSectionAsync();
         }
     }
