@@ -40,8 +40,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailSender, EmailSender>();
         services.AddSingleton<IBookBlobStorageManager, BookBlobStorageManager>();
         services.AddSingleton(x => new BlobServiceClient(
-                                  configuration.GetValue<string>(
-                                      "AzureBlobStorageConnectionString")));
+                                  configuration["AzureBlobStorageConnectionString"]));
         services.AddHttpContextAccessor();
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         services.AddScoped<IUrlHelper>(x =>
