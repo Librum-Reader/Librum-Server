@@ -79,7 +79,7 @@ public class UserService : IUserService
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
 
-        return await _userBlobStorageManager.DownloadProfilePicture(email);
+        return await _userBlobStorageManager.DownloadProfilePicture(user.Id);
     }
 
     public async Task DeleteProfilePicture(string email)
