@@ -16,17 +16,19 @@ public class UserService : IUserService
     private readonly IBookRepository _bookRepository;
     private readonly IMapper _mapper;
     private readonly IUserBlobStorageManager _userBlobStorageManager;
+    private readonly IBookBlobStorageManager _bookBlobStorageManager;
 
 
     public UserService(IUserRepository userRepository,
                        IBookRepository bookRepository,
                        IUserBlobStorageManager userBlobStorageManager,
-                       IMapper mapper)
+                       IBookBlobStorageManager bookBlobStorageManager, IMapper mapper)
     {
         _userRepository = userRepository;
         _bookRepository = bookRepository;
-        _mapper = mapper;
+        _bookBlobStorageManager = bookBlobStorageManager;
         _userBlobStorageManager = userBlobStorageManager;
+        _mapper = mapper;
     }
 
 
@@ -42,7 +44,23 @@ public class UserService : IUserService
     public async Task DeleteUserAsync(string email)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
-
+        if (user == null)
+        {
+            throw new CommonErrorException(400, "No user with this email exists", 17);
+        }
+        
+        // Delete all books
+        foreach(var book in _bookRepository.GetAllAsync(user.Id))
+        {
+            _bookRepository.DeleteBook(book);
+            await _bookBlobStorageManager.DeleteBookBlob(book.BookId);
+            
+            if(book.HasCover)
+                await _bookBlobStorageManager.DeleteBookCover(book.BookId);
+        }
+        
+        // Delete user
+        await DeleteProfilePicture(email);
         _userRepository.Delete(user);
         await _userRepository.SaveChangesAsync();
     }

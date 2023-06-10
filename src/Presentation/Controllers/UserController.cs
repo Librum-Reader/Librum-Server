@@ -55,8 +55,16 @@ public class UserController : ControllerBase
     [HttpDelete]
     public async Task<ActionResult> DeleteUser()
     {
-        await _userService.DeleteUserAsync(HttpContext.User.Identity!.Name);
-        return NoContent();
+        try
+        {
+            await _userService.DeleteUserAsync(HttpContext.User.Identity!.Name);
+            return NoContent();
+        }
+        catch (CommonErrorException e)
+        {
+            _logger.LogWarning("{ErrorMessage}", e.Message);
+            return StatusCode(e.Error.Status, e.Error);
+        }
     }
     
     [HttpPost("profilePicture")]

@@ -23,6 +23,7 @@ public class UserServiceTests
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly Mock<IBookRepository> _bookRepositoryMock = new();
     private readonly Mock<IUserBlobStorageManager> _userBlobStorageManagerMock = new();
+    private readonly Mock<IBookBlobStorageManager> _bookBlobStorageManagerMock = new();
     private readonly Mock<ControllerBase> _controllerBaseMock = new();
     private readonly UserService _userService;
     
@@ -38,6 +39,7 @@ public class UserServiceTests
         _userService = new UserService(_userRepositoryMock.Object, 
                                        _bookRepositoryMock.Object,
                                        _userBlobStorageManagerMock.Object,
+                                       _bookBlobStorageManagerMock.Object,
                                        _mapper);
     }
     
