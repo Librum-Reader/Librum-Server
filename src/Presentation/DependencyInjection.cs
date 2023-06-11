@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text;
+using Application.BackgroundServices;
 using Application.Common.DTOs;
 using Application.Interfaces.Managers;
 using Application.Interfaces.Repositories;
@@ -38,6 +39,7 @@ public static class DependencyInjection
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<ITagRepository, TagRepository>();
         services.AddScoped<IEmailSender, EmailSender>();
+        services.AddHostedService<DeleteUnconfirmedUsers>();
         services.AddSingleton<IBookBlobStorageManager, BookBlobStorageManager>();
         services.AddSingleton<IUserBlobStorageManager, UserBlobStorageManager>();
         services.AddSingleton(x => new BlobServiceClient(
@@ -56,13 +58,13 @@ public static class DependencyInjection
         services.AddCustomInvalidModelStateResponseMessage();
         services.AddDbContext<DataContext>(options =>
         {
-            var sqliteConnection = configuration["DBConnectionString"];
-            if (sqliteConnection == null)
+            var connectionString = configuration["DBConnectionString"];
+            if (connectionString == null)
             {
-                throw new InvalidDataException("Failed getting the DBConnectionString");
+                throw new InvalidDataException("Failed getting the SQL connection string");
             }
             
-            options.UseSqlServer(sqliteConnection);
+            options.UseSqlServer(connectionString);
         });
 
         return services;

@@ -31,6 +31,15 @@ public class UserRepository : IUserRepository
     {
         _context.Users.Remove(user);
     }
+    
+    public async Task DeleteUnconfirmedUsers()
+    {
+        // Users with unconfirmed emails created more than 30 minutes ago.
+        var usersToRemove = _context.Users.Where(u => !u.EmailConfirmed &&
+                                                      u.AccountCreation < DateTime.Now.AddMinutes(-30));
+        _context.Users.RemoveRange(usersToRemove);
+        await _context.SaveChangesAsync();
+    }
 
     public async Task<int> SaveChangesAsync()
     {
