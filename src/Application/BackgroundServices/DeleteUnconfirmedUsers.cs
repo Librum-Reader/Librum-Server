@@ -1,6 +1,7 @@
 using Application.Interfaces.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Application.BackgroundServices;
 
@@ -19,6 +20,10 @@ public class DeleteUnconfirmedUsers : BackgroundService
         {
             using (var scope = _serviceProvider.CreateScope())
             {
+                var logger = scope.ServiceProvider
+                    .GetService<ILogger<DeleteUnconfirmedUsers>>();
+                logger.LogWarning("Deleting unconfirmed users");
+                
                 var userRepository = scope.ServiceProvider.GetService<IUserRepository>();
                 await userRepository.DeleteUnconfirmedUsers();
             }
