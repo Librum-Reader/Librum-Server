@@ -4,5 +4,5 @@ namespace Application.Interfaces.Utility;
 
 public interface IEmailSender
 {
-    public Task SendAccountConfirmationEmail(User user);
+    public Task SendEmailConfirmationEmail(User user);
 }

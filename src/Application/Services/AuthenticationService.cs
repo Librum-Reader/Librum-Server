@@ -38,7 +38,7 @@ public class AuthenticationService : IAuthenticationService
 
         if (!await _authenticationManager.IsEmailConfirmed(email))
         {
-            const string message = "Account is not confirmed";
+            const string message = "Email is not confirmed";
             throw new CommonErrorException(401, message, 18);
         }
 
@@ -63,7 +63,7 @@ public class AuthenticationService : IAuthenticationService
             throw new CommonErrorException(400, message, 3);
         }
 
-        await _emailSender.SendAccountConfirmationEmail(user);
+        await _emailSender.SendEmailConfirmationEmail(user);
     }
     
     public async Task ConfirmEmail(string email, string token)

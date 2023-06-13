@@ -27,27 +27,27 @@ public class EmailSender : IEmailSender
         _configuration = configuration;
     }
     
-    public async Task SendAccountConfirmationEmail(User user)
+    public async Task SendEmailConfirmationEmail(User user)
     {
-        var confirmationLink = await GetAccountConfirmationLink(user);
+        var confirmationLink = await GetEmailConfirmationLink(user);
         
         var message = new MimeMessage();
         message.From.Add (new MailboxAddress ("Librum", "noreply@librumreader.com"));
         message.To.Add (new MailboxAddress (user.FirstName, "prtnprvtmail@protonmail.com"));
-        message.Subject = "Confirm Your Librum Account";
+        message.Subject = "Confirm Your Email";
         
         message.Body = new TextPart ("plain") {
             Text = $"Hello { user.FirstName }.\n\nThank you for choosing Librum! " + 
                    "We are happy to tell you, that your account has successfully been created. " +
                    "The final step remaining is to confirm it, and you're all set to go.\n" + 
-                   $"To confirm your account, please click the link below:\n{confirmationLink}\n\n" +
+                   $"To confirm your email, please click the link below:\n{confirmationLink}\n\n" +
                    "If you didn't request this email, just ignore it."
         };
 
         await SendEmail(message);
     }
 
-    private async Task<string> GetAccountConfirmationLink(User user)
+    private async Task<string> GetEmailConfirmationLink(User user)
     {
         var token = await _authenticationManager.GetEmailConfirmationLinkAsync(user);
         var endpointLink = _urlHelper.Action("ConfirmEmail",
