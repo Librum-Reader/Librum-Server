@@ -63,17 +63,24 @@ public class AuthenticationController : ControllerBase
     
     [AllowAnonymous]
     [HttpGet("confirmEmail")]
-    public async Task<ActionResult> ConfirmEmail(string email, string token)
+    public async Task<ContentResult> ConfirmEmail(string email, string token)
     {
         try
         {
             await _authenticationService.ConfirmEmail(email, token);
-            return Ok();
+            
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "AccountConfirmed.html");
+            var successContent = await System.IO.File.ReadAllTextAsync(filePath);
+            
+            return base.Content(successContent, "text/html");
         }
         catch (CommonErrorException e)
         {
             _logger.LogWarning("{ExceptionMessage}", e.Message);
-            return StatusCode(e.Error.Status, e.Error);
+            
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "AccountConfirmationFailed.html");
+            var successContent = await System.IO.File.ReadAllTextAsync(filePath);
+            return base.Content(successContent, "text/html");
         }
     }
     
