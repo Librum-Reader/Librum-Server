@@ -69,7 +69,7 @@ public class AuthenticationController : ControllerBase
         {
             await _authenticationService.ConfirmEmail(email, token);
             
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "AccountConfirmed.html");
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EmailConfirmationSucceeded.html");
             var successContent = await System.IO.File.ReadAllTextAsync(filePath);
             
             return base.Content(successContent, "text/html");
@@ -78,7 +78,7 @@ public class AuthenticationController : ControllerBase
         {
             _logger.LogWarning("{ExceptionMessage}", e.Message);
             
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "AccountConfirmationFailed.html");
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EmailConfirmationFailed.html");
             var successContent = await System.IO.File.ReadAllTextAsync(filePath);
             return base.Content(successContent, "text/html");
         }
