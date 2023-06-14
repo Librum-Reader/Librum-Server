@@ -72,4 +72,16 @@ public class AuthenticationService : IAuthenticationService
         if (!result)
             throw new CommonErrorException(400, "Failed confirming email", 0);
     }
+
+    public async Task<bool> CheckIfEmailIsConfirmed(string email)
+    {
+        try
+        {
+            return await _authenticationManager.IsEmailConfirmed(email);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
 }

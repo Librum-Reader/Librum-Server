@@ -44,7 +44,7 @@ public class AuthenticationController : ControllerBase
             return StatusCode(e.Error.Status, e.Error);
         }
     }
-    
+
     [AllowAnonymous]
     [HttpPost("login")]
     public async Task<ActionResult<string>> LoginUser([FromBody] LoginDto loginDto)
@@ -60,7 +60,7 @@ public class AuthenticationController : ControllerBase
             return StatusCode(e.Error.Status, e.Error);
         }
     }
-    
+
     [AllowAnonymous]
     [HttpGet("confirmEmail")]
     public async Task<ContentResult> ConfirmEmail(string email, string token)
@@ -68,22 +68,34 @@ public class AuthenticationController : ControllerBase
         try
         {
             await _authenticationService.ConfirmEmail(email, token);
-            
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EmailConfirmationSucceeded.html");
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(),
+                                        "wwwroot",
+                                        "EmailConfirmationSucceeded.html");
             var successContent = await System.IO.File.ReadAllTextAsync(filePath);
-            
+
             return base.Content(successContent, "text/html");
         }
         catch (CommonErrorException e)
         {
             _logger.LogWarning("{ExceptionMessage}", e.Message);
-            
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EmailConfirmationFailed.html");
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(),
+                                        "wwwroot",
+                                        "EmailConfirmationFailed.html");
             var successContent = await System.IO.File.ReadAllTextAsync(filePath);
             return base.Content(successContent, "text/html");
         }
     }
-    
+
+    [AllowAnonymous]
+    [HttpGet("confirmEmail/{email}")]
+    public async Task<ActionResult<bool>> CheckIfEmailIsConfirmed(string email)
+    {
+        var confirmed = await _authenticationService.CheckIfEmailIsConfirmed(email);
+        return Ok(confirmed);
+    }
+
     [AllowAnonymous]
     [HttpPost("recoverAccount/{email}")]
     public ActionResult RecoverAccount(string email)
