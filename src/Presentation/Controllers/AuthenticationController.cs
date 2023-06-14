@@ -89,7 +89,7 @@ public class AuthenticationController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpGet("confirmEmail/{email}")]
+    [HttpGet("checkIfEmailConfirmed/{email}")]
     public async Task<ActionResult<bool>> CheckIfEmailIsConfirmed(string email)
     {
         var confirmed = await _authenticationService.CheckIfEmailIsConfirmed(email);
