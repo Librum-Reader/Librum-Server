@@ -15,6 +15,10 @@ public class UserOutDto
     public long UsedBookStorage { get; set; }
     
     public long BookStorageLimit { get; set; }
+    
+    public DateTime ProfilePictureLastUpdated { get; set; }
+    
+    public bool HasProfilePicture { get; set; }
 
     public ICollection<TagOutDto> Tags { get; set; } = new List<TagOutDto>();
 }

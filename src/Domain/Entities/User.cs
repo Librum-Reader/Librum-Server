@@ -26,6 +26,11 @@ public class User : IdentityUser
     public DateTime AccountCreation { get; set; }
 
     [Required]
+    public DateTime ProfilePictureLastUpdated { get; set; }
+    
+    public bool HasProfilePicture { get; set; }
+    
+    [Required]
     public long BookStorageLimit { get; set; } = 200 * 1024 * 1024; // 200 MiB
     
     
