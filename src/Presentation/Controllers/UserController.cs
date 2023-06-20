@@ -118,6 +118,8 @@ public class UserController : ControllerBase
         try
         {
             var stream = await _userService.GetProfilePicture(HttpContext.User.Identity!.Name);
+            if (stream.Position == stream.Length)
+                return StatusCode(400, "No profile picture exists");
             
             Response.Headers.Add("Guid", guid.ToString());
             return File(stream, "application/octet-stream");

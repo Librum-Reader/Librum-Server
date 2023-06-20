@@ -22,10 +22,7 @@ public class UserBlobStorageManager : IUserBlobStorageManager
         var containerClient =
             _blobServiceClient.GetBlobContainerClient("librumdev");
         var blobClient = containerClient.GetBlobClient(_profilePicturePrefix + guid);
-        if (!blobClient.Exists())
-            throw new CommonErrorException(400, "No profile picture exists", 0);
-        
-        return blobClient.OpenReadAsync();
+        return blobClient.Exists() ? blobClient.OpenReadAsync() : Task.FromResult<Stream>(new MemoryStream());
     }
 
     public async Task ChangeProfilePicture(string guid, MultipartReader reader)
