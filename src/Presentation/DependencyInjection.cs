@@ -54,6 +54,7 @@ public static class DependencyInjection
         });
         
         services.AddLogging();
+        services.AddHttpClient();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddCustomInvalidModelStateResponseMessage();
         services.AddDbContext<DataContext>(options =>

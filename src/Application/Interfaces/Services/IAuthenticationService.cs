@@ -8,4 +8,5 @@ public interface IAuthenticationService
     public Task RegisterUserAsync(RegisterDto registerDto);
     public Task ConfirmEmail(string email, string token);
     public Task<bool> CheckIfEmailIsConfirmed(string email);
+    public Task<string> VerifyReCaptcha(string userToken);
 }

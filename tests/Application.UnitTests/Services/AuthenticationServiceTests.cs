@@ -1,3 +1,4 @@
+using System.Net.Http;
 using System.Threading.Tasks;
 using Application.Common.DTOs.Users;
 using Application.Common.Exceptions;
@@ -7,6 +8,7 @@ using Application.Interfaces.Utility;
 using Application.Services;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;
 
@@ -15,6 +17,8 @@ namespace Application.UnitTests.Services;
 public class AuthenticationServiceTests
 {
     private readonly Mock<IAuthenticationManager> _authenticationManagerMock = new();
+    private readonly Mock<IHttpClientFactory> _httpClientFactoryMock = new();
+    private readonly Mock<IConfiguration> _configurationMock = new();
     private readonly Mock<IEmailSender> _emailSenderMock = new();
     private readonly AuthenticationService _authenticationService;
     
@@ -30,7 +34,10 @@ public class AuthenticationServiceTests
         _authenticationService = new AuthenticationService(
             mapper,
             _authenticationManagerMock.Object,
-            _emailSenderMock.Object);
+            _emailSenderMock.Object,
+            _httpClientFactoryMock.Object,
+            _configurationMock.Object
+            );
     }
     
     

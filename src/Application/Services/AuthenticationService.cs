@@ -1,3 +1,4 @@
+using System.Web;
 using Application.Common.DTOs.Users;
 using Application.Common.Exceptions;
 using Application.Interfaces.Managers;
@@ -5,6 +6,7 @@ using Application.Interfaces.Services;
 using Application.Interfaces.Utility;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.Extensions.Configuration;
 
 namespace Application.Services;
 
@@ -13,15 +15,21 @@ public class AuthenticationService : IAuthenticationService
     private readonly IMapper _mapper;
     private readonly IAuthenticationManager _authenticationManager;
     private readonly IEmailSender _emailSender;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IConfiguration _configuration;
 
 
     public AuthenticationService(IMapper mapper,
                                  IAuthenticationManager authenticationManager,
-                                 IEmailSender emailSender)
+                                 IEmailSender emailSender,
+                                 IHttpClientFactory httpClientFactory,
+                                 IConfiguration configuration)
     {
         _mapper = mapper;
         _authenticationManager = authenticationManager;
         _emailSender = emailSender;
+        _httpClientFactory = httpClientFactory;
+        _configuration = configuration;
     }
     
     
@@ -83,5 +91,19 @@ public class AuthenticationService : IAuthenticationService
         {
             return false;
         }
+    }
+
+    public async Task<string> VerifyReCaptcha(string userToken)
+    {
+        var baseUrl = "https://www.google.com/recaptcha/api/siteverify";
+        var queryParams = HttpUtility.ParseQueryString(string.Empty);
+        queryParams["secret"] = _configuration["ReCaptchaSecret"];
+        queryParams["response"] = userToken;
+
+        var requestUrl = baseUrl + "?" + queryParams.ToString();
+        var httpClient = _httpClientFactory.CreateClient();
+
+        var response = await httpClient.PostAsync(requestUrl, null);
+        return response.Content.ReadAsStringAsync().Result;
     }
 }

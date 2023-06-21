@@ -102,4 +102,13 @@ public class AuthenticationController : ControllerBase
     {
         return Ok();
     }
+    
+    [AllowAnonymous]
+    [HttpPost("recaptchaVerify")]
+    public async Task<ActionResult> ReCaptchaVerify(string userToken)
+    {
+        var result = await _authenticationService.VerifyReCaptcha(userToken);
+
+        return Ok(result);
+    }
 }
