@@ -78,6 +78,7 @@ public static class DependencyInjection
             opt.Password.RequireDigit = false;
             opt.Password.RequireNonAlphanumeric = false;
             opt.Password.RequiredLength = 4;
+            opt.Password.RequireUppercase = false;
             opt.User.RequireUniqueEmail = true;
             opt.SignIn.RequireConfirmedEmail = true;
         });
