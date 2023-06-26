@@ -7,8 +7,11 @@ namespace Application.Common.DTOs;
 /// </summary>
 public class CommonErrorDto
 {
+    [JsonProperty("status")]
     public int Status { get; set; }
+    [JsonProperty("message")]
     public string Message { get; set; }
+    [JsonProperty("code")]
     public int Code { get; set; }
 
     public CommonErrorDto(int status, string message, int code)
