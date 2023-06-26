@@ -44,7 +44,7 @@ using (var scope = app.Services.CreateScope())
 
 
 // Http pipeline
-app.UseIpRateLimiting();
+app.UseMiddleware<CustomIpRateLimitMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseCors("corspolicy");
