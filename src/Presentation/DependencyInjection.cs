@@ -12,6 +12,7 @@ using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repository;
 using Application.Services;
 using Application.Utility;
+using AspNetCoreRateLimit;
 using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -54,6 +55,7 @@ public static class DependencyInjection
         });
         
         services.AddLogging();
+        services.AddMemoryCache();
         services.AddHttpClient();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddCustomInvalidModelStateResponseMessage();
@@ -67,6 +69,15 @@ public static class DependencyInjection
             
             options.UseSqlServer(connectionString);
         });
+        
+        
+        // IP Rate Limiting
+        services.Configure<IpRateLimitOptions>(configuration.GetSection("IpRateLimiting"));
+        services.Configure<IpRateLimitPolicies>(configuration.GetSection("IpRateLimitPolicies"));
+        
+        services.AddInMemoryRateLimiting();
+        services.AddMvc();
+        services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
         return services;
     }

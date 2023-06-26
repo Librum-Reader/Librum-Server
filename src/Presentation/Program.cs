@@ -1,5 +1,6 @@
 using Application.Common.Middleware;
 using Application.Interfaces.Services;
+using AspNetCoreRateLimit;
 using Azure.Identity;
 using Infrastructure.Persistence;
 using Presentation;
@@ -43,6 +44,7 @@ using (var scope = app.Services.CreateScope())
 
 
 // Http pipeline
+app.UseIpRateLimiting();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseCors("corspolicy");
