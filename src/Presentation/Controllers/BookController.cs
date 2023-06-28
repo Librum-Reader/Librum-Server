@@ -71,7 +71,6 @@ public class BookController : ControllerBase
             var stream = await _bookService.GetBookBinaryData(email, 
                                                           guid);
             
-            Response.Headers.Add("Guid", guid.ToString());
             Response.Headers.Add("Format",
                                  await _bookService.GetFormatForBook(email, guid));
             return File(stream, "application/octet-stream");
@@ -124,7 +123,6 @@ public class BookController : ControllerBase
             var stream = await _bookService.GetBookCover(HttpContext.User.Identity!.Name, 
                 guid);
             
-            Response.Headers.Add("Guid", guid.ToString());
             return File(stream, "application/octet-stream");
         }
         catch (CommonErrorException e)
