@@ -2,7 +2,9 @@ using Application.Common.Middleware;
 using Application.Interfaces.Services;
 using AspNetCoreRateLimit;
 using Azure.Identity;
+using Domain.Entities;
 using Infrastructure.Persistence;
+using Microsoft.AspNetCore.Identity;
 using Presentation;
 
 
@@ -37,8 +39,21 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
+    // Configure Logging
     var loggerFactory = services.GetRequiredService<ILoggerFactory>();
     loggerFactory.AddFile(Directory.GetCurrentDirectory() + "/Data/Logs/");
+    
+    // Add Roles
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var roles = new[] { "Admin", "Basic" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+            await roleManager.CreateAsync(new IdentityRole(role));
+    }
+    
+    await SeedWithAdminUser(services);
 }
 
 
@@ -53,3 +68,32 @@ app.UseAuthorization();
 app.UseStaticFiles();
 app.MapControllers();
 app.Run();
+
+
+
+async Task SeedWithAdminUser(IServiceProvider services)
+{
+    var config = services.GetRequiredService<IConfiguration>();
+    string firstName = "Admin";
+    string lastName = "Admin";
+    string email = config["AdminEmail"];
+    string password = config["AdminPassword"];
+
+    var userManager = services.GetRequiredService<UserManager<User>>();
+    if (await userManager.FindByEmailAsync(email) == null)
+    {
+        var user = new User
+        {
+            FirstName = firstName,
+            LastName = lastName,
+            Email = email,
+            UserName = email,
+            AccountCreation = DateTime.UtcNow
+        };
+        
+        await userManager.CreateAsync(user, password);
+        await userManager.AddToRoleAsync(user, "Admin");
+        var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+        await userManager.ConfirmEmailAsync(user, token);
+    }
+}

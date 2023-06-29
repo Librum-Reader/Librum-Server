@@ -28,6 +28,9 @@ public class AuthenticationManager : IAuthenticationManager
     public async Task<bool> CreateUserAsync(User user, string password)
     {
         var result = await _userManager.CreateAsync(user, password);
+        if (result.Succeeded)
+            await _userManager.AddToRoleAsync(user, "Basic");
+        
         return result.Succeeded;
     }
 

@@ -92,7 +92,7 @@ public static class DependencyInjection
             opt.Password.RequireUppercase = false;
             opt.User.RequireUniqueEmail = true;
             opt.SignIn.RequireConfirmedEmail = true;
-        });
+        }).AddRoles<IdentityRole>();
 
         builder = new IdentityBuilder(builder.UserType, 
                                       typeof(IdentityRole), 
