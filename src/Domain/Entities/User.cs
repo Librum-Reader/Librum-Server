@@ -23,6 +23,9 @@ public class User : IdentityUser
     public override string Email { get; set; }
 
     [Required]
+    public string Role { get; set; }
+    
+    [Required]
     public DateTime AccountCreation { get; set; }
 
     [Required]

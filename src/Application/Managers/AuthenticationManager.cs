@@ -29,8 +29,8 @@ public class AuthenticationManager : IAuthenticationManager
     {
         var result = await _userManager.CreateAsync(user, password);
         if (result.Succeeded)
-            await _userManager.AddToRoleAsync(user, "Basic");
-        
+            await _userManager.AddToRoleAsync(user, user.Role);
+
         return result.Succeeded;
     }
 
