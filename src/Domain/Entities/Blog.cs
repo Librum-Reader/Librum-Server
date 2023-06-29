@@ -19,4 +19,6 @@ public class Blog
 
     [Required]
     public DateTime CreationDate { get; set; }
+
+    public bool HasCover { get; set; } = false;
 }

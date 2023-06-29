@@ -47,18 +47,19 @@ public class BlogController : ControllerBase
         return Ok(_blogService.GetAllBlogs());
     }
 
-    [HttpPut("{id:guid}")]
-    public async Task<ActionResult> UpdateBlog([FromBody] BlogInDto blogInDto, Guid id)
+    [HttpPut("{guid:guid}")]
+    public async Task<ActionResult> UpdateBlog([FromBody] BlogInDto blogInDto,
+                                               Guid guid)
     {
         return Ok();
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<ActionResult> DeleteBlog(Guid id)
+    [HttpDelete("{guid:guid}")]
+    public async Task<ActionResult> DeleteBlog(Guid guid)
     {
         try
         {
-            await _blogService.DeleteBlogAsync(id);
+            await _blogService.DeleteBlogAsync(guid);
             return NoContent();
         }
         catch (CommonErrorException e)
@@ -68,10 +69,10 @@ public class BlogController : ControllerBase
         }
     }
     
-    [HttpPost("cover")]
+    [HttpPost("cover/{guid:guid}")]
     [DisableFormValueModelBinding]
     [RequestSizeLimit(5242880)]   // Allow max 5MB
-    public async Task<ActionResult> ChangeCoverPicture()
+    public async Task<ActionResult> ChangeCoverPicture(Guid guid)
     {
         // Check if the profile picture was sent in the correct format
         var isMultiPart = !string.IsNullOrEmpty(Request.ContentType) &&
@@ -89,7 +90,7 @@ public class BlogController : ControllerBase
     
         try
         {
-            ;
+            await _blogService.ChangeCover(guid, reader);
         }
         catch (CommonErrorException e)
         {
@@ -112,12 +113,28 @@ public class BlogController : ControllerBase
         return boundary;
     }
     
-    [HttpGet("cover")]
+    [HttpGet("cover/{guid:guid}")]
     public async Task<ActionResult> GetCover(Guid guid)
     {
         try
         {
-            return Ok();
+            var stream = await _blogService.GetCover(guid);
+            return File(stream, "application/octet-stream");
+        }
+        catch (CommonErrorException e)
+        {
+            _logger.LogWarning("{ErrorMessage}", e.Message);
+            return StatusCode(e.Error.Status, e.Error);
+        }
+    }
+    
+    [HttpDelete("cover/{guid:guid}")]
+    public async Task<ActionResult> DeleteCover(Guid guid)
+    {
+        try
+        {
+            await _blogService.DeleteCover(guid);
+            return NoContent();
         }
         catch (CommonErrorException e)
         {

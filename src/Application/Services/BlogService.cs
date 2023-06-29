@@ -5,6 +5,7 @@ using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace Application.Services;
 
@@ -45,8 +46,53 @@ public class BlogService : IBlogService
             var message = "No blog with this guid exists";
             throw new CommonErrorException(404, message, 0);
         }
+
+        if (blog.HasCover)
+            await DeleteCover(guid);
         
         _blogRepository.DeleteBlog(blog);
+        await _blogRepository.SaveChangesAsync();
+    }
+
+    public async Task<Stream> GetCover(Guid guid)
+    {
+        var blog = await _blogRepository.GetBlogAsync(guid);
+        if (blog == null)
+        {
+            var message = "No blog with this guid exists";
+            throw new CommonErrorException(404, message, 0);
+        }
+
+        return await _blogBlobStorageManager.DownloadBlogCover(guid.ToString());
+    }
+
+    public async Task ChangeCover(Guid guid, MultipartReader reader)
+    {
+        var blog = await _blogRepository.GetBlogAsync(guid);
+        if (blog == null)
+        {
+            var message = "No blog with this guid exists";
+            throw new CommonErrorException(404, message, 0);
+        }
+
+        await _blogBlobStorageManager.ChangeBlogCover(guid.ToString(), reader);
+
+        blog.HasCover = true;
+        await _blogRepository.SaveChangesAsync();
+    }
+
+    public async Task DeleteCover(Guid guid)
+    {
+        var blog = await _blogRepository.GetBlogAsync(guid);
+        if (blog == null)
+        {
+            var message = "No blog with this guid exists";
+            throw new CommonErrorException(404, message, 0);
+        }
+
+        await _blogBlobStorageManager.DeleteBlogCover(guid.ToString());
+        
+        blog.HasCover = true;
         await _blogRepository.SaveChangesAsync();
     }
 }
