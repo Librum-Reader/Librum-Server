@@ -1,7 +1,6 @@
 using Application.Common.DTOs.Books;
 using AutoMapper;
 using Domain.Entities;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Common.Mappings;
 
