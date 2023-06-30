@@ -5,7 +5,7 @@ namespace Application.Interfaces.Services;
 
 public interface IBlogService
 {
-    Task CreateBlogAsync(BlogInDto blogInDto);
+    Task<String> CreateBlogAsync(BlogInDto blogInDto);
     ICollection<BlogOutDto> GetAllBlogs();
     Task DeleteBlogAsync(Guid guid);
     

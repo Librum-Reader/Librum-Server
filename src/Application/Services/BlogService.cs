@@ -23,12 +23,13 @@ public class BlogService : IBlogService
         _blogBlobStorageManager = blogBlobStorageManager;
     }
 
-    public async Task CreateBlogAsync(BlogInDto blogInDto)
+    public async Task<string> CreateBlogAsync(BlogInDto blogInDto)
     {
         var blog = _mapper.Map<Blog>(blogInDto);
         await _blogRepository.AddBlogAsync(blog);
 
         await _blogRepository.SaveChangesAsync();
+        return blog.BlogId.ToString();
     }
 
     public ICollection<BlogOutDto> GetAllBlogs()

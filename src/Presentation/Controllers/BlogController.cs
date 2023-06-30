@@ -27,12 +27,12 @@ public class BlogController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateBlog([FromBody] BlogInDto blogInDto)
+    public async Task<ActionResult<string>> CreateBlog([FromBody] BlogInDto blogInDto)
     {
         try
         {
-            await _blogService.CreateBlogAsync(blogInDto);
-            return StatusCode(201);
+            var blogId = await _blogService.CreateBlogAsync(blogInDto);
+            return StatusCode(201, blogId);
         }
         catch (CommonErrorException e)
         {
