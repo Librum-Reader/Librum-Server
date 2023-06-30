@@ -4,7 +4,11 @@ namespace Application.Interfaces.Managers;
 
 public interface IBlogBlobStorageManager
 {
-    public Task<Stream> DownloadBlogCover(string guid);
-    public Task ChangeBlogCover(string guid, MultipartReader reader);
-    public Task DeleteBlogCover(string guid);
+    Task<Stream> DownloadBlogContent(string guid);
+    Task DeleteBlogContent(string guid);
+    Task AddBlogContent(string guid, MultipartReader reader);
+    
+    Task<Stream> DownloadBlogCover(string guid);
+    Task ChangeBlogCover(string guid, MultipartReader reader);
+    Task DeleteBlogCover(string guid);
 }

@@ -69,6 +69,55 @@ public class BlogController : ControllerBase
         }
     }
     
+    
+    [HttpPost("content/{guid:guid}")]
+    [DisableFormValueModelBinding]
+    [RequestSizeLimit(10485760)]   // Allow max 10MiB
+    public async Task<ActionResult> AddBlogContent(Guid guid)
+    {
+        // Check if the data was sent in the correct format
+        var isMultiPart = !string.IsNullOrEmpty(Request.ContentType) &&
+                          Request.ContentType.IndexOf(
+                              "multipart/",
+                              StringComparison.OrdinalIgnoreCase) >= 0;
+        if (!isMultiPart)
+        {
+            var message = "The blog content needs to be a multipart";
+            return StatusCode(400, new CommonErrorDto(400, message, 0));
+        }
+        
+        var boundary = GetBoundary(MediaTypeHeaderValue.Parse(Request.ContentType));
+        var reader = new MultipartReader(boundary, HttpContext.Request.Body);
+    
+        try
+        {
+            await _blogService.AddBlogContent(guid, reader);
+        }
+        catch (CommonErrorException e)
+        {
+            _logger.LogWarning("{ErrorMessage}", e.Message);
+            return StatusCode(e.Error.Status, e.Error);
+        }
+    
+        return Ok();
+    }
+    
+    [HttpGet("content/{guid:guid}")]
+    public async Task<ActionResult> GetBlogContent(Guid guid)
+    {
+        try
+        {
+            var stream = await _blogService.GetBlogContent(guid);
+            return File(stream, "application/octet-stream");
+        }
+        catch (CommonErrorException e)
+        {
+            _logger.LogWarning("{ErrorMessage}", e.Message);
+            return StatusCode(e.Error.Status, e.Error);
+        }
+    }
+    
+    
     [HttpPost("cover/{guid:guid}")]
     [DisableFormValueModelBinding]
     [RequestSizeLimit(5242880)]   // Allow max 5MB
@@ -101,18 +150,6 @@ public class BlogController : ControllerBase
         return Ok();
     }
     
-    private static string GetBoundary(MediaTypeHeaderValue contentType)
-    {
-        var boundary = HeaderUtilities.RemoveQuotes(contentType.Boundary).Value;
-
-        if (string.IsNullOrWhiteSpace(boundary))
-        {
-            throw new InvalidDataException("Missing content-type boundary.");
-        }
-
-        return boundary;
-    }
-    
     [HttpGet("cover/{guid:guid}")]
     public async Task<ActionResult> GetCover(Guid guid)
     {
@@ -141,5 +178,17 @@ public class BlogController : ControllerBase
             _logger.LogWarning("{ErrorMessage}", e.Message);
             return StatusCode(e.Error.Status, e.Error);
         }
+    }
+    
+    private static string GetBoundary(MediaTypeHeaderValue contentType)
+    {
+        var boundary = HeaderUtilities.RemoveQuotes(contentType.Boundary).Value;
+
+        if (string.IsNullOrWhiteSpace(boundary))
+        {
+            throw new InvalidDataException("Missing content-type boundary.");
+        }
+
+        return boundary;
     }
 }

@@ -47,13 +47,40 @@ public class BlogService : IBlogService
             throw new CommonErrorException(404, message, 0);
         }
 
+        await _blogBlobStorageManager.DeleteBlogContent(guid.ToString());
         if (blog.HasCover)
             await DeleteCover(guid);
-        
+
         _blogRepository.DeleteBlog(blog);
         await _blogRepository.SaveChangesAsync();
     }
 
+    
+    public async Task AddBlogContent(Guid guid, MultipartReader reader)
+    {
+        var blog = await _blogRepository.GetBlogAsync(guid);
+        if (blog == null)
+        {
+            var message = "No blog with this guid exists";
+            throw new CommonErrorException(404, message, 0);
+        }
+
+        await _blogBlobStorageManager.AddBlogContent(guid.ToString(), reader);
+    }
+
+    public async Task<Stream> GetBlogContent(Guid guid)
+    {
+        var blog = await _blogRepository.GetBlogAsync(guid);
+        if (blog == null)
+        {
+            var message = "No blog with this guid exists";
+            throw new CommonErrorException(404, message, 0);
+        }
+
+        return await _blogBlobStorageManager.DownloadBlogContent(guid.ToString());
+    }
+    
+    
     public async Task<Stream> GetCover(Guid guid)
     {
         var blog = await _blogRepository.GetBlogAsync(guid);
