@@ -90,7 +90,7 @@ public class BlogController : ControllerBase
     
         try
         {
-            await _blogService.ChangeCover(guid, reader);
+            // await _blogService.ChangeCover(guid, reader);
         }
         catch (CommonErrorException e)
         {
