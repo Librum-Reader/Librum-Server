@@ -85,7 +85,7 @@ public class BookController : ControllerBase
     
     [HttpPost("cover/{guid:guid}")]
     [DisableFormValueModelBinding]
-    [RequestSizeLimit(10482880)]   // Allow max 10MB
+    [RequestSizeLimit(5242880)]   // Allow max 5MiB
     public async Task<ActionResult> ChangeCover(Guid guid)
     {
         // Check if the cover was sent in the correct format
