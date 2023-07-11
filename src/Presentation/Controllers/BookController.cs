@@ -42,6 +42,7 @@ public class BookController : ControllerBase
         if (!isMultiPart)
         {
             var message = "The book binary data needs to be sent as multipart";
+            _logger.LogWarning(message);
             return StatusCode(400, new CommonErrorDto(400, message, 0));
         }
         
@@ -84,7 +85,7 @@ public class BookController : ControllerBase
     
     [HttpPost("cover/{guid:guid}")]
     [DisableFormValueModelBinding]
-    [RequestSizeLimit(5242880)]   // Allow max 5MB
+    [RequestSizeLimit(10482880)]   // Allow max 10MB
     public async Task<ActionResult> ChangeCover(Guid guid)
     {
         // Check if the cover was sent in the correct format
@@ -95,6 +96,7 @@ public class BookController : ControllerBase
         if (!isMultiPart)
         {
             var message = "The book binary data needs to be sent as multipart";
+            _logger.LogWarning(message);
             return StatusCode(400, new CommonErrorDto(400, message, 0));
         }
         
