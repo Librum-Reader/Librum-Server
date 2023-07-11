@@ -81,8 +81,9 @@ public class BookRepository : IBookRepository
         return type.ToLower() switch
         {
             "b" => numbers,
-            "kib" => numbers * 1024,
-            "mib" => numbers * 1024 * 1024
+            "kb" => numbers * 1000,
+            "mb" => numbers * 1000 * 1000,
+            "gb" => numbers * 1000 * 1000
         };
     }
 }
