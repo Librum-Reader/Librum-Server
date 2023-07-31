@@ -69,7 +69,8 @@ public static class DependencyInjection
             {
                 throw new InvalidDataException("Failed getting the SQL connection string");
             }
-            
+
+            options.EnableSensitiveDataLogging(true);
             options.UseSqlServer(connectionString);
         });
         
