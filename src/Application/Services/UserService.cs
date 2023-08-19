@@ -52,15 +52,39 @@ public class UserService : IUserService
         // Delete all books
         foreach(var book in _bookRepository.GetAllAsync(user.Id))
         {
-            _bookRepository.DeleteBook(book);
-            await _bookBlobStorageManager.DeleteBookBlob(book.BookId);
+            // Continue deleting the user even if some parts of it contains invalid data.
+            try
+            {
+                _bookRepository.DeleteBook(book);
+                await _bookBlobStorageManager.DeleteBookBlob(book.BookId);
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
             
-            if(book.HasCover)
-                await _bookBlobStorageManager.DeleteBookCover(book.BookId);
+            try
+            {
+                if(book.HasCover)
+                    await _bookBlobStorageManager.DeleteBookCover(book.BookId);
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
         }
         
-        // Delete user
-        await DeleteProfilePicture(email);
+        try
+        {
+            if(user.HasProfilePicture)
+                await DeleteProfilePicture(email);
+            user.HasProfilePicture = false;
+        }
+        catch (Exception e)
+        {
+            // ignored
+        }
+
         _userRepository.Delete(user);
         await _userRepository.SaveChangesAsync();
     }
