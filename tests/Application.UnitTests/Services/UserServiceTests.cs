@@ -8,6 +8,7 @@ using Application.Interfaces.Repositories;
 using Application.Services;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -24,6 +25,8 @@ public class UserServiceTests
     private readonly Mock<IBookRepository> _bookRepositoryMock = new();
     private readonly Mock<IUserBlobStorageManager> _userBlobStorageManagerMock = new();
     private readonly Mock<IBookBlobStorageManager> _bookBlobStorageManagerMock = new();
+    private readonly Mock<UserManager<User>> _userManagerMock = 
+        new(new Mock<IUserStore<User>>().Object, null, null, null, null, null, null, null, null);
     private readonly Mock<ControllerBase> _controllerBaseMock = new();
     private readonly UserService _userService;
     
@@ -40,7 +43,8 @@ public class UserServiceTests
                                        _bookRepositoryMock.Object,
                                        _userBlobStorageManagerMock.Object,
                                        _bookBlobStorageManagerMock.Object,
-                                       _mapper);
+                                       _mapper, _userManagerMock.Object
+            );
     }
     
     
