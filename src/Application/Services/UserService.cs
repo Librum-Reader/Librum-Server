@@ -4,6 +4,8 @@ using Application.Interfaces.Managers;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using AutoMapper;
+using Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -15,6 +17,7 @@ public class UserService : IUserService
     private readonly IUserRepository _userRepository;
     private readonly IBookRepository _bookRepository;
     private readonly IMapper _mapper;
+    private readonly UserManager<User> _userManager;
     private readonly IUserBlobStorageManager _userBlobStorageManager;
     private readonly IBookBlobStorageManager _bookBlobStorageManager;
 
@@ -22,13 +25,15 @@ public class UserService : IUserService
     public UserService(IUserRepository userRepository,
                        IBookRepository bookRepository,
                        IUserBlobStorageManager userBlobStorageManager,
-                       IBookBlobStorageManager bookBlobStorageManager, IMapper mapper)
+                       IBookBlobStorageManager bookBlobStorageManager, IMapper mapper,
+                       UserManager<User> userManager)
     {
         _userRepository = userRepository;
         _bookRepository = bookRepository;
         _bookBlobStorageManager = bookBlobStorageManager;
         _userBlobStorageManager = userBlobStorageManager;
         _mapper = mapper;
+        _userManager = userManager;
     }
 
 
@@ -129,5 +134,18 @@ public class UserService : IUserService
         var user = await _userRepository.GetAsync(email, trackChanges: true);
 
         await _userBlobStorageManager.DeleteProfilePicture(user.Id);
+    }
+
+    public async Task ChangePasswordAsync(string email, string newPassword)
+    {
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+        if (!result.Succeeded)
+        {
+            const string message = "Updating the password failed";
+            throw new CommonErrorException(400, message, 0);
+        }
     }
 }

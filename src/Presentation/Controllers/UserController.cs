@@ -51,6 +51,27 @@ public class UserController : ControllerBase
             return StatusCode(e.Error.Status, e.Error);
         }
     }
+    
+    public class StringInputModel
+    {
+        public string Input { get; set; }
+    }
+    
+    [HttpPost]
+    public async Task<ActionResult> ChangePassword([FromBody] StringInputModel inputModel)
+    {
+        try
+        {
+            await _userService.ChangePasswordAsync(HttpContext.User.Identity!.Name,
+                                                   inputModel.Input);
+            return Ok();
+        }
+        catch (CommonErrorException e)
+        {
+            _logger.LogWarning("{ErrorMessage}", e.Message);
+            return StatusCode(e.Error.Status, e.Error);
+        }
+    }
 
     [HttpDelete]
     public async Task<ActionResult> DeleteUser()

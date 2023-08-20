@@ -16,4 +16,5 @@ public interface IUserService
     public Task ChangeProfilePicture(string email, MultipartReader reader);
     public Task<Stream> GetProfilePicture(string email);
     public Task DeleteProfilePicture(string email);
+    public Task ChangePasswordAsync(string email, string newPassword);
 }
