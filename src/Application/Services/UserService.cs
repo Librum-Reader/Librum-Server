@@ -144,7 +144,9 @@ public class UserService : IUserService
         var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
         if (!result.Succeeded)
         {
-            const string message = "Updating the password failed";
+            var errors = string.Join(", ", result.Errors.SelectMany(
+                                         _ =>result.Errors.Select(error => error.Code)));
+            var message = "Changing the password failed: " + errors;
             throw new CommonErrorException(400, message, 0);
         }
     }
