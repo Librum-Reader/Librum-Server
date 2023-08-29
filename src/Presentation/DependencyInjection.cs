@@ -39,13 +39,10 @@ public static class DependencyInjection
         services.AddScoped<IBookRepository, BookRepository>();
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<ITagRepository, TagRepository>();
-        services.AddScoped<IBlogService, BlogService>();
-        services.AddScoped<IBlogRepository, BlogRepository>();
         services.AddScoped<IEmailSender, EmailSender>();
         services.AddHostedService<DeleteUnconfirmedUsers>();
         services.AddSingleton<IBookBlobStorageManager, BookBlobStorageManager>();
         services.AddSingleton<IUserBlobStorageManager, UserBlobStorageManager>();
-        services.AddSingleton<IBlogBlobStorageManager, BlogBlobStorageManager>();
         services.AddSingleton(x => new BlobServiceClient(
                                   configuration["AzureBlobStorageConnectionString"]));
         services.AddHttpContextAccessor();
