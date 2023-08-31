@@ -25,7 +25,7 @@ public class AppInfoController : ControllerBase
         _configuration = configuration;
     }
 
-
+    [AllowAnonymous]
     [HttpGet("latest-version")]
     public async Task<string> GetLatestVersion()
     {
