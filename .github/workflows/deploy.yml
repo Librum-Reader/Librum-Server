@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - dev/develop
+      - main
     
 env:
   AZURE_WEBAPP_NAME: librum-dev
