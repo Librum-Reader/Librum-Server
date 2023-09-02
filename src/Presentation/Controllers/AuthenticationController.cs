@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Controllers;
 
 [ApiController]
-[Route("auth")]
+[Route("[controller]")]
 public class AuthenticationController : ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
@@ -19,14 +19,6 @@ public class AuthenticationController : ControllerBase
     {
         _authenticationService = authenticationService;
         _logger = logger;
-    }
-
-
-    [AllowAnonymous]
-    [HttpGet]
-    public ActionResult Get()
-    {
-        return Ok("Librum-Api Version 1");
     }
 
     [AllowAnonymous]

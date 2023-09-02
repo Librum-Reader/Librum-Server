@@ -23,6 +23,13 @@ public class AppInfoController : ControllerBase
         _httpClientFactory = httpClientFactory;
         _configuration = configuration;
     }
+    
+    [AllowAnonymous]
+    [HttpGet("health")]
+    public ActionResult Health()
+    {
+        return Ok();
+    }
 
     [AllowAnonymous]
     [HttpGet("latest-version")]
