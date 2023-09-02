@@ -1,4 +1,4 @@
-# Deploys updated binaries to the test server
+# Deploys updated binaries to the production server
 name: Deploy
 
 on:
