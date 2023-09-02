@@ -19,7 +19,7 @@ public class BookBlobStorageManager : IBookBlobStorageManager
     public Task<Stream> DownloadBookBlob(Guid guid)
     {
         var containerClient =
-            _blobServiceClient.GetBlobContainerClient("librumdev");
+            _blobServiceClient.GetBlobContainerClient("books");
         var blobClient = containerClient.GetBlobClient(guid.ToString());
 
         return blobClient.OpenReadAsync();
@@ -28,7 +28,7 @@ public class BookBlobStorageManager : IBookBlobStorageManager
     public async Task UploadBookBlob(Guid guid, MultipartReader reader)
     {
         var containerClient =
-            _blobServiceClient.GetBlobContainerClient("librumdev");
+            _blobServiceClient.GetBlobContainerClient("books");
         var blobClient = containerClient.GetBlobClient(guid.ToString());
 
         await using var dest = await blobClient.OpenWriteAsync(true);
@@ -71,7 +71,7 @@ public class BookBlobStorageManager : IBookBlobStorageManager
     public async Task DeleteBookBlob(Guid guid)
     {
         var containerClient =
-            _blobServiceClient.GetBlobContainerClient("librumdev");
+            _blobServiceClient.GetBlobContainerClient("books");
         var blobClient = containerClient.GetBlobClient(guid.ToString());
 
         await blobClient.DeleteAsync();
@@ -80,7 +80,7 @@ public class BookBlobStorageManager : IBookBlobStorageManager
     public async Task<long> ChangeBookCover(Guid guid, MultipartReader reader)
     {
         var containerClient =
-            _blobServiceClient.GetBlobContainerClient("librumdev");
+            _blobServiceClient.GetBlobContainerClient("books");
         var blobClient = containerClient.GetBlobClient(_bookCoverPrefix + guid);
 
         await using var dest = await blobClient.OpenWriteAsync(true);
@@ -115,7 +115,7 @@ public class BookBlobStorageManager : IBookBlobStorageManager
     public Task<Stream> DownloadBookCover(Guid guid)
     {
         var containerClient =
-            _blobServiceClient.GetBlobContainerClient("librumdev");
+            _blobServiceClient.GetBlobContainerClient("books");
         var blobClient = containerClient.GetBlobClient(_bookCoverPrefix + guid);
 
         return blobClient.OpenReadAsync();
@@ -124,7 +124,7 @@ public class BookBlobStorageManager : IBookBlobStorageManager
     public async Task DeleteBookCover(Guid guid)
     {
         var containerClient =
-            _blobServiceClient.GetBlobContainerClient("librumdev");
+            _blobServiceClient.GetBlobContainerClient("books");
         var blobClient = containerClient.GetBlobClient(_bookCoverPrefix + guid);
 
         await blobClient.DeleteAsync();

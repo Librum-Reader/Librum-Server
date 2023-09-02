@@ -20,7 +20,7 @@ public class UserBlobStorageManager : IUserBlobStorageManager
     public Task<Stream> DownloadProfilePicture(string guid)
     {
         var containerClient =
-            _blobServiceClient.GetBlobContainerClient("librumdev");
+            _blobServiceClient.GetBlobContainerClient("users");
         var blobClient = containerClient.GetBlobClient(_profilePicturePrefix + guid);
         return blobClient.Exists() ? blobClient.OpenReadAsync() : Task.FromResult<Stream>(new MemoryStream());
     }
@@ -28,7 +28,7 @@ public class UserBlobStorageManager : IUserBlobStorageManager
     public async Task ChangeProfilePicture(string guid, MultipartReader reader)
     {
         var containerClient =
-            _blobServiceClient.GetBlobContainerClient("librumdev");
+            _blobServiceClient.GetBlobContainerClient("users");
         var blobClient = containerClient.GetBlobClient(_profilePicturePrefix + guid);
 
         await using var dest = await blobClient.OpenWriteAsync(true);
@@ -68,7 +68,7 @@ public class UserBlobStorageManager : IUserBlobStorageManager
     public async Task DeleteProfilePicture(string guid)
     {
         var containerClient =
-            _blobServiceClient.GetBlobContainerClient("librumdev");
+            _blobServiceClient.GetBlobContainerClient("users");
         var blobClient = containerClient.GetBlobClient(_profilePicturePrefix + guid);
         if(!blobClient.Exists())
             throw new CommonErrorException(400, "No profile picture exists", 0);
