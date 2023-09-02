@@ -1,10 +1,11 @@
-# Deploys updated binaries to the test server
+# Deploys updated binaries to the development server
 name: Deploy
 
 on:
   workflow_dispatch:
   push:
     branches:
+      - main
       - dev/develop
 
 env:
