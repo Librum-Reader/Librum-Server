@@ -8,7 +8,7 @@ on:
       - main
 
 env:
-  AZURE_WEBAPP_NAME: librum-dev
+  AZURE_WEBAPP_NAME: librum-server
   AZURE_WEBAPP_PACKAGE_PATH: "${{ github.workspace }}/publish"
 
 
