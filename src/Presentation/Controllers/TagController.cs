@@ -8,7 +8,7 @@ namespace Presentation.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class TagController : ControllerBase
 {
     private readonly ITagService _tagService;

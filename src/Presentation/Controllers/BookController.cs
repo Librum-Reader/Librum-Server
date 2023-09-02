@@ -13,7 +13,7 @@ namespace Presentation.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class BookController : ControllerBase
 {
     private readonly ILogger<BookController> _logger;

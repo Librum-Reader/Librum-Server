@@ -1,5 +1,4 @@
 using System.Net.Http.Headers;
-using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -8,7 +7,7 @@ namespace Presentation.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class AppInfoController : ControllerBase
 {
     private readonly ILogger<UserController> _logger;

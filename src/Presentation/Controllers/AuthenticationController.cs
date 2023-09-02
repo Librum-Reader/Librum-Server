@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Controllers;
 
 [ApiController]
-[Route("api")]
+[Route("")]
 public class AuthenticationController : ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
