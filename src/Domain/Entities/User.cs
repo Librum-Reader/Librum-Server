@@ -34,7 +34,7 @@ public class User : IdentityUser
     public bool HasProfilePicture { get; set; }
     
     [Required]
-    public long BookStorageLimit { get; set; } = 200 * 1024 * 1024; // 200 MiB
+    public long BookStorageLimit { get; set; } = 2L * 1024 * 1024 * 1024; // 2 GB
     
     
     public ICollection<Book> Books { get; set; }
