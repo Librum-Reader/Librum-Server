@@ -88,6 +88,7 @@ async Task SeedWithAdminUser(IServiceProvider services)
             LastName = lastName,
             Email = email,
             UserName = email,
+            Role = "Basic",
             AccountCreation = DateTime.UtcNow
         };
         
