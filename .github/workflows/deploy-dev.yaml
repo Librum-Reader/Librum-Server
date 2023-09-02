@@ -1,0 +1,41 @@
+# Deploys updated binaries to the test server
+name: Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev/develop
+
+env:
+  AZURE_WEBAPP_NAME: librum-dev
+  AZURE_WEBAPP_PACKAGE_PATH: "${{ github.workspace }}/publish"
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
+
+      - name: Restore
+        run: dotnet restore ./Librum-Server.sln
+
+      - name: Build
+        run: dotnet build src/Presentation --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish src/Presentation --configuration Release --no-build --property PublishDir=${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+      - name: Deploy
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_DEVELOPMENT_PUBLISH_PROFILE }}
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
