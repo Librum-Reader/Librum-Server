@@ -135,7 +135,7 @@ public class AuthenticationServiceTests
                                                                 It.IsAny<string>()))
             .ReturnsAsync(true);
         _emailSenderMock.Setup(
-            x => x.SendEmailConfirmationEmail(It.IsAny<User>()));
+            x => x.SendEmailConfirmationEmail(It.IsAny<User>(), It.IsAny<string>()));
         
 
         // Act

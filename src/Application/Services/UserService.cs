@@ -3,6 +3,7 @@ using Application.Common.Exceptions;
 using Application.Interfaces.Managers;
 using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
+using Application.Interfaces.Utility;
 using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -17,6 +18,7 @@ public class UserService : IUserService
     private readonly IUserRepository _userRepository;
     private readonly IBookRepository _bookRepository;
     private readonly IMapper _mapper;
+    private readonly IEmailSender _emailSender;
     private readonly UserManager<User> _userManager;
     private readonly IUserBlobStorageManager _userBlobStorageManager;
     private readonly IBookBlobStorageManager _bookBlobStorageManager;
@@ -26,6 +28,7 @@ public class UserService : IUserService
                        IBookRepository bookRepository,
                        IUserBlobStorageManager userBlobStorageManager,
                        IBookBlobStorageManager bookBlobStorageManager, IMapper mapper,
+                       IEmailSender emailSender,
                        UserManager<User> userManager)
     {
         _userRepository = userRepository;
@@ -33,6 +36,7 @@ public class UserService : IUserService
         _bookBlobStorageManager = bookBlobStorageManager;
         _userBlobStorageManager = userBlobStorageManager;
         _mapper = mapper;
+        _emailSender = emailSender;
         _userManager = userManager;
     }
 
@@ -149,5 +153,38 @@ public class UserService : IUserService
             var message = "Changing the password failed: " + errors;
             throw new CommonErrorException(400, message, 0);
         }
+    }
+
+    public async Task ChangePasswordWithTokenAsync(string email, string token, 
+                                                   string newPassword)
+    {
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        if (user == null)
+        {
+            return;
+        }
+        
+        var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(", ", result.Errors.SelectMany(
+                                         _ =>result.Errors.Select(error => error.Code)));
+            var message = "Changing the password failed: " + errors;
+            throw new CommonErrorException(400, message, 0);
+        }
+    }
+
+    public async Task ForgotPassword(string email)
+    {
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        if (user == null)
+        {
+            // Don't throw, we don't want the caller to know if a user with this
+            // email exists.
+            return;
+        }
+        
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        await _emailSender.SendPasswordResetEmail(user, token);
     }
 }

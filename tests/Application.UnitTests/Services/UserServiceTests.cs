@@ -5,6 +5,7 @@ using Application.Common.Exceptions;
 using Application.Common.Mappings;
 using Application.Interfaces.Managers;
 using Application.Interfaces.Repositories;
+using Application.Interfaces.Utility;
 using Application.Services;
 using AutoMapper;
 using Domain.Entities;
@@ -25,6 +26,7 @@ public class UserServiceTests
     private readonly Mock<IBookRepository> _bookRepositoryMock = new();
     private readonly Mock<IUserBlobStorageManager> _userBlobStorageManagerMock = new();
     private readonly Mock<IBookBlobStorageManager> _bookBlobStorageManagerMock = new();
+    private readonly Mock<IEmailSender> _emailSenderMock = new();
     private readonly Mock<UserManager<User>> _userManagerMock = 
         new(new Mock<IUserStore<User>>().Object, null, null, null, null, null, null, null, null);
     private readonly Mock<ControllerBase> _controllerBaseMock = new();
@@ -43,7 +45,8 @@ public class UserServiceTests
                                        _bookRepositoryMock.Object,
                                        _userBlobStorageManagerMock.Object,
                                        _bookBlobStorageManagerMock.Object,
-                                       _mapper, _userManagerMock.Object
+                                       _mapper, _emailSenderMock.Object, 
+                                       _userManagerMock.Object
             );
     }
     

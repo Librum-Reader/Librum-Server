@@ -11,7 +11,6 @@ namespace Application.Utility;
 
 public class EmailSender : IEmailSender
 {
-    private readonly IAuthenticationManager _authenticationManager;
     private readonly IUrlHelper _urlHelper;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IConfiguration _configuration;
@@ -21,15 +20,14 @@ public class EmailSender : IEmailSender
                        IHttpContextAccessor httpContextAccessor,
                        IConfiguration configuration)
     {
-        _authenticationManager = authenticationManager;
         _urlHelper = urlHelper;
         _httpContextAccessor = httpContextAccessor;
         _configuration = configuration;
     }
     
-    public async Task SendEmailConfirmationEmail(User user)
+    public async Task SendEmailConfirmationEmail(User user, string token)
     {
-        var confirmationLink = await GetEmailConfirmationLink(user);
+        var confirmationLink = GetEmailConfirmationLink(user, token);
         
         var message = new MimeMessage();
         message.From.Add (new MailboxAddress ("Librum", "noreply@librumreader.com"));
@@ -47,9 +45,27 @@ public class EmailSender : IEmailSender
         await SendEmail(message);
     }
 
-    private async Task<string> GetEmailConfirmationLink(User user)
+    public async Task SendPasswordResetEmail(User user, string token)
     {
-        var token = await _authenticationManager.GetEmailConfirmationLinkAsync(user);
+        var resetLink = $"https://librumreader.com/resetPassword?email={user.Email}&token={token}";
+        
+        var message = new MimeMessage();
+        message.From.Add (new MailboxAddress ("Librum", "noreply@librumreader.com"));
+        message.To.Add (new MailboxAddress (user.FirstName, "prtnprvtmail@protonmail.com"));
+        message.Subject = "Reset Your Password";
+        
+        message.Body = new TextPart ("plain") {
+            Text = $"Hello { user.FirstName }.\n\nYou can find the link to reset your password below. " + 
+                   "Follow the link and continue the password reset on our website.\n" + 
+                   $"{resetLink}\n\n" +
+                   "If you didn't request this email, just ignore it."
+        };
+        
+        await SendEmail(message);
+    }
+
+    private string GetEmailConfirmationLink(User user, string token)
+    {
         var endpointLink = _urlHelper.Action("ConfirmEmail",
                                              "Authentication",
                                              new
@@ -64,16 +80,17 @@ public class EmailSender : IEmailSender
         return confirmationLink;
     }
 
+    
+    
     private async Task SendEmail(MimeMessage message)
     {
-        using (var client = new SmtpClient()) {
-            await client.ConnectAsync(_configuration["SMTPEndpoint"], 465, true);
+        using var client = new SmtpClient();
+        await client.ConnectAsync(_configuration["SMTPEndpoint"], 465, true);
 
-            await client.AuthenticateAsync(_configuration["SMTPUsername"],
-                                           _configuration["SMTPPassword"]);
+        await client.AuthenticateAsync(_configuration["SMTPUsername"],
+                                       _configuration["SMTPPassword"]);
 
-            await client.SendAsync(message);
-            await client.DisconnectAsync(true);
-        }
+        await client.SendAsync(message);
+        await client.DisconnectAsync(true);
     }
 }

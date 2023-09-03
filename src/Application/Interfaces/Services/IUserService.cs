@@ -17,4 +17,7 @@ public interface IUserService
     public Task<Stream> GetProfilePicture(string email);
     public Task DeleteProfilePicture(string email);
     public Task ChangePasswordAsync(string email, string newPassword);
+    public Task ChangePasswordWithTokenAsync(string email, string token,
+                                             string newPassword);
+    public Task ForgotPassword(string email);
 }

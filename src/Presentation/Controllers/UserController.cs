@@ -56,7 +56,7 @@ public class UserController : ControllerBase
     {
         public string Input { get; set; }
     }
-    
+
     [HttpPost]
     public async Task<ActionResult> ChangePassword([FromBody] StringInputModel inputModel)
     {
@@ -71,6 +71,37 @@ public class UserController : ControllerBase
             _logger.LogWarning("{ErrorMessage}", e.Message);
             return StatusCode(e.Error.Status, e.Error);
         }
+    }
+
+    public class PasswordResetModel
+    {
+        public string Email { get; set; }
+        public string Token { get; set; }
+        public string Password { get; set; }
+    }
+
+    [AllowAnonymous]
+    [HttpPost("resetPassword")]
+    public async Task<ActionResult> ResetPasswordWithToken([FromBody] PasswordResetModel model)
+    {
+        try
+        {
+            await _userService.ChangePasswordWithTokenAsync(model.Email, model.Token, model.Password);
+            return Ok();
+        }
+        catch (CommonErrorException e)
+        {
+            _logger.LogWarning("{ErrorMessage}", e.Message);
+            return StatusCode(e.Error.Status, e.Error);
+        }
+    }
+    
+    [AllowAnonymous]
+    [HttpPost("forgotPassword/{email}")]
+    public async Task<ActionResult> ForgotPassword(string email)
+    {
+        await _userService.ForgotPassword(email);
+        return Ok();
     }
 
     [HttpDelete]

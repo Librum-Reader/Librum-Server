@@ -87,13 +87,6 @@ public class AuthenticationController : ControllerBase
         var confirmed = await _authenticationService.CheckIfEmailIsConfirmed(email);
         return Ok(confirmed);
     }
-
-    [AllowAnonymous]
-    [HttpPost("recoverAccount/{email}")]
-    public ActionResult RecoverAccount(string email)
-    {
-        return Ok();
-    }
     
     [AllowAnonymous]
     [HttpPost("recaptchaVerify")]

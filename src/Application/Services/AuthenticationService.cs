@@ -71,7 +71,8 @@ public class AuthenticationService : IAuthenticationService
             throw new CommonErrorException(400, message, 3);
         }
 
-        await _emailSender.SendEmailConfirmationEmail(user);
+        var token = await _authenticationManager.GetEmailConfirmationLinkAsync(user);
+        await _emailSender.SendEmailConfirmationEmail(user, token);
     }
     
     public async Task ConfirmEmail(string email, string token)
