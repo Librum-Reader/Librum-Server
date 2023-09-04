@@ -31,7 +31,7 @@ public class EmailSender : IEmailSender
         
         var message = new MimeMessage();
         message.From.Add (new MailboxAddress ("Librum", "noreply@librumreader.com"));
-        message.To.Add (new MailboxAddress (user.FirstName, "prtnprvtmail@protonmail.com"));
+        message.To.Add (new MailboxAddress (user.FirstName, user.Email));
         message.Subject = "Confirm Your Email";
         
         message.Body = new TextPart ("plain") {
@@ -51,7 +51,7 @@ public class EmailSender : IEmailSender
         
         var message = new MimeMessage();
         message.From.Add (new MailboxAddress ("Librum", "noreply@librumreader.com"));
-        message.To.Add (new MailboxAddress (user.FirstName, "prtnprvtmail@protonmail.com"));
+        message.To.Add (new MailboxAddress (user.FirstName, user.Email));
         message.Subject = "Reset Your Password";
         
         message.Body = new TextPart ("plain") {
