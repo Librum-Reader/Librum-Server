@@ -11,11 +11,21 @@ using Presentation;
 var builder = WebApplication.CreateBuilder(args);
 
 
+// Add environment variables for Docker configuration
+builder.Configuration.AddEnvironmentVariables(prefix: "LIBRUM_");
 
-// Add AzureKeyVault as configuration provider
-var keyVaultUrl = new Uri(builder.Configuration.GetSection("AzureKeyVaultUri").Value!);
-var azureCredential = new DefaultAzureCredential();
-builder.Configuration.AddAzureKeyVault(keyVaultUrl, azureCredential);
+
+// Add AzureKeyVault as configuration provider if not self-hosted
+if (builder.Configuration["LIBRUM_SELFHOSTED"] != "true")
+{
+    var keyVaultUrl = new Uri(builder.Configuration.GetSection("AzureKeyVaultUri").Value!);
+    var azureCredential = new DefaultAzureCredential();
+    builder.Configuration.AddAzureKeyVault(keyVaultUrl, azureCredential);
+}
+else
+{
+    Console.WriteLine("Running in selfhosted mode, skipping AzureKeyVault configuration");
+}
 
 
 // Services
@@ -42,17 +52,17 @@ using (var scope = app.Services.CreateScope())
     // Configure Logging
     var loggerFactory = services.GetRequiredService<ILoggerFactory>();
     loggerFactory.AddFile(Directory.GetCurrentDirectory() + "/Data/Logs/");
-    
+
     // Add Roles
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
     var roles = new[] { "Admin", "Basic" };
-    
+
     foreach (var role in roles)
     {
         if (!await roleManager.RoleExistsAsync(role))
             await roleManager.CreateAsync(new IdentityRole(role));
     }
-    
+
     await SeedWithAdminUser(services);
 }
 
@@ -91,7 +101,7 @@ async Task SeedWithAdminUser(IServiceProvider services)
             Role = "Basic",
             AccountCreation = DateTime.UtcNow
         };
-        
+
         await userManager.CreateAsync(user, password);
         await userManager.AddToRoleAsync(user, "Admin");
         var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
