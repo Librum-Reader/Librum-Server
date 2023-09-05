@@ -1,0 +1,7 @@
+services:
+  librum-server :
+    build : .
+  azurite :
+    image: azurite
+  db :
+    image : keinos/sqlite3
