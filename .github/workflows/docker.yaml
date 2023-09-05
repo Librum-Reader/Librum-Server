@@ -28,7 +28,7 @@ jobs:
         if: github.event_name != 'release'
         with:
           context: .
-          push: true
+          push: false
           tags: librum-reader/librum-server:latest
                 
       - name: Push Docker image with release tag
