@@ -28,8 +28,8 @@ jobs:
         if: github.event_name != 'release'
         with:
           context: .
-          push: true
-          tags: Librum-Reader/Librum-Server:latest
+          push: false
+          tags: librum-reader/librum-server:latest
                 
       - name: Push Docker image with release tag
         uses: docker/build-push-action@v2
@@ -37,4 +37,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/Librum-Reader/Librum-Server:${{ github.event.release.tag_name }}
+          tags: ghcr.io/librum-reader/librum-server:${{ github.event.release.tag_name }}
