@@ -163,6 +163,10 @@ public static class DependencyInjection
     private static ValueTuple<int, string> GetCodeAndMessageFromErrorString(
         string errorString)
     {
+        // Return the whole string if it doesn't start with a digit
+        if (!char.IsDigit(errorString[0]))
+            return (0, errorString);
+        
         int endOfDigits = 0;
         foreach(char c in errorString)
         {
