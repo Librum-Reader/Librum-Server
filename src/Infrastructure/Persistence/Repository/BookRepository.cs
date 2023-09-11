@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Application.Interfaces.Repositories;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +23,13 @@ public class BookRepository : IBookRepository
     public async Task LoadRelationShipsAsync(Book book)
     {
         await _context.Entry(book).Collection(p => p.Tags).LoadAsync();
+        await _context.Entry(book).Collection(p => p.Highlights).LoadAsync();
+        
+        // Load the RectFs from the loaded highlights as well
+        foreach (var highlight in book.Highlights)
+        {
+            await _context.Entry(highlight).Collection(p => p.Rects).LoadAsync();
+        }
     }
 
     public async Task LoadRelationShipsAsync(IEnumerable<Book> books)

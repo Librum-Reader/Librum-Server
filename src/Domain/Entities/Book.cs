@@ -69,6 +69,8 @@ public class Book
 
     public ICollection<Tag> Tags { get; set; } = new List<Tag>();
 
+    public ICollection<Highlight> Highlights { get; set; } = new List<Highlight>();
+    
     public string UserId { get; set; }
     public User User { get; set; }
 }

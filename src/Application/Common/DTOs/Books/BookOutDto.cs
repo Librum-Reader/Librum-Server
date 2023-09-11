@@ -1,3 +1,4 @@
+using Application.Common.DTOs.Highlights;
 using Application.Common.DTOs.Tags;
 
 namespace Application.Common.DTOs.Books;
@@ -38,4 +39,6 @@ public class BookOutDto
     
 
     public ICollection<TagOutDto> Tags { get; set; } = new List<TagOutDto>();
+    
+    public ICollection<HighlightOutDto> Highlights { get; set; } = new List<HighlightOutDto>();
 }

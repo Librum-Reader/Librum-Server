@@ -4,6 +4,7 @@ using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230911113759_AddedHighlights")]
+    partial class AddedHighlights
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,7 +108,10 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<Guid>("HighlightId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("BookId")
+                    b.Property<string>("BookId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("BookId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Color")
@@ -118,7 +123,7 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.HasKey("HighlightId");
 
-                    b.HasIndex("BookId");
+                    b.HasIndex("BookId1");
 
                     b.ToTable("Highlights");
                 });
@@ -422,9 +427,7 @@ namespace Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("Domain.Entities.Book", "Book")
                         .WithMany("Highlights")
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BookId1");
 
                     b.Navigation("Book");
                 });
