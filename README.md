@@ -18,7 +18,7 @@ The Librum-Server RestAPI is preconfigured with Librum's servers, which for obvi
 ### Installation
 1. Clone the repository.
     ```sh
-    git clone -j4 https://github.com/Etovex/Librum-Server.git
+    git clone -j4 https://github.com/Librum-Reader/Librum-Server.git
     ```
 2. Step into the cloned project folder.
     ```sh
