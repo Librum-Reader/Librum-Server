@@ -4,6 +4,9 @@ namespace Application.Common.DTOs.Highlights;
 public class RectFInDto
 {
     [Required]
+    public Guid Guid { get; set; }
+    
+    [Required]
     public float X { get; set; }
     
     [Required]

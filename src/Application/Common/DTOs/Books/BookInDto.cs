@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Application.Common.DataAnnotations;
+using Application.Common.DTOs.Highlights;
 using Application.Common.DTOs.Tags;
 
 
@@ -73,7 +74,10 @@ public class BookInDto
     [Required]
     public bool HasCover { get; set; }
     
+    
     public ICollection<TagInDto> Tags { get; set; } = new List<TagInDto>();
+    
+    public ICollection<HighlightInDto> Highlights { get; set; } = new List<HighlightInDto>();
 
 
     public bool IsValid => CurrentPage <= PageCount;

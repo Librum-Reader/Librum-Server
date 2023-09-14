@@ -39,8 +39,6 @@ public static class DependencyInjection
         services.AddScoped<IBookRepository, BookRepository>();
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<ITagRepository, TagRepository>();
-        services.AddScoped<IHighlightService, HighlightService>();
-        services.AddScoped<IHighlightRepository, HighlightRepository>();
         services.AddScoped<IEmailSender, EmailSender>();
         services.AddHostedService<DeleteUnconfirmedUsers>();
         services.AddSingleton<IBookBlobStorageManager, BookBlobStorageManager>();

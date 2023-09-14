@@ -1,4 +1,6 @@
+using System.Collections.ObjectModel;
 using Application.Common.DTOs.Books;
+using Application.Common.DTOs.Highlights;
 using Application.Common.DTOs.Tags;
 using Application.Common.Exceptions;
 using Application.Interfaces.Managers;
@@ -7,6 +9,7 @@ using Application.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services;
 
@@ -18,7 +21,7 @@ public class BookService : IBookService
     private readonly IBookBlobStorageManager _bookBlobStorageManager;
 
     public BookService(IMapper mapper, IBookRepository bookRepository,
-                       IUserRepository userRepository, 
+                       IUserRepository userRepository,
                        IBookBlobStorageManager bookBlobStorageManager)
     {
         _mapper = mapper;
@@ -49,6 +52,14 @@ public class BookService : IBookService
         foreach (var tag in bookInDto.Tags)
         {
             AddTagDtoToBook(book, tag, user);
+        }
+
+        foreach (var highlight in bookInDto.Highlights)
+        {
+            var newHighlight = _mapper.Map<Highlight>(highlight);
+            newHighlight.BookId = book.BookId;
+        
+            book.Highlights.Add(newHighlight);
         }
 
         user.Books.Add(book);
@@ -105,7 +116,6 @@ public class BookService : IBookService
             throw new CommonErrorException(404, message, 4);
         }
         await _bookRepository.LoadRelationShipsAsync(book);
-        
 
         var dtoProperties = bookUpdateDto.GetType().GetProperties();
         foreach (var dtoProperty in dtoProperties)
@@ -118,6 +128,18 @@ public class BookService : IBookService
                 case "Tags":
                     MergeTags(bookUpdateDto.Tags, book, user);
                     continue;
+                case "Highlights":
+                {
+                    Collection<Highlight> newHighlights = new();
+                    foreach (var highlightInDto in bookUpdateDto.Highlights)
+                    {
+                        var highlight = _mapper.Map<Highlight>(highlightInDto);
+                        newHighlights.Add(highlight);
+                    }
+                    book.Highlights = newHighlights;
+
+                    continue;
+                }
             }
             
             // Update any other property via reflection
@@ -127,7 +149,7 @@ public class BookService : IBookService
 
         await _bookRepository.SaveChangesAsync();
     }
-
+    
     public async Task AddBookBinaryData(string email, Guid guid, MultipartReader reader)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
@@ -227,7 +249,7 @@ public class BookService : IBookService
         var bookProperty = book.GetType().GetProperty(property);
         if (bookProperty == null)
         {
-            var message = "Book contains no property called: " + property;
+            var message = "Book has no property called: " + property;
             throw new CommonErrorException(400, message, 0);
         }
         
@@ -267,6 +289,22 @@ public class BookService : IBookService
         }
 
         foreach (var tag in tagsToRemove) {  book.Tags.Remove(tag); }
+    }
+    
+    private void RemoveHighlightsWhichDontExistInNewBook(Book book, 
+                                                         ICollection<HighlightInDto> newHighlights)
+    {
+        var highlightsToRemove = new List<Highlight>();
+        foreach (var highlight in book.Highlights)
+        {
+            if (newHighlights.All(t => t.Guid != highlight.HighlightId))
+                highlightsToRemove.Add(highlight);
+        }
+
+        foreach (var highlight in highlightsToRemove)
+        {
+            book.Highlights.Remove(highlight);
+        }
     }
 
     private void AddTagDtoToBook(Book book, TagInDto tag, User user)

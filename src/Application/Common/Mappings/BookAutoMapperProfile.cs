@@ -9,7 +9,8 @@ public class BookAutoMapperProfile : Profile
     public BookAutoMapperProfile()
     {
         CreateMap<BookInDto, Book>()
-            .ForMember(dest => dest.Tags, temp => temp.Ignore());
+            .ForMember(dest => dest.Tags, temp => temp.Ignore())
+            .ForMember(dest => dest.Highlights, temp => temp.Ignore());
 
         CreateMap<Book, BookOutDto>()
             .ForMember(dest => dest.Format,

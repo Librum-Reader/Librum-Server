@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Application.Common.DataAnnotations;
+using Application.Common.DTOs.Highlights;
 using Application.Common.DTOs.Tags;
 
 namespace Application.Common.DTOs.Books;
@@ -45,4 +46,6 @@ public class BookForUpdateDto
     
     
     public ICollection<TagInDto> Tags { get; set; } = new List<TagInDto>();
+    
+    public ICollection<HighlightInDto> Highlights { get; set; } = new List<HighlightInDto>();
 }
