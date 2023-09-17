@@ -97,8 +97,18 @@ public class BookService : IBookService
 
             await _bookRepository.LoadRelationShipsAsync(book);
             _bookRepository.DeleteBook(book);
-            await _bookBlobStorageManager.DeleteBookBlob(book.BookId);
-            
+
+            // When a book is deleted while media file was not yet uploaded, the
+            // delete should still succeed.
+            try
+            {
+                await _bookBlobStorageManager.DeleteBookBlob(book.BookId);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
             if(book.HasCover)
                 await _bookBlobStorageManager.DeleteBookCover(book.BookId);
         }
