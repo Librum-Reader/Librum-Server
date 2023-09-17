@@ -109,8 +109,17 @@ public class BookService : IBookService
                 // ignored
             }
 
-            if(book.HasCover)
-                await _bookBlobStorageManager.DeleteBookCover(book.BookId);
+            if (book.HasCover)
+            {
+                try
+                {
+                    await _bookBlobStorageManager.DeleteBookCover(book.BookId);
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+            }
         }
 
         await _bookRepository.SaveChangesAsync();
