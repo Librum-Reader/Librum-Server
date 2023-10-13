@@ -41,6 +41,12 @@ public class UserRepository : IUserRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task ResetAiExplanationCount()
+    {
+        await _context.Users.ForEachAsync(u => u.AiExplanationRequestsMadeToday = 0);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<int> SaveChangesAsync()
     {
         return await _context.SaveChangesAsync();

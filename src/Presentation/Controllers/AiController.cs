@@ -1,4 +1,4 @@
-using Application.Common.Extensions;
+using Application.Common.Exceptions;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,11 +24,17 @@ public class AiController : ControllerBase
     }
     
     [HttpPost("complete")]
-    public async Task Explain(ExplainRequest request)
+    public async Task<ActionResult> Explain(ExplainRequest request)
     {
-        await HttpContext.SSEInitAsync();
-        
-        await _aiService.ExplainAsync(HttpContext.User.Identity!.Name, HttpContext,
-                                      request.Text, request.Mode);
+        try
+        {
+            await _aiService.ExplainAsync(HttpContext.User.Identity!.Name, HttpContext,
+                                          request.Text, request.Mode);
+            return Ok();
+        }
+        catch (CommonErrorException e)
+        {
+            return StatusCode(e.Error.Status, e.Error);
+        }
     }
 }

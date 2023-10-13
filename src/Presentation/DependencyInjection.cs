@@ -42,6 +42,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailSender, EmailSender>();
         services.AddScoped<IAiService, AiService>();
         services.AddHostedService<DeleteUnconfirmedUsers>();
+        services.AddHostedService<ResetAiExplanationCount>();
         services.AddSingleton<IBookBlobStorageManager, BookBlobStorageManager>();
         services.AddSingleton<IUserBlobStorageManager, UserBlobStorageManager>();
         services.AddSingleton(x => new BlobServiceClient(

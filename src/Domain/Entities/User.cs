@@ -35,6 +35,9 @@ public class User : IdentityUser
     
     [Required]
     public long BookStorageLimit { get; set; } = 2L * 1024 * 1024 * 1024; // 2 GB
+
+    [Required]
+    public int AiExplanationRequestsMadeToday { get; set; } = 0;
     
     
     public ICollection<Book> Books { get; set; }

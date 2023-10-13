@@ -7,5 +7,6 @@ public interface IUserRepository
     public Task<User> GetAsync(string email, bool trackChanges);
     public void Delete(User user);
     public Task DeleteUnconfirmedUsers();
+    public Task ResetAiExplanationCount();
     public Task<int> SaveChangesAsync();
 }

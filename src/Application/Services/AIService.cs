@@ -2,6 +2,9 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
+using Application.Common.Extensions;
+using Application.Common.Exceptions;
+using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -15,19 +18,32 @@ public class AiService : IAiService
 {
     private readonly ILogger<AiService> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
 
     public AiService(ILogger<AiService> logger, IHttpClientFactory httpClientFactory,
-                     IConfiguration configuration)
+                     IUserRepository userRepository, IConfiguration configuration)
     {
         _logger = logger;
+        
         _httpClientFactory = httpClientFactory;
+        _userRepository = userRepository;
         _configuration = configuration;
     }
 
     public async Task ExplainAsync(string email, HttpContext context, string text, 
                                    string mode)
     {
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        if(user.AiExplanationRequestsMadeToday >= 20)
+        {
+            const string message = "Ai explanation limit reached";
+            _logger.LogWarning(message);
+            throw new CommonErrorException(403, message, 20);
+        }
+        
+        await context.SSEInitAsync();
+        
         var httpClient = _httpClientFactory.CreateClient();
         httpClient.DefaultRequestHeaders.TryAddWithoutValidation(
             "User-Agent",
@@ -40,10 +56,15 @@ public class AiService : IAiService
         var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogWarning("AI explanation failed");
-            return;
+            const string message = "Ai explanation failed";
+            _logger.LogWarning(message);
+            throw new CommonErrorException(400, message, 0);
         }
-
+        
+        // Increment the ai explanation count on the user
+        user.AiExplanationRequestsMadeToday++;
+        await _userRepository.SaveChangesAsync();
+        
         using var stream = await response.Content.ReadAsStreamAsync();
         using var reader = new StreamReader(stream);
 
@@ -109,7 +130,7 @@ public class AiService : IAiService
         var firstChoice = jsonObj["choices"][0];
 
         var finishReason = firstChoice["finish_reason"];
-        return finishReason == null;
+        return finishReason != null;
     }
     
     private static byte[] GetHash(string inputString)
