@@ -40,6 +40,7 @@ public static class DependencyInjection
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<ITagRepository, TagRepository>();
         services.AddScoped<IEmailSender, EmailSender>();
+        services.AddScoped<IAiService, AiService>();
         services.AddHostedService<DeleteUnconfirmedUsers>();
         services.AddSingleton<IBookBlobStorageManager, BookBlobStorageManager>();
         services.AddSingleton<IUserBlobStorageManager, UserBlobStorageManager>();
@@ -100,6 +101,8 @@ public static class DependencyInjection
                                       builder.Services);
         builder.AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
     }
+    
+    
 
     public static void ConfigureJwt(this IServiceCollection services, 
                                     IConfiguration configuration)
