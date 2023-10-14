@@ -1,3 +1,4 @@
+using Application.Common.DTOs;
 using Application.Common.Exceptions;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -10,10 +11,12 @@ namespace Presentation.Controllers;
 [Route("[controller]")]
 public class AiController : ControllerBase
 {
+    private readonly ILogger<AiController> _logger;
     private readonly IAiService _aiService;
 
-    public AiController(IAiService aiService)
+    public AiController(ILogger<AiController> logger, IAiService aiService)
     {
+        _logger = logger;
         _aiService = aiService;
     }
 
@@ -26,6 +29,13 @@ public class AiController : ControllerBase
     [HttpPost("complete")]
     public async Task<ActionResult> Explain(ExplainRequest request)
     {
+        if (request.Text.Length > 5000)
+        {
+            const string message = "The text is too long";
+            _logger.LogWarning(message);
+            return StatusCode(400, new CommonErrorDto(400, message, 21));
+        }
+        
         try
         {
             await _aiService.ExplainAsync(HttpContext.User.Identity!.Name, HttpContext,

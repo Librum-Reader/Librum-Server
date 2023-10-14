@@ -35,7 +35,7 @@ public class AiService : IAiService
                                    string mode)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
-        if(user.AiExplanationRequestsMadeToday >= 20)
+        if(user.AiExplanationRequestsMadeToday >= 30)
         {
             const string message = "Ai explanation limit reached";
             _logger.LogWarning(message);
