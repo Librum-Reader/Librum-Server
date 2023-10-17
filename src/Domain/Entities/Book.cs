@@ -71,6 +71,8 @@ public class Book
 
     public ICollection<Highlight> Highlights { get; set; } = new List<Highlight>();
     
+    public ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
+    
     public string UserId { get; set; }
     public User User { get; set; }
 }

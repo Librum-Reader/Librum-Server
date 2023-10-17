@@ -1,5 +1,4 @@
 using Application.Common.DTOs.Highlights;
-using Application.Common.DTOs.Tags;
 using AutoMapper;
 using Domain.Entities;
 

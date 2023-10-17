@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
+using Application.Common.DTOs.Bookmarks;
 using Application.Common.DTOs.Books;
-using Application.Common.DTOs.Highlights;
 using Application.Common.DTOs.Tags;
 using Application.Common.Exceptions;
 using Application.Interfaces.Managers;
@@ -9,7 +9,6 @@ using Application.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services;
 
@@ -60,6 +59,14 @@ public class BookService : IBookService
             newHighlight.BookId = book.BookId;
         
             book.Highlights.Add(newHighlight);
+        }
+
+        foreach (var bookmark in bookInDto.Bookmarks)
+        {
+            var newBookmark = _mapper.Map<Bookmark>(bookmark);
+            newBookmark.BookId = book.BookId;
+
+            book.Bookmarks.Add(newBookmark);
         }
 
         user.Books.Add(book);
@@ -159,6 +166,9 @@ public class BookService : IBookService
 
                     continue;
                 }
+                case "Bookmarks":
+                    MergeBookmarks(bookUpdateDto.Bookmarks, book);
+                    continue;
             }
             
             // Update any other property via reflection
@@ -168,7 +178,7 @@ public class BookService : IBookService
 
         await _bookRepository.SaveChangesAsync();
     }
-    
+
     public async Task AddBookBinaryData(string email, Guid guid, MultipartReader reader)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);
@@ -293,39 +303,6 @@ public class BookService : IBookService
         }
     }
     
-    /// When a book is updated, a list of tags is sent with it. This list of tags
-    /// is the "source of truth" and contains all tags that the book owns.
-    /// If the database book contains tags that the updated list of tags does not
-    /// contain, those old tags shall be deleted
-    private void RemoveBookTagsWhichDontExistInNewTags(Book book, 
-                                                       ICollection<TagInDto> newTags)
-    {
-        var tagsToRemove = new List<Tag>();
-        foreach (var tag in book.Tags)
-        {
-            if (newTags.All(t => t.Guid != tag.TagId))
-                tagsToRemove.Add(tag);
-        }
-
-        foreach (var tag in tagsToRemove) {  book.Tags.Remove(tag); }
-    }
-    
-    private void RemoveHighlightsWhichDontExistInNewBook(Book book, 
-                                                         ICollection<HighlightInDto> newHighlights)
-    {
-        var highlightsToRemove = new List<Highlight>();
-        foreach (var highlight in book.Highlights)
-        {
-            if (newHighlights.All(t => t.Guid != highlight.HighlightId))
-                highlightsToRemove.Add(highlight);
-        }
-
-        foreach (var highlight in highlightsToRemove)
-        {
-            book.Highlights.Remove(highlight);
-        }
-    }
-
     private void AddTagDtoToBook(Book book, TagInDto tag, User user)
     {
         // Return if the book already owns the tag
@@ -351,5 +328,60 @@ public class BookService : IBookService
         var newTag = _mapper.Map<Tag>(tag);
         newTag.UserId = user.Id;
         book.Tags.Add(newTag);
+    }
+    
+    /// When a book is updated, a list of tags is sent with it. This list of tags
+    /// is the "source of truth" and contains all tags that the book owns.
+    /// If the database book contains tags that the updated list of tags does not
+    /// contain, those old tags shall be deleted
+    private void RemoveBookTagsWhichDontExistInNewTags(Book book, 
+                                                       ICollection<TagInDto> newTags)
+    {
+        var tagsToRemove = new List<Tag>();
+        foreach (var tag in book.Tags)
+        {
+            if (newTags.All(t => t.Guid != tag.TagId))
+                tagsToRemove.Add(tag);
+        }
+
+        foreach (var tag in tagsToRemove) {  book.Tags.Remove(tag); }
+    }
+    
+    private void MergeBookmarks(ICollection<BookmarkInDto> newBookmarks, Book book)
+    {
+        RemoveBookmarksWhichDontExistInNewBookmarks(book, newBookmarks);
+        
+        foreach (var newBookmark in newBookmarks)
+        {
+            // If book already has the tag, update it
+            var existingBookmark = book.Bookmarks.SingleOrDefault(t => t.BookmarkId == newBookmark.Guid);
+            if (existingBookmark != null)
+            {
+                existingBookmark.Name = newBookmark.Name;
+                continue;
+            }
+            
+            // Else add the bookmark to book
+            var bookmark = _mapper.Map<Bookmark>(newBookmark);
+            bookmark.BookId = book.BookId;
+            book.Bookmarks.Add(bookmark);
+        }
+    }
+    
+    /// When a book is updated, a list of bookmarks is sent with it. This list of tags
+    /// is the "source of truth" and contains all bookmarks that the book owns.
+    /// If the database book contains bookmarks that the updated list of bookmarks
+    /// does not contain, those old bookmarks shall be deleted.
+    private void RemoveBookmarksWhichDontExistInNewBookmarks(Book book, 
+                                                             ICollection<BookmarkInDto> newBookmarks)
+    {
+        var bookmarksToRemove = new List<Bookmark>();
+        foreach (var bookmark in book.Bookmarks)
+        {
+            if (newBookmarks.All(t => t.Guid != bookmark.BookmarkId))
+                bookmarksToRemove.Add(bookmark);
+        }
+
+        foreach (var bookmark in bookmarksToRemove) { book.Bookmarks.Remove(bookmark); }
     }
 }

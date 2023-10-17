@@ -9,6 +9,7 @@ public class DataContext : IdentityDbContext<User>
 {
     public DbSet<Book> Books { get; set; }
     public DbSet<Highlight> Highlights { get; set; }
+    public DbSet<Bookmark> Bookmarks { get; set; }
     public DbSet<Tag> Tags { get; set; }
 
 

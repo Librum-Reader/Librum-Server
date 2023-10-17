@@ -24,6 +24,7 @@ public class BookRepository : IBookRepository
     {
         await _context.Entry(book).Collection(p => p.Tags).LoadAsync();
         await _context.Entry(book).Collection(p => p.Highlights).LoadAsync();
+        await _context.Entry(book).Collection(p => p.Bookmarks).LoadAsync();
         
         // Load the RectFs from the loaded highlights as well
         foreach (var highlight in book.Highlights)

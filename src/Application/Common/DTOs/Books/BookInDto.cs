@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Application.Common.DataAnnotations;
+using Application.Common.DTOs.Bookmarks;
 using Application.Common.DTOs.Highlights;
 using Application.Common.DTOs.Tags;
 
@@ -78,6 +79,8 @@ public class BookInDto
     public ICollection<TagInDto> Tags { get; set; } = new List<TagInDto>();
     
     public ICollection<HighlightInDto> Highlights { get; set; } = new List<HighlightInDto>();
+    
+    public ICollection<BookmarkInDto> Bookmarks { get; set; } = new List<BookmarkInDto>();
 
 
     public bool IsValid => CurrentPage <= PageCount;
