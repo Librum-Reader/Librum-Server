@@ -66,6 +66,9 @@ public class Book
     
     [Required]
     public bool HasCover { get; set; }
+    
+    [Required]
+    public int ProjectGutenbergId { get; set; }
 
     public ICollection<Tag> Tags { get; set; } = new List<Tag>();
 

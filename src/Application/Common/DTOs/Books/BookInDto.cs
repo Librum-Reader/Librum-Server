@@ -74,6 +74,8 @@ public class BookInDto
     
     [Required]
     public bool HasCover { get; set; }
+
+    public int ProjectGutenbergId { get; set; } = 0;
     
     
     public ICollection<TagInDto> Tags { get; set; } = new List<TagInDto>();
