@@ -45,8 +45,12 @@ public static class DependencyInjection
         services.AddHostedService<ResetAiExplanationCount>();
         services.AddSingleton<IBookBlobStorageManager, BookBlobStorageManager>();
         services.AddSingleton<IUserBlobStorageManager, UserBlobStorageManager>();
-        services.AddSingleton(x => new BlobServiceClient(
-                                  configuration["AzureBlobStorageConnectionString"]));
+		// if not self hosted add Azure
+		if (configuration["LIBRUM_SELFHOSTED"] != "true"){
+			services.AddSingleton(x => new BlobServiceClient(
+									  configuration["AzureBlobStorageConnectionString"]));
+		}
+		
         services.AddHttpContextAccessor();
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         services.AddScoped<IUrlHelper>(x =>
@@ -70,7 +74,14 @@ public static class DependencyInjection
             }
 
             options.EnableSensitiveDataLogging(true);
-            options.UseSqlServer(connectionString);
+			//  if not selfhosted use MSsql
+			if (configuration["LIBRUM_SELFHOSTED"] != "true"){
+            	options.UseSqlServer(connectionString);
+			}
+			else{
+				var serverVersion = new MySqlServerVersion(new Version(8, 0, 30));
+				options.UseMySql(connectionString, serverVersion);
+			}
         });
         
         
