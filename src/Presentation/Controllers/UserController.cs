@@ -18,13 +18,17 @@ public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly ILogger<UserController> _logger;
+	private readonly IConfiguration _configuration;
 
 
     public UserController(IUserService userService, 
-                          ILogger<UserController> logger)
+                          ILogger<UserController> logger,
+						  IConfiguration configuration
+						  )
     {
         _userService = userService;
         _logger = logger;
+		_configuration = configuration;
     }
 
 
@@ -79,14 +83,43 @@ public class UserController : ControllerBase
         public string Token { get; set; }
         public string Password { get; set; }
     }
-
+	
+	// ---------------------------
+	// added HttpGet method for self-hosted version to show simple form for password change
+	// it's needed because we can't go to librum.com when self-hosted
+	[AllowAnonymous]
+	[HttpGet("resetPassword")]
+	public async Task<ActionResult> ResetPasswordPage(string email,string token){
+		var content ="<!DOCTYPE html><html><head><title>Reset Password</title></head>"+
+						"<body><h1>Reset Password</h1><form action=\"/user/resetPassword\" "+
+						"method=\"post\" style=\"margin:auto; display:grid;max-width:200px;\">"+
+						"<input type=\"hidden\"  name=\"Email\" value=\""+email+"\"><br><br>"+
+						"<input type=\"hidden\"  name=\"Token\" value=\""+token+"\"><br>"+
+						"<input type=\"password\" name=\"Password\" minlength=5 required><br>"+
+    					"<input type=\"submit\" value=\"Reset Password\"></form></body></html>";
+		
+		return new ContentResult()
+   		{
+        	Content = content,
+        	ContentType = "text/html",
+    	};				
+						
+	}
+	// ----------------------------------------------
+	// end of HttpGet added 
+	
     [AllowAnonymous]
     [HttpPost("resetPassword")]
     public async Task<ActionResult> ResetPasswordWithToken([FromBody] PasswordResetModel model)
     {
         try
         {
-            await _userService.ChangePasswordWithTokenAsync(model.Email, model.Token, model.Password);
+			// in self hosted version need to replace spaces with "+" to work normally
+			var token=model.Token;
+			if (_configuration["LIBRUM_SELFHOSTED"] == "true"){
+				token =System.Web.HttpUtility.HtmlDecode( model.Token.Replace(" ","+") );
+			}
+            await _userService.ChangePasswordWithTokenAsync(model.Email, token, model.Password);
             return Ok();
         }
         catch (CommonErrorException e)
