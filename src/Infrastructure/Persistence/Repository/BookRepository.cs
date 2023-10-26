@@ -82,7 +82,16 @@ public class BookRepository : IBookRepository
         }
 
         var numberString = size.Substring(0, typeBegining);
-        var numbers = double.Parse(numberString);
+		// ------------
+		// double.Parse was throwing exception on  linux so 
+		//var numbers = double.Parse(numberString,number); 
+		System.Globalization.NumberFormatInfo provider = new System.Globalization.NumberFormatInfo();
+		provider.NumberDecimalSeparator = ".";
+		provider.NumberGroupSeparator = ",";
+		var numbers = Convert.ToDouble(numberString,provider);
+		// end of changes
+		// --------------
+		
         var type = size[typeBegining..];
 
         return type.ToLower() switch
