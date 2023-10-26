@@ -30,7 +30,14 @@ public class EmailSender : IEmailSender
         var confirmationLink = GetEmailConfirmationLink(user, token);
         
         var message = new MimeMessage();
-        message.From.Add (new MailboxAddress ("Librum", "noreply@librumreader.com"));
+		// message from Librum if not self-hosted
+		if (_configuration["LIBRUM_SELFHOSTED"] != "true"){
+			message.From.Add (new MailboxAddress ("Librum", "noreply@librumreader.com"));
+		}
+        else{
+			 var messFrom = _configuration["SMTPMailFrom"];
+			 message.From.Add (new MailboxAddress ("Librum", messFrom));
+		}
         message.To.Add (new MailboxAddress (user.FirstName, user.Email));
         message.Subject = "Confirm Your Email";
         
@@ -47,10 +54,25 @@ public class EmailSender : IEmailSender
 
     public async Task SendPasswordResetEmail(User user, string token)
     {
-        var resetLink = $"https://librumreader.com/resetPassword?email={user.Email}&token={token}";
-        
+		// go to librum site if not selfhosted
+		if (_configuration["LIBRUM_SELFHOSTED"] != "true"){
+        	var resetLink = $"https://librumreader.com/resetPassword?email={user.Email}&token={token}";
+        }
+		else {
+			var domain =_configuration["CleanUrl"];
+			var encodedToken=System.Web.HttpUtility.HtmlEncode(token);
+			var resetLink = $"{domain}/user/resetPassword?email={user.Email}&token={encodedToken}";
+		}
+		
         var message = new MimeMessage();
-        message.From.Add (new MailboxAddress ("Librum", "noreply@librumreader.com"));
+		// message from librum if not self-hosted
+		if (_configuration["LIBRUM_SELFHOSTED"] != "true"){
+        	message.From.Add (new MailboxAddress ("Librum", "noreply@librumreader.com"));
+		}	
+		else{
+			var messFrom = _configuration["SMTPMailFrom"];
+			message.From.Add (new MailboxAddress ("Librum",messFrom));
+		}
         message.To.Add (new MailboxAddress (user.FirstName, user.Email));
         message.Subject = "Reset Your Password";
         
