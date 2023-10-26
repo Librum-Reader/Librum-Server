@@ -55,13 +55,12 @@ public class EmailSender : IEmailSender
     public async Task SendPasswordResetEmail(User user, string token)
     {
 		// go to librum site if not selfhosted
-		if (_configuration["LIBRUM_SELFHOSTED"] != "true"){
-        	var resetLink = $"https://librumreader.com/resetPassword?email={user.Email}&token={token}";
-        }
-		else {
+		var resetLink = $"https://librumreader.com/resetPassword?email={user.Email}&token={token}";
+		// if self hosted change resetlink
+		if (_configuration["LIBRUM_SELFHOSTED"] == "true"){
 			var domain =_configuration["CleanUrl"];
 			var encodedToken=System.Web.HttpUtility.HtmlEncode(token);
-			var resetLink = $"{domain}/user/resetPassword?email={user.Email}&token={encodedToken}";
+			resetLink = $"{domain}/user/resetPassword?email={user.Email}&token={encodedToken}";
 		}
 		
         var message = new MimeMessage();
