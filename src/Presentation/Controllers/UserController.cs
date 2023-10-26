@@ -91,7 +91,7 @@ public class UserController : ControllerBase
 	[HttpGet("resetPassword")]
 	public async Task<ActionResult> ResetPasswordPage(string email,string token){
 		var content ="<!DOCTYPE html><html><head><title>Reset Password</title></head>"+
-						"<body><h1>Reset Password</h1><form action=\"/user/resetPassword\" "+
+						"<body><h1>Reset Password</h1><form action=\"/user/resetPasswordLocal\" "+
 						"method=\"post\" style=\"margin:auto; display:grid;max-width:200px;\">"+
 						"<input type=\"hidden\"  name=\"Email\" value=\""+email+"\"><br><br>"+
 						"<input type=\"hidden\"  name=\"Token\" value=\""+token+"\"><br>"+
@@ -105,8 +105,33 @@ public class UserController : ControllerBase
     	};				
 						
 	}
+	// method to change password when selfhosted - using data posted from simple html form
+	[AllowAnonymous]
+    [HttpPost("resetPasswordLocal")]
+    public async Task<ActionResult> ResetPasswordWithTokenLocal([FromForm] PasswordResetModel model)
+    {
+        try
+        {
+			// in self hosted version need to replace spaces with "+" to work normally
+			var token=model.Token;
+			token =System.Web.HttpUtility.HtmlDecode( model.Token.Replace(" ","+") );
+            await _userService.ChangePasswordWithTokenAsync(model.Email,token, model.Password);
+            return new ContentResult()
+    		{
+        		Content = "password successfully chaged",
+        		ContentType = "text/html",
+    		};	
+        }
+        catch (CommonErrorException e)
+        {
+            _logger.LogWarning("{ErrorMessage}", e.Message);
+            return StatusCode(e.Error.Status, e.Error);
+        }
+    }
+	
+	
 	// ----------------------------------------------
-	// end of HttpGet added 
+	// end 
 	
     [AllowAnonymous]
     [HttpPost("resetPassword")]
@@ -114,12 +139,7 @@ public class UserController : ControllerBase
     {
         try
         {
-			// in self hosted version need to replace spaces with "+" to work normally
-			var token=model.Token;
-			if (_configuration["LIBRUM_SELFHOSTED"] == "true"){
-				token =System.Web.HttpUtility.HtmlDecode( model.Token.Replace(" ","+") );
-			}
-            await _userService.ChangePasswordWithTokenAsync(model.Email, token, model.Password);
+            await _userService.ChangePasswordWithTokenAsync(model.Email, model.Token, model.Password);
             return Ok();
         }
         catch (CommonErrorException e)
