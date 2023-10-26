@@ -48,7 +48,13 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-
+	
+	// create local db structure
+	if (builder.Configuration["LIBRUM_SELFHOSTED"] == "true"){
+		var context = services.GetRequiredService<DataContext>();
+    	context.Database.EnsureCreated();
+	}
+	
     // Configure Logging
     var loggerFactory = services.GetRequiredService<ILoggerFactory>();
     loggerFactory.AddFile(Directory.GetCurrentDirectory() + "/Data/Logs/");
