@@ -43,12 +43,18 @@ public static class DependencyInjection
         services.AddScoped<IAiService, AiService>();
         services.AddHostedService<DeleteUnconfirmedUsers>();
         services.AddHostedService<ResetAiExplanationCount>();
-        services.AddSingleton<IBookBlobStorageManager, BookBlobStorageManager>();
-        services.AddSingleton<IUserBlobStorageManager, UserBlobStorageManager>();
-		// if not self hosted add Azure
+        
+		// if not self hosted add Azure and blob storages
 		if (configuration["LIBRUM_SELFHOSTED"] != "true"){
+			services.AddSingleton<IUserBlobStorageManager, UserBlobStorageManager>();
+			services.AddSingleton<IBookBlobStorageManager, BookBlobStorageManager>();
 			services.AddSingleton(x => new BlobServiceClient(
 									  configuration["AzureBlobStorageConnectionString"]));
+			services.AddSingleton<IUserBlobStorageManager, UserBlobStorageManager>();
+		} 
+		else { //use local storages
+			services.AddSingleton<IUserBlobStorageManager, UserLocalStorageManager>();
+			services.AddSingleton<IBookBlobStorageManager, BookLocalStorageManager>();
 		}
 		
         services.AddHttpContextAccessor();
