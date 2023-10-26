@@ -12,7 +12,7 @@ public class UserLocalStorageManager : IUserBlobStorageManager
     private string profilesDir;
     private string baseDir;
 	
-    public UserBlobStorageManager()
+    public UserLocalStorageManager()
     {
         baseDir=System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal); // $HOME folder 
 	    dataDir= baseDir+"/librum_srorage";

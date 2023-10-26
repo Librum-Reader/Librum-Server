@@ -13,7 +13,7 @@ public class BookLocalStorageManager : IBookBlobStorageManager
  	private string coversDir;
     private string baseDir;
    
-    public BookBlobStorageManager()
+    public BookLocalStorageManager()
     {
         baseDir=System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
 		dataDir= baseDir+"/librum_srorage";
