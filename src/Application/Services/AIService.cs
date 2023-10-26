@@ -34,6 +34,12 @@ public class AiService : IAiService
     public async Task ExplainAsync(string email, HttpContext context, string text, 
                                    string mode)
     {
+		//  return error mesage if no OpenAIToken exists for self-hosted mode, dont throw exception
+	    if (_configuration["LIBRUM_SELFHOSTED"] == "true" &&  String.IsNullOrEmpty(_configuration["OpenAIToken"])){
+            await context.Response.WriteAsync("data: " + "OpenAI temporary unavailable" + "\n");
+            return;
+        }
+	
         var user = await _userRepository.GetAsync(email, trackChanges: true);
         if(user.AiExplanationRequestsMadeToday >= 10)
         {
