@@ -50,7 +50,6 @@ public static class DependencyInjection
 			services.AddSingleton<IBookBlobStorageManager, BookBlobStorageManager>();
 			services.AddSingleton(x => new BlobServiceClient(
 									  configuration["AzureBlobStorageConnectionString"]));
-			services.AddSingleton<IUserBlobStorageManager, UserBlobStorageManager>();
 		} 
 		else { //use local storages
 			services.AddSingleton<IUserBlobStorageManager, UserLocalStorageManager>();
