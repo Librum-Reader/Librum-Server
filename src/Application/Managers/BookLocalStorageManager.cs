@@ -14,7 +14,7 @@ public class BookLocalStorageManager : IBookBlobStorageManager
     public BookLocalStorageManager()
     {
         string baseDir=System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
-		dataDir= baseDir+"/librum_storage";
+		string dataDir= baseDir+"/librum_storage";
 		booksDir= dataDir + "/books";
 		coversDir=booksDir + "/covers";
 		// create folders
