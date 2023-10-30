@@ -8,14 +8,12 @@ namespace Application.Managers;
 public class BookLocalStorageManager : IBookBlobStorageManager
 {
     private readonly string _bookCoverPrefix = "cover_";
-	private string dataDir;
  	private string booksDir;
  	private string coversDir;
-    private string baseDir;
    
     public BookLocalStorageManager()
     {
-        baseDir=System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
+        string baseDir=System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
 		dataDir= baseDir+"/librum_storage";
 		booksDir= dataDir + "/books";
 		coversDir=booksDir + "/covers";
