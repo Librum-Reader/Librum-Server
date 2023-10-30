@@ -49,8 +49,9 @@ public class UserLocalStorageManager : IUserBlobStorageManager
 			}
 			else
 			{
+				Console.WriteLine(e.Message);
   		 		throw new CommonErrorException(400, "Can't create file "+filename, 0);
-		 		Console.WriteLine(e.Message);
+		 		
 			}
 		}
 

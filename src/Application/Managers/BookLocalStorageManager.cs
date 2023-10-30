@@ -109,6 +109,7 @@ public class BookLocalStorageManager : IBookBlobStorageManager
 				throw new CommonErrorException(400, "Can't overwrite file for book cover", 0);
 			}
 			else
+				Console.WriteLine(e.Message);
   		 		throw new CommonErrorException(400, "Can't create file for book cover", 0);
 		}
 
