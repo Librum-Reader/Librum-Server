@@ -94,18 +94,21 @@ public class BookLocalStorageManager : IBookBlobStorageManager
 
     public async Task<long> ChangeBookCover(Guid guid, MultipartReader reader)
     {
-		  //if already exists
-		var filename=coversDir+"/"+guid;
-		if ( System.IO.File.Exists(filename)){
-			throw new CommonErrorException(400,"file already exists "+filename ,0);
-		}
 		System.IO.Stream dest;
 		try {
 			 dest = System.IO.File.Create (filename);
 		}
 		catch (Exception e)
 		{
-  		 	throw new CommonErrorException(400, "Can't create file for book cover", 0);
+			if (ex is System.UnauthorizedAccessException)
+			{
+				throw new CommonErrorException(400, "Can't overwrite file for book cover", 0);
+				FileAttributes attr = (new FileInfo(filePath)).Attributes;
+				if ((attr & FileAttributes.ReadOnly) > 0)
+            		Console.Write("The file is read-only.");
+			}
+			else
+  		 		throw new CommonErrorException(400, "Can't create file for book cover", 0);
 		}
 
         long coverSize = 0;
