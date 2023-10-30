@@ -37,7 +37,6 @@ public class AiService : IAiService
 		//  return error mesage if no OpenAIToken exists for self-hosted mode, dont throw exception
 	    if (_configuration["LIBRUM_SELFHOSTED"] == "true" &&  String.IsNullOrEmpty(_configuration["OpenAIToken"])){
             throw new CommonErrorException(403, "Ai explanation is unavailable when selfhosting Librum. You will need to provide an OpenAI Token yourself.", 20);
-            return;
         }
 	
         var user = await _userRepository.GetAsync(email, trackChanges: true);
