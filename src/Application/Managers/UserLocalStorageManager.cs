@@ -42,10 +42,10 @@ public class UserLocalStorageManager : IUserBlobStorageManager
 		{
 			if (e is System.UnauthorizedAccessException)
 			{
-				throw new CommonErrorException(400, "Can't overwrite file for picture profile", 0);
 				FileAttributes attr = (new FileInfo(filename)).Attributes;
 				if ((attr & FileAttributes.ReadOnly) > 0)
             		Console.Write("The file is read-only.Can't overwrite.");
+				throw new CommonErrorException(400, "Can't overwrite file for picture profile", 0);
 			}
 			else
 			{

@@ -103,10 +103,10 @@ public class BookLocalStorageManager : IBookBlobStorageManager
 		{
 			if (e is System.UnauthorizedAccessException)
 			{
-				throw new CommonErrorException(400, "Can't overwrite file for book cover", 0);
 				FileAttributes attr = (new FileInfo(filename)).Attributes;
 				if ((attr & FileAttributes.ReadOnly) > 0)
             		Console.Write("The file is read-only.");
+				throw new CommonErrorException(400, "Can't overwrite file for book cover", 0);
 			}
 			else
   		 		throw new CommonErrorException(400, "Can't create file for book cover", 0);
