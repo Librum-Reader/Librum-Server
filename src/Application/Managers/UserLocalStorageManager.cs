@@ -8,14 +8,12 @@ namespace Application.Managers;
 public class UserLocalStorageManager : IUserBlobStorageManager
 {
     private readonly string _profilePicturePrefix = "profilePicture_";
-    private string dataDir;
     private string profilesDir;
-    private string baseDir;
 	
     public UserLocalStorageManager()
     {
-        baseDir=System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal); // $HOME folder 
-	    dataDir= baseDir+"/librum_storage";
+        string baseDir=System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal); // $HOME folder 
+	    string dataDir= baseDir+"/librum_storage";
 		profilesDir=dataDir+"/profiles";
 		// create folders
 		if(! System.IO.Directory.Exists(dataDir)) System.IO.Directory.CreateDirectory(dataDir);
