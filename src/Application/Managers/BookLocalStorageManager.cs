@@ -94,13 +94,14 @@ public class BookLocalStorageManager : IBookBlobStorageManager
 
     public async Task<long> ChangeBookCover(Guid guid, MultipartReader reader)
     {
+		var filename=coversDir+"/"+guid;
 		System.IO.Stream dest;
 		try {
 			 dest = System.IO.File.Create (filename);
 		}
 		catch (Exception e)
 		{
-			if (ex is System.UnauthorizedAccessException)
+			if (e is System.UnauthorizedAccessException)
 			{
 				throw new CommonErrorException(400, "Can't overwrite file for book cover", 0);
 				FileAttributes attr = (new FileInfo(filePath)).Attributes;
