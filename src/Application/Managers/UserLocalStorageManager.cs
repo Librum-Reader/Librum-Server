@@ -33,14 +33,14 @@ public class UserLocalStorageManager : IUserBlobStorageManager
 
     public async Task ChangeProfilePicture(string guid, MultipartReader reader)
     {
-        
+        var filename=profilesDir+"/"+guid;
 		System.IO.Stream dest;
 		try {
 			 dest = System.IO.File.Create (filename);
 		}
 		catch (Exception e)
 		{
-			if (ex is System.UnauthorizedAccessException)
+			if (e is System.UnauthorizedAccessException)
 			{
 				throw new CommonErrorException(400, "Can't overwrite file for picture profile", 0);
 				FileAttributes attr = (new FileInfo(filePath)).Attributes;
