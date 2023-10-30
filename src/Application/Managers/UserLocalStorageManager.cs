@@ -15,7 +15,7 @@ public class UserLocalStorageManager : IUserBlobStorageManager
     public UserLocalStorageManager()
     {
         baseDir=System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal); // $HOME folder 
-	    dataDir= baseDir+"/librum_srorage";
+	    dataDir= baseDir+"/librum_storage";
 		profilesDir=dataDir+"/profiles";
 		// create folders
 		if(! System.IO.Directory.Exists(dataDir)) System.IO.Directory.CreateDirectory(dataDir);
