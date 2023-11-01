@@ -44,21 +44,24 @@ public static class DependencyInjection
         services.AddHostedService<DeleteUnconfirmedUsers>();
         services.AddHostedService<ResetAiExplanationCount>();
         
-		// if not self hosted add Azure and blob storages
-		if (configuration["LIBRUM_SELFHOSTED"] != "true"){
+		// If not self hosted add the managers that store data to Azure
+		if (configuration["LIBRUM_SELFHOSTED"] != "true")
+        {
 			services.AddSingleton<IUserBlobStorageManager, UserBlobStorageManager>();
 			services.AddSingleton<IBookBlobStorageManager, BookBlobStorageManager>();
 			services.AddSingleton(x => new BlobServiceClient(
 									  configuration["AzureBlobStorageConnectionString"]));
-		} 
-		else { //use local storages
+		}
+        // Else use the classes that store the data locally
+		else
+        {
 			services.AddSingleton<IUserBlobStorageManager, UserLocalStorageManager>();
 			services.AddSingleton<IBookBlobStorageManager, BookLocalStorageManager>();
 		}
 		
         services.AddHttpContextAccessor();
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-        services.AddScoped<IUrlHelper>(x =>
+        services.AddScoped(x =>
         {
             var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
             var factory = x.GetRequiredService<IUrlHelperFactory>();
@@ -79,11 +82,14 @@ public static class DependencyInjection
             }
 
             options.EnableSensitiveDataLogging(true);
-			//  if not selfhosted use MSsql
+            
+			// If not self-hosted, use MSSQL
 			if (configuration["LIBRUM_SELFHOSTED"] != "true"){
             	options.UseSqlServer(connectionString);
 			}
-			else{
+            // Else use MySql
+			else
+            {
 				var serverVersion = new MySqlServerVersion(new Version(8, 0, 30));
 				options.UseMySql(connectionString, serverVersion);
 			}

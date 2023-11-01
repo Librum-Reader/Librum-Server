@@ -18,17 +18,12 @@ public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly ILogger<UserController> _logger;
-	private readonly IConfiguration _configuration;
 
 
-    public UserController(IUserService userService, 
-                          ILogger<UserController> logger,
-						  IConfiguration configuration
-						  )
+    public UserController(IUserService userService, ILogger<UserController> logger)
     {
         _userService = userService;
         _logger = logger;
-		_configuration = configuration;
     }
 
 
@@ -84,12 +79,12 @@ public class UserController : ControllerBase
         public string Password { get; set; }
     }
 	
-	// ---------------------------
-	// added HttpGet method for self-hosted version to show simple form for password change
-	// it's needed because we can't go to librum.com when self-hosted
+	
+	// Show a simple form for password changing the password when self-hosted.
+	// it's necessary because we can't rely on librumreader.com when self-hosting.
 	[AllowAnonymous]
 	[HttpGet("resetPassword")]
-	public async Task<ActionResult> ResetPasswordPage(string email,string token){
+	public ActionResult ResetPasswordPage(string email,string token){
 		var content ="<!DOCTYPE html><html><head><title>Reset Password</title></head>"+
 						"<body><h1>Reset Password</h1><form action=\"/user/resetPasswordLocal\" "+
 						"method=\"post\" style=\"margin:auto; display:grid;max-width:200px;\">"+
@@ -105,18 +100,18 @@ public class UserController : ControllerBase
     	};				
 						
 	}
-	// method to change password when selfhosted - using data posted from simple html form
+    
+	// To change password when self-hosted - using the data posted from simple html form
 	[AllowAnonymous]
     [HttpPost("resetPasswordLocal")]
     public async Task<ActionResult> ResetPasswordWithTokenLocal([FromForm] PasswordResetModel model)
     {
         try
         {
-			// in self hosted version need to replace spaces with "+" to work normally
-			var token=model.Token;
-			token =System.Web.HttpUtility.HtmlDecode( model.Token.Replace(" ","+") );
-            await _userService.ChangePasswordWithTokenAsync(model.Email,token, model.Password);
-            return new ContentResult()
+			// in self hosted version we need to replace spaces with "+" for it to work
+			var token = System.Web.HttpUtility.HtmlDecode(model.Token.Replace(" ","+"));
+            await _userService.ChangePasswordWithTokenAsync(model.Email, token, model.Password);
+            return new ContentResult
     		{
         		Content = "password successfully chaged",
         		ContentType = "text/html",
@@ -128,10 +123,6 @@ public class UserController : ControllerBase
             return StatusCode(e.Error.Status, e.Error);
         }
     }
-	
-	
-	// ----------------------------------------------
-	// end 
 	
     [AllowAnonymous]
     [HttpPost("resetPassword")]

@@ -7,56 +7,57 @@ namespace Application.Managers;
 
 public class BookLocalStorageManager : IBookBlobStorageManager
 {
-    private readonly string _bookCoverPrefix = "cover_";
- 	private string booksDir;
- 	private string coversDir;
+ 	private readonly string _booksDir;
+ 	private readonly string _coversDir;
    
     public BookLocalStorageManager()
     {
-        string baseDir=System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
-		string dataDir= baseDir+"/librum_storage";
-		booksDir= dataDir + "/books";
-		coversDir=booksDir + "/covers";
+        string baseDir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+		string dataDir = baseDir + "/librum_storage";
+		_booksDir = dataDir + "/books";
+		_coversDir = _booksDir + "/covers";
+		
 		// create folders
-		if(! System.IO.Directory.Exists(dataDir)) System.IO.Directory.CreateDirectory(dataDir);
-		if(! System.IO.Directory.Exists(booksDir)) System.IO.Directory.CreateDirectory(booksDir);
-		if(! System.IO.Directory.Exists(coversDir)) System.IO.Directory.CreateDirectory(coversDir);
-		Console.WriteLine ("Current directory is "+ dataDir);
+		if (!Directory.Exists(dataDir))
+			Directory.CreateDirectory(dataDir);
+		if (!Directory.Exists(_booksDir))
+			Directory.CreateDirectory(_booksDir);
+		if (!Directory.Exists(_coversDir))
+			Directory.CreateDirectory(_coversDir);
+		
+		Console.WriteLine ("Books are stored in: " + dataDir);
     }
 
     public Task<Stream> DownloadBookBlob(Guid guid)
     {
-		var filename=booksDir+"/"+guid;
-		if (!System.IO.File.Exists(filename)){
-			throw new CommonErrorException(400,"file not exists "+filename ,0);
-		}
+		var filename= _booksDir + "/" + guid;
+		if (!File.Exists(filename))
+			throw new CommonErrorException(400, "File does not exist: " + filename, 0);
+		
 		return Task.FromResult<Stream>(File.OpenRead(filename)); 
     }
 
     public async Task UploadBookBlob(Guid guid, MultipartReader reader)
     {
-        //if already exists
-		var filename=booksDir+"/"+guid;
-		if ( System.IO.File.Exists(filename)){
-			throw new CommonErrorException(400,"file already exists "+filename ,0);
-		}
-		System.IO.Stream dest;
-		try {
-			 dest = System.IO.File.Create (filename);
-		}
-		catch (Exception e)
+		var filename= _booksDir + "/" + guid;
+		if (File.Exists(filename))
+			throw new CommonErrorException(400, "File already exists: " + filename, 0);
+		
+		Stream dest;
+		try
 		{
-  		 throw new CommonErrorException(400, "Can't create file", 0);
+			 dest = File.Create(filename);
 		}
-
-        
+		catch (Exception _) 
+		{ 
+			throw new CommonErrorException(400, "Can't create file", 0);
+		}
+		
         var section = await reader.ReadNextSectionAsync();
         while (section != null)
         {
             var hasContentDispositionHeader =
-                ContentDispositionHeaderValue.TryParse(
-                    section.ContentDisposition,
-                    out var contentDisposition);
+                ContentDispositionHeaderValue.TryParse(section.ContentDisposition, out var contentDisposition);
         
             if (!hasContentDispositionHeader)
                 continue;
@@ -68,11 +69,11 @@ public class BookLocalStorageManager : IBookBlobStorageManager
             }
             
             await section.Body.CopyToAsync(dest);
-            
             section = await reader.ReadNextSectionAsync();
         }
-		dest.Dispose();
-        System.IO.File.SetUnixFileMode(filename,UnixFileMode.UserRead | UnixFileMode.UserWrite);
+        
+		dest.Close();
+        File.SetUnixFileMode(filename,UnixFileMode.UserRead | UnixFileMode.UserWrite);
     }
     
     private static bool HasFileContentDisposition(
@@ -88,29 +89,30 @@ public class BookLocalStorageManager : IBookBlobStorageManager
 
     public async Task DeleteBookBlob(Guid guid)
     {
-		var path=booksDir+"/"+guid;
-		 await Task.Run(() => System.IO.File.Delete(path));
+		var path = _booksDir + "/" + guid;
+		await Task.Run(() => File.Delete(path));
     }
 
     public async Task<long> ChangeBookCover(Guid guid, MultipartReader reader)
     {
-		var filename=coversDir+"/"+guid;
-		System.IO.Stream dest;
-		try {
-			 dest = System.IO.File.Create (filename);
+		var filename=_coversDir + "/" + guid;
+		Stream dest;
+		try
+		{
+			 dest = File.Create (filename);
 		}
 		catch (Exception e)
 		{
-			if (e is System.UnauthorizedAccessException)
+			if (e is UnauthorizedAccessException)
 			{
 				FileAttributes attr = (new FileInfo(filename)).Attributes;
 				if ((attr & FileAttributes.ReadOnly) > 0)
-            		Console.Write("The file is read-only.");
-				throw new CommonErrorException(400, "Can't overwrite file for book cover", 0);
+            		Console.Write("The file is read-only");
+				throw new CommonErrorException(400, "Can't overwrite the book cover file", 0);
 			}
-			else
-				Console.WriteLine(e.Message);
-  		 		throw new CommonErrorException(400, "Can't create file for book cover", 0);
+			
+			Console.WriteLine(e.Message);
+  		 	throw new CommonErrorException(400, "Can't create file for book cover", 0);
 		}
 
         long coverSize = 0;
@@ -118,9 +120,7 @@ public class BookLocalStorageManager : IBookBlobStorageManager
         while (section != null)
         {
             var hasContentDispositionHeader =
-                ContentDispositionHeaderValue.TryParse(
-                    section.ContentDisposition,
-                    out var contentDisposition);
+                ContentDispositionHeaderValue.TryParse(section.ContentDisposition,  out var contentDisposition);
         
             if (!hasContentDispositionHeader)
                 continue;
@@ -136,24 +136,24 @@ public class BookLocalStorageManager : IBookBlobStorageManager
             
             section = await reader.ReadNextSectionAsync();
         }
-		dest.Dispose();
-        System.IO.File.SetUnixFileMode(filename,UnixFileMode.UserRead | UnixFileMode.UserWrite);
-
+        
+		dest.Close();
+        File.SetUnixFileMode(filename,UnixFileMode.UserRead | UnixFileMode.UserWrite);
         return coverSize;
     }
 
     public Task<Stream> DownloadBookCover(Guid guid)
     {
-		var filename=coversDir+"/"+guid;
-		if (!System.IO.File.Exists(filename)){
-			throw new CommonErrorException(400,"file not exists "+filename ,0);
-		}
+		var filename = _coversDir + "/" + guid;
+		if (!File.Exists(filename))
+			throw new CommonErrorException(400, "file not exists "+filename, 0);
+		
 		return Task.FromResult<Stream>(File.OpenRead(filename)); 
     }
 
     public async Task DeleteBookCover(Guid guid)
     {
-		var path=coversDir+"/"+guid;
-		await Task.Run(() => System.IO.File.Delete(path));
+		var path = _coversDir + "/" + guid;
+		await Task.Run(() => File.Delete(path));
     }
 }

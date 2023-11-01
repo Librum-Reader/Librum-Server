@@ -49,7 +49,7 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 	
-	// create local db structure
+	// Initialize the local database if self-hosted
 	if (builder.Configuration["LIBRUM_SELFHOSTED"] == "true"){
 		var context = services.GetRequiredService<DataContext>();
     	context.Database.EnsureCreated();
