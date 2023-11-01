@@ -1,0 +1,90 @@
+.TH librum-server 
+
+.SH NAME
+.B librum-server
+- server for librum-reader app
+
+
+.SH DESCRIPTION
+.B librum-server
+is server running as servise 
+
+.SH INSTALLATION
+.TP
+After installing librum-server package
+.RS 
+.B 1.
+Install and configure MariaDb or MySql service
+.RS
+.LP 
+.B a)
+Edit  /etc/my.cnf.d/server.cnf to bind MySql server to some ip adress
+for example - bind-address=127.0.0.1
+.LP
+.B b)
+Disable skip-networking option
+.LP
+.B c)
+Restart MySql server - systemctl restart mysqld
+.LP
+.B d)
+Run mysql and create user for mysql database. For example 
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'superStrongPassword123';
+.RE
+
+.LP 
+.B 2.
+Edit configuration file /etc/librum-server/librum-server.conf
+You must provide:
+.RS
+.LP
+.B JWTValidIssuer
+- any string for key provider for example "myhomeKeyProvider"
+.LP
+.B  JWTKey
+- secret key for JWT token generation ( at least 20 symbols)
+.LP
+.B AdminEmail
+- admin email(login) for creating user in database -this user will be created on first run
+.LP
+.B AdminPassword
+- password for admin (5 symbols minimum)
+.LP
+.B DBConnectionString
+- Connection string for Mysql (or MariaDB)
+for example "Server=127.0.0.1;port=3306;Database=my_database_name;Uid=mysql_user;Pwd=mysql_password;"
+.LP
+.B SMTPEndpoint
+- smtp server endpoint - for  sending "confirm email" letters
+.LP 
+.B SMTPUsername and SMTPPassword
+login and password for smtp server
+.LP
+.B SMTPMailFrom
+mailfrom variable is recommended to be exactly matching your username on email server
+.LP
+.B CleanUrl
+- clean url - url without ports, it will be used to build "reset password link"
+for  example server running on 127.0.0.1:5000 can be exposed to web like https://myserver.com/, so this is the point
+.RE
+.LP
+.B 3.
+Update configuration with running:  systemctl daemon-reload
+.LP
+.B 4.
+Run server: systemctl start librum-server
+.LP 
+.B 5.
+Check status with: systemctl status librum-server
+.RE
+.LP 
+.B 6.
+Configure your librum-reader app to launch using your server. 
+Edit ~/.config/librum-server/librum-server.conf or /etc/xdg/librum-server.conf to change server url for reader-app.
+
+.SH DIAGNOSTICS
+.PP
+The activity of server is logged to /var/lib/librum-server/srv/Data/Logs
+Also you can check journalctl
+
+
