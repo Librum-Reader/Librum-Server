@@ -97,7 +97,7 @@ CRTOUT=/var/lib/librum-server/srv/librum-server.crt
 PFXOUT=/var/lib/librum-server/srv/librum-server.pfx
 sudo /usr/bin/openssl req -x509 -newkey rsa:4096 -sha256 -days 365 -nodes -keyout $KEYOUT -out  $CRTOUT -subj "/CN=librum-server" -extensions v3_ca -extensions v3_req 
 sudo openssl pkcs12 -export -passout pass: -out $PFXOUT -inkey $KEYOUT -in $CRTOUT
-chown librum-server $PFXOUT 
+sudo chown librum-server $PFXOUT 
 ```
 ### Configure server ports  
 
