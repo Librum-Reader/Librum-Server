@@ -173,10 +173,10 @@ Reload privilege tables now? [Y/n] y
 ```
 
 ### Run librum-server
-First of all you must edit /etc/librum-reader/librum-reader.conf
+First of all you must edit /etc/librum-server/librum-server.conf
 
 ```
-vim /etc/librum-reader/librum-reader.conf
+vim /etc/librum-server/librum-server.conf
 ```
 You must change at least ten variables, instructions are inside, feel free to ask if something is not clear.
 
