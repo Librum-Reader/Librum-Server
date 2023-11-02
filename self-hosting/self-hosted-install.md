@@ -14,7 +14,7 @@ The Librum-Server contains the API, database, and other core infrastructure item
 So:  
 
 ```
-apt-get install dotnet-sdk-7.0 dotnet-7.0  dotnet-host openssl mariadb-server dotnet-7.0 dotnet-aspnetcore-runtime-7.0 openssl
+apt-get install dotnet-sdk-7.0 dotnet-7.0  dotnet-host openssl mariadb-server  dotnet-aspnetcore-runtime-7.0 
 ```
 
 ## Build process
