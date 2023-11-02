@@ -101,7 +101,7 @@ chown librum-server $PFXOUT
 ```
 ### Configure server ports  
 
-go to src/Presentation/ and add to appsettings.json and appsettings.Development.json - this block:
+go to /var/lib/librum-server/srv/ and add to appsettings.json and appsettings.Development.json - this block:
 
 ```
   "Kestrel": {
