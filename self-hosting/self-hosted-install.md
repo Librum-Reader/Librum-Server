@@ -85,7 +85,7 @@ install -m664 self-hosting/librum-server.7 /usr/share/man/man7
 ### Insall readme
 
 ```
-install -m664 self-hosting/INSTALL.md /var/lib/librum-server/srv
+install -m664 self-hosting/self-hosted-install.md /var/lib/librum-server/srv
 ```
 
 ### Create SSL certificate  
