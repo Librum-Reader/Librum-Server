@@ -14,7 +14,7 @@ The Librum-Server contains the API, database, and other core infrastructure item
 So:  
 
 ```
-sudo apt-get install dotnet-sdk-7.0 dotnet7 dotnet-host  aspnetcore-runtime-7.0  openssl mariadb-server
+sudo apt install dotnet-sdk-7.0 dotnet7 dotnet-host  aspnetcore-runtime-7.0  openssl mariadb-server
 
 ```
 
@@ -101,7 +101,7 @@ sudo chown librum-server $PFXOUT
 ```
 ### Configure server ports  
 
-go to /var/lib/librum-server/srv/ and add to appsettings.json and appsettings.Development.json - this block:
+go to /var/lib/librum-server/srv/ and add to appsettings.json  - this block:
 
 ```
   "Kestrel": {
@@ -127,7 +127,7 @@ go to /var/lib/librum-server/srv/ and add to appsettings.json and appsettings.De
 ### Install and configure MariaDB
 
 ```
-sudo apt-get mariadb-server
+sudo apt install mariadb-server
 ```
 
 Go to   /etc/mysql/mariadb.conf.d/  and find 50-server.cnf 
