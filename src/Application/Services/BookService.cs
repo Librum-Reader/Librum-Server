@@ -357,7 +357,12 @@ public class BookService : IBookService
             var existingBookmark = book.Bookmarks.SingleOrDefault(t => t.BookmarkId == newBookmark.Guid);
             if (existingBookmark != null)
             {
-                existingBookmark.Name = newBookmark.Name;
+                if (existingBookmark.Name != newBookmark.Name)
+                {
+                    string prevName = existingBookmark.Name;
+                    existingBookmark.Name = newBookmark.Name;
+                }
+
                 continue;
             }
             
