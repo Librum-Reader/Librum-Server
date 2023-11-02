@@ -86,7 +86,7 @@ sudo install -m664 self-hosting/librum-server.7 /usr/share/man/man7
 ### Insall readme
 
 ```
-sudo install -m664 self-hosting/self-hosted-install.md /var/lib/librum-server/srv
+sudo install -m664 self-hosting/ubuntu-self-hosted-install.md /var/lib/librum-server/srv
 ```
 
 ### Create SSL certificate  
