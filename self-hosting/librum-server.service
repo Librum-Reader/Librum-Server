@@ -1,5 +1,5 @@
 [Unit]
-Description=Server for Librum-Reader app
+Description=Server for the Librum application
 
 [Service]
 WorkingDirectory=/var/lib/librum-server/srv
@@ -14,5 +14,6 @@ Environment=ASPNETCORE_ENVIRONMENT=Production
 Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
 Environment=LIBRUM_SELFHOSTED=true
 EnvironmentFile=/etc/librum-server/librum-server.conf
+
 [Install]
 WantedBy=multi-user.target
