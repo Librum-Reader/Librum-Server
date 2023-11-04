@@ -2,77 +2,73 @@
 
 .SH NAME
 .B librum-server
-- server for librum-reader app
+- the server for the Librum application
 
 
 .SH DESCRIPTION
 .B librum-server
-is server running as servise 
+is a server running as a service 
 
 .SH INSTALLATION
 .TP
-After installing librum-server package
+After installing the librum-server package
 .RS 
 .B 1.
-Install and configure MariaDb or MySql service
+Install and configure the MariaDb or MySql service
 .RS
 .LP 
 .B a)
-Edit  /etc/my.cnf.d/server.cnf to bind MySql server to some ip adress
-for example - bind-address=127.0.0.1
+Edit /etc/mysql/mariadb.conf.d/50-server.cnf to set bind-address=127.0.0.1 and comment out the skip-networking option
 .LP
 .B b)
-Disable skip-networking option
-.LP
-.B c)
 Restart MySql server - systemctl restart mysqld
 .LP
-.B d)
-Run mysql and create user for mysql database. For example 
-ALTER USER 'root'@'localhost' IDENTIFIED BY 'superStrongPassword123';
+.B c)
+Run mysql and create a user for the mysql database. For example: 
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'strongPassword123';
 .RE
 
 .LP 
 .B 2.
-Edit configuration file /etc/librum-server/librum-server.conf
+Edit the configuration file at /etc/librum-server/librum-server.conf
 You must provide:
 .RS
 .LP
 .B JWTValidIssuer
-- any string for key provider for example "myhomeKeyProvider"
+- Any string for key provider for example "myhomeKeyProvider"
 .LP
 .B  JWTKey
-- secret key for JWT token generation ( at least 20 symbols)
+- The secret key for JWT token generation (at least 20 symbols)
 .LP
 .B AdminEmail
-- admin email(login) for creating user in database -this user will be created on first run
+- An admin email for seeding the database with an admin account on the first run
 .LP
 .B AdminPassword
-- password for admin (5 symbols minimum)
+- A password for the admin account (5 symbols minimum)
 .LP
 .B DBConnectionString
-- Connection string for Mysql (or MariaDB)
+- The connection string for Mysql (or MariaDB)
 for example "Server=127.0.0.1;port=3306;Database=my_database_name;Uid=mysql_user;Pwd=mysql_password;"
 .LP
 .B SMTPEndpoint
-- smtp server endpoint - for  sending "confirm email" letters
+- The smtp server endpoint used for sending emails to confirm your account
 .LP 
 .B SMTPUsername and SMTPPassword
-login and password for smtp server
+- The username and password for your smtp server
 .LP
 .B SMTPMailFrom
-mailfrom variable is recommended to be exactly matching your username on email server
+- It is recommended to set this variable to be exactly the same email that you are using on your mail server
 .LP
 .B CleanUrl
-- clean url - url without ports, it will be used to build "reset password link"
-for  example server running on 127.0.0.1:5000 can be exposed to web like https://myserver.com/, so this is the point
+- A clean url without ports, it will be used to build the "reset password link".
+As an example, a server running on 127.0.0.1:5000 can be exposed to the web as https://myserver.com, so the CleanUrl would be https://myserver.com
 .RE
 .LP
 .B 3.
-Update configuration with running:  systemctl daemon-reload
+Refresh the systemd services by running:  systemctl daemon-reload
 .LP
 .B 4.
-Run server: systemctl start librum-server
+Run the server: systemctl start librum-server
 .LP 
 .B 5.
 Check status with: systemctl status librum-server
@@ -80,11 +76,14 @@ Check status with: systemctl status librum-server
 .LP 
 .B 6.
 Configure your librum-reader app to launch using your server. 
-Edit ~/.config/librum-server/librum-server.conf or /etc/xdg/librum-server.conf to change server url for reader-app.
+In ~/.config/librum-server/librum-server.conf set selfHosted to true and set serverHost to the servers url (e.g. https://127.0.0.1:5001)
+
+.SH UNINSTALL
+.TP
+Delte the package and in ~/.config/librum-server/librum-server.conf, change selfHosted to false and serverHost to api.librumreader.com to switch back to the official servers.
 
 .SH DIAGNOSTICS
 .PP
-The activity of server is logged to /var/lib/librum-server/srv/Data/Logs
-Also you can check journalctl
+The activity of server is logged to /var/lib/librum-server/srv/Data/Logs and journalctl.
 
 
