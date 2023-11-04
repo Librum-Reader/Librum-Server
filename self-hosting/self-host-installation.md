@@ -35,9 +35,10 @@ dotnet publish  -c Release -o build  --no-restore --verbosity m
 <br>
 
 ## Install
-### Create a `librum-server` user
+### Create a `librum-server` group and user
 
 ```
+groupadd -r -f librum-server
 sudo useradd -r -g librum-server -d /var/lib/librum-server --shell /usr/sbin/nologin librum-server 
 ```
 
