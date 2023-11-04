@@ -11,10 +11,6 @@ using Presentation;
 var builder = WebApplication.CreateBuilder(args);
 
 
-// Add environment variables for Docker configuration
-builder.Configuration.AddEnvironmentVariables(prefix: "LIBRUM_");
-
-
 // Add AzureKeyVault as configuration provider if not self-hosted
 if (builder.Configuration["LIBRUM_SELFHOSTED"] != "true")
 {
