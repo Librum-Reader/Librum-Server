@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using Application.Common.DTOs.Bookmarks;
 using Application.Common.DTOs.Books;
 using Application.Common.DTOs.Tags;
+using Application.Common.DTOs.Highlights;
 using Application.Common.Exceptions;
 using Application.Interfaces.Managers;
 using Application.Interfaces.Repositories;
@@ -155,17 +156,8 @@ public class BookService : IBookService
                     MergeTags(bookUpdateDto.Tags, book, user);
                     continue;
                 case "Highlights":
-                {
-                    Collection<Highlight> newHighlights = new();
-                    foreach (var highlightInDto in bookUpdateDto.Highlights)
-                    {
-                        var highlight = _mapper.Map<Highlight>(highlightInDto);
-                        newHighlights.Add(highlight);
-                    }
-                    book.Highlights = newHighlights;
-
-                    continue;
-                }
+                    MergeHighlights(bookUpdateDto.Highlights, book);
+		    continue;
                 case "Bookmarks":
                     MergeBookmarks(bookUpdateDto.Bookmarks, book);
                     continue;
@@ -347,21 +339,58 @@ public class BookService : IBookService
         foreach (var tag in tagsToRemove) {  book.Tags.Remove(tag); }
     }
     
+    private void MergeHighlights(ICollection<HighlightInDto> newHighlights, Book book)
+    {
+        RemoveHighlightsWhichDontExistInNewHighlights(book, newHighlights);
+        
+        foreach (var newHighlight in newHighlights)
+        {
+            // If book already has the highlight, update it
+            var existingHighlight = book.Highlights.SingleOrDefault(h => h.HighlightId == newHighlight.Guid);
+            if (existingHighlight != null)
+            {
+                if (existingHighlight.Color != newHighlight.Color)
+                    existingHighlight.Color = newHighlight.Color;
+
+                continue;
+            }
+            
+            // Else add the highlight to book
+            var highlight = _mapper.Map<Highlight>(newHighlight);
+            highlight.HighlightId = highlight.HighlightId;
+            book.Highlights.Add(highlight);
+        }
+    }
+    
+    /// When a book is updated, a list of highlights is sent with it. This list of highlights
+    /// is the "source of truth" and contains all highlights that the book owns.
+    /// If the database book contains highlights that the updated list of highlights
+    /// does not contain, those old highlights shall be deleted.
+    private void RemoveHighlightsWhichDontExistInNewHighlights(Book book, 
+                                                               ICollection<HighlightInDto> newHighlights)
+    {
+        var highlightsToRemove = new List<Highlight>();
+        foreach (var highlight in book.Highlights)
+        {
+            if (newHighlights.All(h => h.Guid != highlight.HighlightId))
+                highlightsToRemove.Add(highlight);
+        }
+
+        foreach (var highlight in highlightsToRemove) { book.Highlights.Remove(highlight); }
+    }
+    
     private void MergeBookmarks(ICollection<BookmarkInDto> newBookmarks, Book book)
     {
         RemoveBookmarksWhichDontExistInNewBookmarks(book, newBookmarks);
         
         foreach (var newBookmark in newBookmarks)
         {
-            // If book already has the tag, update it
+            // If book already has the bookmark, update it
             var existingBookmark = book.Bookmarks.SingleOrDefault(t => t.BookmarkId == newBookmark.Guid);
             if (existingBookmark != null)
             {
                 if (existingBookmark.Name != newBookmark.Name)
-                {
-                    string prevName = existingBookmark.Name;
                     existingBookmark.Name = newBookmark.Name;
-                }
 
                 continue;
             }
@@ -373,7 +402,7 @@ public class BookService : IBookService
         }
     }
     
-    /// When a book is updated, a list of bookmarks is sent with it. This list of tags
+    /// When a book is updated, a list of bookmarks is sent with it. This list of bookmarks
     /// is the "source of truth" and contains all bookmarks that the book owns.
     /// If the database book contains bookmarks that the updated list of bookmarks
     /// does not contain, those old bookmarks shall be deleted.

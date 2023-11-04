@@ -1,0 +1,89 @@
+.TH librum-server 
+
+.SH NAME
+.B librum-server
+- the server for the Librum application
+
+
+.SH DESCRIPTION
+.B librum-server
+is a server running as a service 
+
+.SH INSTALLATION
+.TP
+After installing the librum-server package
+.RS 
+.B 1.
+Install and configure the MariaDb or MySql service
+.RS
+.LP 
+.B a)
+Edit /etc/mysql/mariadb.conf.d/50-server.cnf to set bind-address=127.0.0.1 and comment out the skip-networking option
+.LP
+.B b)
+Restart MySql server - systemctl restart mysqld
+.LP
+.B c)
+Run mysql and create a user for the mysql database. For example: 
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'strongPassword123';
+.RE
+
+.LP 
+.B 2.
+Edit the configuration file at /etc/librum-server/librum-server.conf
+You must provide:
+.RS
+.LP
+.B JWTValidIssuer
+- Any string for key provider for example "myhomeKeyProvider"
+.LP
+.B  JWTKey
+- The secret key for JWT token generation (at least 20 symbols)
+.LP
+.B AdminEmail
+- An admin email for seeding the database with an admin account on the first run
+.LP
+.B AdminPassword
+- A password for the admin account (5 symbols minimum)
+.LP
+.B DBConnectionString
+- The connection string for Mysql (or MariaDB)
+for example "Server=127.0.0.1;port=3306;Database=my_database_name;Uid=mysql_user;Pwd=mysql_password;"
+.LP
+.B SMTPEndpoint
+- The smtp server endpoint used for sending emails to confirm your account
+.LP 
+.B SMTPUsername and SMTPPassword
+- The username and password for your smtp server
+.LP
+.B SMTPMailFrom
+- It is recommended to set this variable to be exactly the same email that you are using on your mail server
+.LP
+.B CleanUrl
+- A clean url without ports, it will be used to build the "reset password link".
+As an example, a server running on 127.0.0.1:5000 can be exposed to the web as https://myserver.com, so the CleanUrl would be https://myserver.com
+.RE
+.LP
+.B 3.
+Refresh the systemd services by running:  systemctl daemon-reload
+.LP
+.B 4.
+Run the server: systemctl start librum-server
+.LP 
+.B 5.
+Check status with: systemctl status librum-server
+.RE
+.LP 
+.B 6.
+Configure your librum-reader app to launch using your server. 
+In ~/.config/librum-server/librum-server.conf set selfHosted to true and set serverHost to the servers url (e.g. https://127.0.0.1:5001)
+
+.SH UNINSTALL
+.TP
+Delte the package and in ~/.config/librum-server/librum-server.conf, change selfHosted to false and serverHost to api.librumreader.com to switch back to the official servers.
+
+.SH DIAGNOSTICS
+.PP
+The activity of server is logged to /var/lib/librum-server/srv/Data/Logs and journalctl.
+
+

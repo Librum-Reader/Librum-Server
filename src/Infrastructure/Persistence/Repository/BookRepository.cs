@@ -82,9 +82,12 @@ public class BookRepository : IBookRepository
         }
 
         var numberString = size.Substring(0, typeBegining);
-        var numbers = double.Parse(numberString);
+		var provider = new System.Globalization.NumberFormatInfo();
+		provider.NumberDecimalSeparator = ".";
+		provider.NumberGroupSeparator = ",";
+		var numbers = Convert.ToDouble(numberString,provider);
+		
         var type = size[typeBegining..];
-
         return type.ToLower() switch
         {
             "b" => numbers,

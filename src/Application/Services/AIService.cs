@@ -34,6 +34,13 @@ public class AiService : IAiService
     public async Task ExplainAsync(string email, HttpContext context, string text, 
                                    string mode)
     {
+		//  The OpenAIToken needs to be provided by the user when the server is self-hosted
+	    if (_configuration["LIBRUM_SELFHOSTED"] == "true" && String.IsNullOrEmpty(_configuration["OpenAIToken"]))
+        {
+            throw new CommonErrorException(403, "Ai explanation is unavailable when selfhosting Librum. " +
+                                                "You will need to provide an OpenAI Token yourself.", 20);
+        }
+	
         var user = await _userRepository.GetAsync(email, trackChanges: true);
         if(user.AiExplanationRequestsMadeToday >= 10)
         {
