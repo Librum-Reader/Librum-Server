@@ -5,10 +5,18 @@ The build and deploy process was tested on Ubuntu 22.04. It should work on any o
 
 ## Dependencies
 
-You will need dotnet, openssl and mariadb-server, so:  
+You will need `dotnet`, `openssl` and `mariadb-server`.
+
+First enable the Microsoft PPA to be able to download dotnet
 ```
-sudo apt install dotnet-sdk-7.0 dotnet-host-7.0 openssl mariadb-server
+wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb 
+sudo dpkg -i packages-microsoft-prod.deb
 ```
+then run
+```
+sudo apt install dotnet-sdk-7.0 openssl mariadb-server
+```
+to install all dependencies.
 
 <br>
 
