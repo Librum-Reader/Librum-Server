@@ -11,6 +11,7 @@ First enable the Microsoft PPA to be able to download dotnet
 ```
 wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb 
 sudo dpkg -i packages-microsoft-prod.deb
+sudo apt update
 ```
 then run
 ```
