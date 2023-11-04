@@ -143,10 +143,6 @@ Edit `/var/lib/librum-server/srv/appsettings.json` and change it to look like th
 
 ### Install and configure MariaDB
 
-```
-sudo apt install mariadb-server
-```
-
 Edit `/etc/mysql/mariadb.conf.d/50-server.cnf` (called differently on other linux distros e.g. `/etc/my.cnf.d/server.cnf` or `my.cnf`).
 
 Set `bind-adress` to `127.0.0.1` and if a `skip-networking` section exists, comment it out by adding a `#` infront of it.
