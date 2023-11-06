@@ -13,9 +13,9 @@ RUN groupadd -r -f librum-server
 RUN useradd -r -g librum-server -d /var/lib/librum-server --shell /usr/sbin/nologin librum-server
 
 
-RUN mkdir -p /var/lib/librum-server/srv
-COPY --from=build /app/src/Presentation/build/* /var/lib/librum-server/srv
-COPY --from=build /app/appsettings.json /var/lib/librum-server/srv
+RUN mkdir -p /var/lib/librum-server/
+COPY --from=build /app/src/Presentation/build /var/lib/librum-server/srv
+COPY --from=build /app/appsettings.json /var/lib/librum-server/srv/
 RUN chmod --recursive 660 /var/lib/librum-server/
 RUN chmod 770 /var/lib/librum-server
 RUN chmod 770 /var/lib/librum-server/srv
