@@ -21,6 +21,7 @@ RUN chmod 770 /var/lib/librum-server
 RUN chmod 770 /var/lib/librum-server/srv
 COPY --from=build /app/self-hosting/run.sh .
 RUN install run.sh -m770 /var/lib/librum-server/srv
+RUN rm -f /app/run.sh
 RUN chown --recursive librum-server /var/lib/librum-server/
 
 ENV JWTValidIssuer=exampleIssuer
