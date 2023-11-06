@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  librum_server:
+    build: .
+    restart: unless-stopped
+    ports:
+      - 5000:5000
+    environment:
+      JWTValidIssuer: 'exampleIssuer'
+      JWTKey: 'exampleOfALongSecretToken'
+      AdminEmail: 'admin@example.com'
+      AdminPassword: 'strongPassword123'
+      DBConnectionString: 'Server=librum_db;port=3306;Database=librum;Uid=mysql_user;Pwd=mysql_password;'
+      SMTPEndpoint: 'smtp.example.com'
+      SMTPUsername: 'mailuser123'
+      SMTPPassword: 'smtpUserPassword123'
+      SMTPMailFrom: 'mailuser123@example.com'
+      CleanUrl: 'http://0.0.0.0'
+      OpenAIToken: ''
+      DOTNET_PRINT_TELEMETRY_MESSAGE: false
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      ASPNETCORE_ENVIRONMENT: 'production'
+      LIBRUM_SELFHOSTED: true
+#    volumes:
+#      - librum_server:/var/librum-server/data_storage
+    depends_on:
+        - librum_db
+    networks:
+      - librum
+
+  librum_db:
+    image: mariadb:latest
+    restart: unless-stopped
+    hostname: librum_db
+    environment:
+      MARIADB_USER: 'mysql_user'
+      MARIADB_PASSWORD: 'mysql_password'
+      MARIADB_ROOT_PASSWORD: 'mysql_root_password'
+      MARIADB_DATABASE: 'librum'
+#    volumes:
+#      - librum_db:/var/lib/mysql:Z
+    networks:
+      - librum
+
+networks:
+  librum:
+
+#volumes:
+#  librum_server:
+#  librum_db:
