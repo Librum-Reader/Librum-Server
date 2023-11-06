@@ -24,12 +24,12 @@ RUN install run.sh -m770 /var/lib/librum-server/srv
 RUN rm -f /app/run.sh
 RUN chown --recursive librum-server /var/lib/librum-server/
 
-ENV JWTValidIssuer=exampleIssuer
-ENV JWTKey=exampleOfALongSecretToken
-ENV SMTPEndpoint=smtp.example.com
-ENV SMTPUsername=mailuser123
-ENV SMTPPassword=smtpUserPassword123
-ENV SMTPMailFrom=mailuser123@example.com
+# ENV JWTValidIssuer=exampleIssuer
+# ENV JWTKey=exampleOfALongSecretToken
+# ENV SMTPEndpoint=smtp.example.com
+# ENV SMTPUsername=mailuser123
+# ENV SMTPPassword=smtpUserPassword123
+# ENV SMTPMailFrom=mailuser123@example.com
 ENV AdminEmail=admin@example.com
 ENV AdminPassword=strongPassword123
 ENV DBConnectionString=Server=mariadb;port=3306;Database=librum;Uid=librum;Pwd=mariadb;
