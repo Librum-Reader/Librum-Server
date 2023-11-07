@@ -10,7 +10,7 @@ services:
     networks:
       - librum
     volumes:
-      - librum:/var/librum-server/data_storage
+      - librum:/var/lib/librum-server/librum_storage
     environment:
       - JWTValidIssuer=exampleIssuer
       - JWTKey=exampleOfALongSecretToken

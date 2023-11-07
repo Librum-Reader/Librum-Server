@@ -37,6 +37,6 @@ EXPOSE 5001/tcp
 WORKDIR /var/lib/librum-server/srv
 USER librum-server
 
-VOLUME /var/librum-server/data_storage
+VOLUME /var/lib/librum-server/librum_storage
 
 ENTRYPOINT /var/lib/librum-server/srv/run.sh
