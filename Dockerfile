@@ -12,7 +12,6 @@ WORKDIR /var/lib/librum-server/
 RUN groupadd -r -f librum-server
 RUN useradd -r -g librum-server -d /var/lib/librum-server --shell /usr/sbin/nologin librum-server
 
-
 COPY --from=build /app/src/Presentation/build /var/lib/librum-server/srv
 COPY --from=build /app/appsettings.json /var/lib/librum-server/srv/
 RUN chmod -R 660 /var/lib/librum-server/ && \
@@ -21,8 +20,8 @@ RUN chmod -R 660 /var/lib/librum-server/ && \
 COPY --from=build /app/self-hosting/run.sh .
 
 RUN install run.sh -m770 /var/lib/librum-server/srv && \
-    rm -f /app/run.sh && \
-    chown -R librum-server /var/lib/librum-server/
+    rm -f ./run.sh && \
+    chown -R librum-server: /var/lib/librum-server/
 
 ENV AdminEmail=admin@example.com
 ENV AdminPassword=strongPassword123
