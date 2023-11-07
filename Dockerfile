@@ -20,6 +20,7 @@ RUN chmod -R 660 /var/lib/librum-server/ && \
 COPY --from=build /app/self-hosting/run.sh .
 
 RUN install run.sh -m770 /var/lib/librum-server/srv && \
+    mkdir librum_storage && \
     rm -f ./run.sh && \
     chown -R librum-server: /var/lib/librum-server/
 
@@ -33,9 +34,8 @@ ENV LIBRUM_SELFHOSTED=true
 EXPOSE 5000/tcp
 EXPOSE 5001/tcp
 
-WORKDIR /var/lib/librum-server/srv
-USER librum-server
-
 VOLUME /var/lib/librum-server/librum_storage
 
+WORKDIR /var/lib/librum-server/srv
+USER librum-server
 ENTRYPOINT /var/lib/librum-server/srv/run.sh
