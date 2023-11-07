@@ -40,7 +40,10 @@ services:
 
 networks:
   librum:
+    name: "librum"
 
 volumes:
   librum:
+    name: "librum"
   librum_db:
+    name: "librum_db"
