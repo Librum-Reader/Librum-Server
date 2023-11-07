@@ -1,0 +1,46 @@
+---
+version: "3.8"
+services:
+  librum:
+    image: librum
+    hostname: librum
+    container_name: librum
+    ports:
+      - 5000:5000
+    networks:
+      - librum
+    volumes:
+      - librum:/var/librum-server/data_storage
+    environment:
+      - JWTValidIssuer=exampleIssuer
+      - JWTKey=exampleOfALongSecretToken
+      - SMTPEndpoint=smtp.example.com
+      - SMTPUsername=mailuser123
+      - SMTPPassword=smtpUserPassword123
+      - SMTPMailFrom=mailuser123@example.com
+      - DBConnectionString=Server=mariadb;port=3306;Database=librum;Uid=librum;Pwd=mariadb;
+    restart: unless-stopped
+    depends_on:
+      - librum_db
+
+  librum_db:
+    image: mariadb:latest
+    hostname: mariadb
+    container_name: librum_db
+    networks:
+      - librum
+    volumes:
+      - librum_db:/var/lib/mysql
+    environment:
+      - MARIADB_USER=librum
+      - MARIADB_PASSWORD=mariadb
+      - MARIADB_DATABASE=librum
+      - MARIADB_ROOT_PASSWORD=mariadb
+    restart: unless-stopped
+
+networks:
+  librum:
+
+volumes:
+  librum:
+  librum_db:
