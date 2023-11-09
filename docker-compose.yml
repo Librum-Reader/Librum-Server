@@ -19,6 +19,8 @@ services:
       - SMTPPassword=smtpUserPassword123
       - SMTPMailFrom=mailuser123@example.com
       - DBConnectionString=Server=mariadb;port=3306;Database=librum;Uid=librum;Pwd=mariadb;
+      - AdminEmail=admin@example.com
+      - AdminPassword=strongPassword123
     restart: unless-stopped
     depends_on:
       - librum_db

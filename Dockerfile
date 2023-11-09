@@ -24,8 +24,6 @@ RUN install run.sh -m770 /var/lib/librum-server/srv && \
     rm -f ./run.sh && \
     chown -R librum-server: /var/lib/librum-server/
 
-ENV AdminEmail=admin@example.com
-ENV AdminPassword=strongPassword123
 ENV CleanUrl=http://0.0.0.0
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV DOTNET_PRINT_TELEMETRY_MESSAGE=false
