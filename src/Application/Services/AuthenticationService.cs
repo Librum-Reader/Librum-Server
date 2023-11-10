@@ -72,7 +72,16 @@ public class AuthenticationService : IAuthenticationService
         }
 
         var token = await _authenticationManager.GetEmailConfirmationLinkAsync(user);
-        await _emailSender.SendEmailConfirmationEmail(user, token);
+
+        if (_configuration["LIBRUM_SELFHOSTED"] != "true")
+        {
+            await _emailSender.SendEmailConfirmationEmail(user, token);
+        }
+        else
+        {
+            // Automatically confirm the email if self-hosted
+            await _authenticationManager.ConfirmEmailAsync(user.Email, token);
+        }
     }
     
     public async Task ConfirmEmail(string email, string token)

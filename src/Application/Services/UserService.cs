@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Configuration;
 
 namespace Application.Services;
 
@@ -19,6 +20,7 @@ public class UserService : IUserService
     private readonly IBookRepository _bookRepository;
     private readonly IMapper _mapper;
     private readonly IEmailSender _emailSender;
+    private readonly IConfiguration _configuration;
     private readonly UserManager<User> _userManager;
     private readonly IUserBlobStorageManager _userBlobStorageManager;
     private readonly IBookBlobStorageManager _bookBlobStorageManager;
@@ -29,6 +31,7 @@ public class UserService : IUserService
                        IUserBlobStorageManager userBlobStorageManager,
                        IBookBlobStorageManager bookBlobStorageManager, IMapper mapper,
                        IEmailSender emailSender,
+                       IConfiguration configuration,
                        UserManager<User> userManager)
     {
         _userRepository = userRepository;
@@ -37,6 +40,7 @@ public class UserService : IUserService
         _userBlobStorageManager = userBlobStorageManager;
         _mapper = mapper;
         _emailSender = emailSender;
+        _configuration = configuration;
         _userManager = userManager;
     }
 
@@ -185,6 +189,15 @@ public class UserService : IUserService
         }
         
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        await _emailSender.SendPasswordResetEmail(user, token);
+        
+        if (_configuration["LIBRUM_SELFHOSTED"] != "true")
+        {
+            await _emailSender.SendPasswordResetEmail(user, token);
+        }
+        else
+        {
+            var message = "Reset the password via queries to your DB directly.";
+            throw new CommonErrorException(400, message, 0);
+        }
     }
 }

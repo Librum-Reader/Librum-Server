@@ -79,51 +79,6 @@ public class UserController : ControllerBase
         public string Password { get; set; }
     }
 	
-	
-	// Show a simple form for password changing the password when self-hosted.
-	// it's necessary because we can't rely on librumreader.com when self-hosting.
-	[AllowAnonymous]
-	[HttpGet("resetPassword")]
-	public ActionResult ResetPasswordPage(string email,string token){
-		var content ="<!DOCTYPE html><html><head><title>Reset Password</title></head>"+
-						"<body><h1>Reset Password</h1><form action=\"/user/resetPasswordLocal\" "+
-						"method=\"post\" style=\"margin:auto; display:grid;max-width:200px;\">"+
-						"<input type=\"hidden\"  name=\"Email\" value=\""+email+"\"><br><br>"+
-						"<input type=\"hidden\"  name=\"Token\" value=\""+token+"\"><br>"+
-						"<input type=\"password\" name=\"Password\" minlength=5 required><br>"+
-    					"<input type=\"submit\" value=\"Reset Password\"></form></body></html>";
-		
-		return new ContentResult()
-   		{
-        	Content = content,
-        	ContentType = "text/html",
-    	};				
-						
-	}
-    
-	// To change password when self-hosted - using the data posted from simple html form
-	[AllowAnonymous]
-    [HttpPost("resetPasswordLocal")]
-    public async Task<ActionResult> ResetPasswordWithTokenLocal([FromForm] PasswordResetModel model)
-    {
-        try
-        {
-			// in self hosted version we need to replace spaces with "+" for it to work
-			var token = System.Web.HttpUtility.HtmlDecode(model.Token.Replace(" ","+"));
-            await _userService.ChangePasswordWithTokenAsync(model.Email, token, model.Password);
-            return new ContentResult
-    		{
-        		Content = "password successfully chaged",
-        		ContentType = "text/html",
-    		};	
-        }
-        catch (CommonErrorException e)
-        {
-            _logger.LogWarning("{ErrorMessage}", e.Message);
-            return StatusCode(e.Error.Status, e.Error);
-        }
-    }
-	
     [AllowAnonymous]
     [HttpPost("resetPassword")]
     public async Task<ActionResult> ResetPasswordWithToken([FromBody] PasswordResetModel model)
