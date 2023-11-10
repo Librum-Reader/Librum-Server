@@ -50,15 +50,6 @@ You must provide:
 - The connection string for Mysql (or MariaDB)
 for example "Server=127.0.0.1;port=3306;Database=my_database_name;Uid=mysql_user;Pwd=mysql_password;"
 .LP
-.B SMTPEndpoint
-- The smtp server endpoint used for sending emails to confirm your account
-.LP 
-.B SMTPUsername and SMTPPassword
-- The username and password for your smtp server
-.LP
-.B SMTPMailFrom
-- It is recommended to set this variable to be exactly the same email that you are using on your mail server
-.LP
 .B CleanUrl
 - A clean url without ports, it will be used to build the "reset password link".
 As an example, a server running on 127.0.0.1:5000 can be exposed to the web as https://myserver.com, so the CleanUrl would be https://myserver.com
