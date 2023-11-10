@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
@@ -27,6 +28,7 @@ public class UserServiceTests
     private readonly Mock<IUserBlobStorageManager> _userBlobStorageManagerMock = new();
     private readonly Mock<IBookBlobStorageManager> _bookBlobStorageManagerMock = new();
     private readonly Mock<IEmailSender> _emailSenderMock = new();
+    private readonly Mock<IConfiguration> _configurationMock = new();
     private readonly Mock<UserManager<User>> _userManagerMock = 
         new(new Mock<IUserStore<User>>().Object, null, null, null, null, null, null, null, null);
     private readonly Mock<ControllerBase> _controllerBaseMock = new();
@@ -46,6 +48,7 @@ public class UserServiceTests
                                        _userBlobStorageManagerMock.Object,
                                        _bookBlobStorageManagerMock.Object,
                                        _mapper, _emailSenderMock.Object, 
+                                       _configurationMock.Object,
                                        _userManagerMock.Object
             );
     }
