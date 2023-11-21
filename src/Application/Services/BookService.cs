@@ -10,6 +10,7 @@ using Application.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Configuration;
 
 namespace Application.Services;
 
@@ -18,15 +19,18 @@ public class BookService : IBookService
     private readonly IMapper _mapper;
     private readonly IBookRepository _bookRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IConfiguration _configuration;
     private readonly IBookBlobStorageManager _bookBlobStorageManager;
 
     public BookService(IMapper mapper, IBookRepository bookRepository,
                        IUserRepository userRepository,
+                       IConfiguration configuration,
                        IBookBlobStorageManager bookBlobStorageManager)
     {
         _mapper = mapper;
         _bookRepository = bookRepository;
         _userRepository = userRepository;
+        _configuration = configuration;
         _bookBlobStorageManager = bookBlobStorageManager;
     }
 
@@ -40,7 +44,7 @@ public class BookService : IBookService
             throw new CommonErrorException(400, message, 0);
         }
 
-        if (!await UserHasEnoughStorageSpaceAvailable(user))
+        if (_configuration["LIBRUM_SELFHOSTED"] != "true" && !await UserHasEnoughStorageSpaceAvailable(user))
         {
             const string message = "Book storage space is insufficient";
             throw new CommonErrorException(426, message, 5);

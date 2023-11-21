@@ -12,9 +12,11 @@ using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using Application.Services;
 using AutoMapper;
+using Castle.Core.Configuration;
 using Domain.Entities;
 using Moq;
 using Xunit;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 
 namespace Application.UnitTests.Services;
@@ -25,6 +27,7 @@ public class BookServiceTests
     private readonly Mock<IBookRepository> _bookRepositoryMock = new();
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly Mock<IBookBlobStorageManager> _bookBlobStorageManagerMock = new();
+    private readonly Mock<IConfiguration> _configurationMock = new();
     private readonly IBookService _bookService;
 
     public BookServiceTests()
@@ -37,7 +40,7 @@ public class BookServiceTests
         var mapper = new Mapper(mapperConfig);
 
         _bookService = new BookService(mapper, _bookRepositoryMock.Object,
-            _userRepositoryMock.Object, _bookBlobStorageManagerMock.Object);
+            _userRepositoryMock.Object, _configurationMock.Object, _bookBlobStorageManagerMock.Object);
     }
 
 
