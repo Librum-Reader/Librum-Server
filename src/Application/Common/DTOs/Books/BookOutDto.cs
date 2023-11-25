@@ -40,6 +40,7 @@ public class BookOutDto
     
     public int ProjectGutenbergId { get; set; }
     
+    public string ColorTheme { get; set; }
 
     public ICollection<TagOutDto> Tags { get; set; } = new List<TagOutDto>();
     

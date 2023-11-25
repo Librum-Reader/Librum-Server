@@ -12,7 +12,6 @@ using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using Application.Services;
 using AutoMapper;
-using Castle.Core.Configuration;
 using Domain.Entities;
 using Moq;
 using Xunit;

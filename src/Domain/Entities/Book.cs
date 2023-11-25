@@ -69,6 +69,9 @@ public class Book
     
     [Required]
     public int ProjectGutenbergId { get; set; }
+    
+    [Required]
+    public string ColorTheme { get; set; }
 
     public ICollection<Tag> Tags { get; set; } = new List<Tag>();
 

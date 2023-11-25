@@ -47,6 +47,7 @@ public class BookForUpdateDto
     
     public int ProjectGutenbergId { get; set; }
     
+    public string ColorTheme { get; set; }
     
     public ICollection<TagInDto> Tags { get; set; } = new List<TagInDto>();
     
