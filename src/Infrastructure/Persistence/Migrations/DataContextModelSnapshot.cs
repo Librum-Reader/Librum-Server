@@ -64,6 +64,12 @@ namespace Infrastructure.Persistence.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<string>("FileHash")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("");
+
                     b.Property<string>("Format")
                         .IsRequired()
                         .HasMaxLength(40)

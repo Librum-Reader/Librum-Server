@@ -14,5 +14,7 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
             .HasDefaultValue(0);
         builder.Property(b => b.ColorTheme)
             .HasDefaultValue("Normal");
+        builder.Property(b => b.FileHash)
+            .HasDefaultValue("");
     }
 }

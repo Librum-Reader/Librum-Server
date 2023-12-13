@@ -79,6 +79,8 @@ public class BookInDto
     
     public string ColorTheme { get; set; }
     
+    public string FileHash { get; set; }
+    
     public ICollection<TagInDto> Tags { get; set; } = new List<TagInDto>();
     
     public ICollection<HighlightInDto> Highlights { get; set; } = new List<HighlightInDto>();
