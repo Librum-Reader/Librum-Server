@@ -37,7 +37,9 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.Property<string>("ColorTheme")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("Normal");
 
                     b.Property<string>("CoverLastModified")
                         .IsRequired()
@@ -90,7 +92,9 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("ProjectGutenbergId")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("Title")
                         .IsRequired()

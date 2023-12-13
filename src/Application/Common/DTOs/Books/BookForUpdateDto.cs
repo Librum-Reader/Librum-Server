@@ -45,8 +45,10 @@ public class BookForUpdateDto
     
     public bool HasCover { get; set; }
     
+    [Required]
     public int ProjectGutenbergId { get; set; }
     
+    [Required]
     public string ColorTheme { get; set; }
     
     public ICollection<TagInDto> Tags { get; set; } = new List<TagInDto>();
