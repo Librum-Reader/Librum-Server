@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using Application.Common.DTOs.Bookmarks;
 using Application.Common.DTOs.Books;
 using Application.Common.DTOs.Tags;
@@ -87,10 +86,8 @@ public class BookService : IBookService
     public async Task<IList<BookOutDto>> GetBooksAsync(string email)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: false);
-
-        var books = _bookRepository.GetAllAsync(user.Id).ToList();
-        await _bookRepository.LoadRelationShipsAsync(books);
-
+        var books = _bookRepository.GetAllAsync(user.Id, true).ToList();
+        
         return books.Select(book => _mapper.Map<BookOutDto>(book)).ToList();
     }
 

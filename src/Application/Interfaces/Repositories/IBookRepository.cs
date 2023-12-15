@@ -6,8 +6,7 @@ public interface IBookRepository
 {
     public Task<int> SaveChangesAsync();
     public Task LoadRelationShipsAsync(Book book);
-    public Task LoadRelationShipsAsync(IEnumerable<Book> books);
-    public IQueryable<Book> GetAllAsync(string userId);
+    public IQueryable<Book> GetAllAsync(string userId, bool loadRelationships = false);
     public Task<bool> ExistsAsync(string userId, Guid bookGuid);
     void DeleteBook(Book book);
     public Task<long> GetUsedBookStorage(string userId);

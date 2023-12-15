@@ -186,7 +186,7 @@ public class BookServiceTests
         _userRepositoryMock.Setup(x => x.GetAsync(It.IsAny<string>(),
                                                   It.IsAny<bool>()))
             .ReturnsAsync(user);
-        _bookRepositoryMock.Setup(x => x.GetAllAsync(It.IsAny<string>()))
+        _bookRepositoryMock.Setup(x => x.GetAllAsync(It.IsAny<string>(), It.IsAny<bool>()))
             .Returns(user.Books.AsQueryable());
 
 

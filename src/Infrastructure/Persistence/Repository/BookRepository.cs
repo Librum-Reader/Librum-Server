@@ -32,17 +32,17 @@ public class BookRepository : IBookRepository
             await _context.Entry(highlight).Collection(p => p.Rects).LoadAsync();
         }
     }
-
-    public async Task LoadRelationShipsAsync(IEnumerable<Book> books)
+    
+    public IQueryable<Book> GetAllAsync(string userId, bool loadRelationships = false)
     {
-        foreach (var book in books)
+        if (loadRelationships)
         {
-            await LoadRelationShipsAsync(book);
+            return _context.Books.Where(book => book.UserId == userId)
+                .Include(b => b.Tags)
+                .Include(b => b.Bookmarks)
+                .Include(b => b.Highlights).ThenInclude(h => h.Rects);
         }
-    }
-
-    public IQueryable<Book> GetAllAsync(string userId)
-    {
+        
         return _context.Books.Where(book => book.UserId == userId);
     }
 
