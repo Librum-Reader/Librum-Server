@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
 COPY . .
@@ -6,7 +6,7 @@ RUN dotnet restore && \
     cd src/Presentation && \
     dotnet publish -c Release -o build  --no-restore --verbosity m
 
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /var/lib/librum-server/
 
 RUN groupadd -r -f librum-server
