@@ -64,7 +64,7 @@ jobs:
           flavor: |
             latest=true
           images: |
-            name=ghcr.io/${{ github.repository_owner }}/${{matrix.image}}
+            name=ghcr.io/Tenekev/${{matrix.image}}
           tags: |
             # Tag with branch name
             type=ref,event=branch
