@@ -11,7 +11,7 @@ public class UserLocalStorageManager : IUserBlobStorageManager
 	
     public UserLocalStorageManager()
     {
-        string baseDir = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+        string baseDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 	    string dataDir = baseDir + "/librum_storage";
 		_profilesDir = dataDir + "/profiles";
 		
