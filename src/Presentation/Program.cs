@@ -71,6 +71,9 @@ using (var scope = app.Services.CreateScope())
 
 
 // Http pipeline
+if (builder.Configuration["LIBRUM_SELFHOSTED"] == "true"){
+    app.MapGet("/", () => "Librum-Server is not a web application, so it's not supposed to have a main page. <br>This page is just for health-status checking.");
+}
 app.UseMiddleware<CustomIpRateLimitMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
