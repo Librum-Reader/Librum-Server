@@ -64,7 +64,7 @@ jobs:
           flavor: |
             latest=true
           images: |
-            name=ghcr.io/Tene-Kev/${{matrix.image}}
+            name=ghcr.io/${{ github.repository_owner }}/${{matrix.image}}
           tags: |
             # Tag with branch name
             type=ref,event=branch
@@ -92,7 +92,7 @@ jobs:
           platforms: ${{ matrix.platforms }}
           # Skip pushing when PR from a fork
           push: ${{ !github.event.pull_request.head.repo.fork }}
-          cache-from: type=registry,ref=ghcr.io/Tene-Kev/librum-build-cache:${{matrix.image}}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/librum-build-cache:${{matrix.image}}
           cache-to: ${{ steps.cache-target.outputs.cache-to }}
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
