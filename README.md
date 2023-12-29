@@ -5,30 +5,20 @@ The server is written in C# using ASP.NET Core. The codebase can be developed, b
 
 <br>
 
-# Self-hosting
-
+# Self-hosting 
 Librum-Server can easily be self-hosted. This way all your data and books remain on your own devices and are not synchronized to the official cloud.
-<br>
-<br>
-There are two options for self-hosting Librum-Server:
-1. The first one is running a service on your linux server for which you can find instructions [here](self-hosting/self-host-installation.md).<br>
-2. The other option is to run it via Docker which is described in the [next section](https://github.com/Librum-Reader/Librum-Server#running-with-docker).<br>
 
-
-<br>
-
-# Running with Docker
-
-Librum-Server can be run with Docker. We currently do not provide images in DockerHub so you'll need to build it yourself.
+## 🐋 With Docker
+Librum-Server can be run with Docker. We provide a [docker-compose.yml](docker-compose.yml) file as well as our own images. We are using GitHub's `ghrc.io` Container Registry.
 
 ```bash
-git clone https://github.com/Librum-Reader/Librum-Server
-cd Librum-Server
-docker build . -t librum
+wget https://github.com/Librum-Reader/Librum-Server/raw/main/docker-compose.yml
+
+docker compose up -d
 ```
 
-Librum will also need a database. You can use [our sample docker-compose.yml file](docker-compose.yml) as a guide for setting it up.
-
+## 📃 Manual installation
+If you don't like Docker, you can also selfhost Librum-Server by running it as a service on your linux server. Instructions can be found [here](self-hosting/self-host-installation.md).
 
 <br>
 
