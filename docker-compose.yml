@@ -2,7 +2,7 @@
 version: "3.8"
 services:
   librum:
-    image: librum
+    image: ghcr.io/librum-reader/librum-server:latest
     hostname: librum
     container_name: librum
     ports:
@@ -12,18 +12,20 @@ services:
     volumes:
       - librum:/var/lib/librum-server/librum_storage
     environment:
-      - JWTValidIssuer=exampleIssuer
-      - JWTKey=exampleOfALongSecretToken
-      - SMTPEndpoint=smtp.example.com
-      - SMTPUsername=mailuser123
+      - JWTValidIssuer=exampleIssuer          # Optional. You can leave it as-is
+      - JWTKey=exampleOfALongSecretToken      # Optional. You can leave it as-is
+      - SMTPEndpoint=smtp.example.com         # Example for Gmail: smtp.gmail.com:587
+      - SMTPUsername=mailuser123              
       - SMTPPassword=smtpUserPassword123
       - SMTPMailFrom=mailuser123@example.com
       - DBConnectionString=Server=mariadb;port=3306;Database=librum;Uid=librum;Pwd=mariadb;
-      - AdminEmail=admin@example.com
-      - AdminPassword=strongPassword123
+      - AdminEmail=admin@example.com          # Admin login username
+      - AdminPassword=strongPassword123       # Admin login password
+      #- OpenAIToken=                         # Optional. Generate here: https://platform.openai.com/api-keys
     restart: unless-stopped
     depends_on:
-      - librum_db
+      librum_db:
+        condition: service_healthy            # Ensures the DB is up before the server.
 
   librum_db:
     image: mariadb:latest
@@ -39,6 +41,12 @@ services:
       - MARIADB_DATABASE=librum
       - MARIADB_ROOT_PASSWORD=mariadb
     restart: unless-stopped
+    healthcheck:                              # Ensures the DB is up before the server.
+      test: ["CMD", "mariadb-admin", "ping", "-u", "librum", "-p'mariadb'", "-h", "localhost"]
+      interval: 20s
+      timeout: 40s
+      retries: 3
+      start_period: 30s
 
 networks:
   librum:
