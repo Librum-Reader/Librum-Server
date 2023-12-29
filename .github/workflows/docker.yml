@@ -29,8 +29,8 @@ jobs:
             file: "Dockerfile"
             image: "librum-server"
             # ARM not working. Needs further research.
-            # platforms: "linux/arm64,linux/amd64"
-            platforms: "linux/amd64"
+            platforms: "linux/arm64,linux/amd64"
+            #platforms: "linux/amd64"
 
     steps:
       - name: Checkout
@@ -57,6 +57,12 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Sanitize unfortunate names
+        id: sanitize_names
+        uses: ASzc/change-string-case-action@v5
+        with:
+          string: ${{ github.repository_owner }}
+
       - name: Generate docker image tags
         id: metadata
         uses: docker/metadata-action@v5
@@ -64,7 +70,7 @@ jobs:
           flavor: |
             latest=true
           images: |
-            name=ghcr.io/${{ github.repository_owner }}/${{matrix.image}}
+            name=ghcr.io/${{ steps.sanitize_names.outputs.lowercase }}/${{matrix.image}}
           tags: |
             # Tag with branch name
             type=ref,event=branch
@@ -81,7 +87,7 @@ jobs:
             # Essentially just ignore the cache output (PR can't write to registry cache)
             echo "cache-to=type=local,dest=/tmp/discard,ignore-error=true" >> $GITHUB_OUTPUT
           else
-            echo "cache-to=type=registry,mode=max,ref=ghcr.io/${{ github.repository_owner }}/librum-build-cache:${{ matrix.image }}" >> $GITHUB_OUTPUT
+            echo "cache-to=type=registry,mode=max,ref=ghcr.io/${{ steps.sanitize_names.outputs.lowercase }}/librum-build-cache:${{ matrix.image }}" >> $GITHUB_OUTPUT
           fi
 
       - name: Build and push image
@@ -92,7 +98,7 @@ jobs:
           platforms: ${{ matrix.platforms }}
           # Skip pushing when PR from a fork
           push: ${{ !github.event.pull_request.head.repo.fork }}
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/librum-build-cache:${{matrix.image}}
+          cache-from: type=registry,ref=ghcr.io/${{ steps.sanitize_names.outputs.lowercase }}/librum-build-cache:${{matrix.image}}
           cache-to: ${{ steps.cache-target.outputs.cache-to }}
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
