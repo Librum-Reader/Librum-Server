@@ -31,7 +31,7 @@ public class BookController : ControllerBase
     /// binary data, so their actual content is added to the existing book.
     [HttpPost("bookData/{guid:guid}")]
     [DisableFormValueModelBinding]
-    [RequestSizeLimit(209715200)]   // Allow max 200MB
+    [RequestSizeLimit(400000000)]   // Allow max 400MB
     public async Task<ActionResult> AddBookBinaryData(Guid guid)
     {
         // Check if the book binary data was sent in the correct format
