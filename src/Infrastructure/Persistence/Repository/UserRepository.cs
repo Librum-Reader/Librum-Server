@@ -27,6 +27,16 @@ public class UserRepository : IUserRepository
                 .SingleOrDefaultAsync(user => user.Email == email);
     }
 
+    public Task<User> GetByCustomerIdAsync(string customerId, bool trackChanges)
+    {
+        return trackChanges
+            ? _context.Users.Include(user => user.Books)
+                .SingleOrDefaultAsync(user => user.CustomerId == customerId)
+            : _context.Users
+                .AsNoTracking()
+                .SingleOrDefaultAsync(user => user.CustomerId == customerId);
+    }
+
     public void Delete(User user)
     {
         _context.Users.Remove(user);

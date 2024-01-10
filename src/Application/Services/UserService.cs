@@ -221,24 +221,24 @@ public class UserService : IUserService
         await _userRepository.SaveChangesAsync();
     }
     
-    public async Task AddTierToUser(string email, string productId)
+    public async Task AddTierToUser(string customerId, string productId)
     {
-        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        var user = await _userRepository.GetByCustomerIdAsync(customerId, trackChanges: true);
         if (user == null)
         {
-            throw new CommonErrorException(400, "No user with this email exists", 17);
+            throw new CommonErrorException(400, "No user with this customer Id exists", 0);
         }
         
         user.ProductId = productId;
         await _userRepository.SaveChangesAsync();
     }
 
-    public async Task ResetUserToFreeTier(string email)
+    public async Task ResetUserToFreeTier(string customerId)
     {
-        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        var user = await _userRepository.GetByCustomerIdAsync(customerId, trackChanges: true);
         if (user == null)
         {
-            throw new CommonErrorException(400, "No user with this email exists", 17);
+            throw new CommonErrorException(400, "No user with this customerId exists", 0);
         }
 
         var freeTier = await _productRepository.GetAll().FirstOrDefaultAsync(p => p.Price == 0.0);

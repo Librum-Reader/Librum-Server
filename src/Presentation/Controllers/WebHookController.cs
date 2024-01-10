@@ -24,7 +24,7 @@ public class WebHookController(IConfiguration configuration,
         {
             var stripeEvent = EventUtility.ConstructEvent(json,
                                                           Request.Headers["Stripe-Signature"], 
-                                                          "x",
+                                                          WebhookSecret,
                                                           300,
                                                           (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds,
                                                           false);
@@ -78,7 +78,8 @@ public class WebHookController(IConfiguration configuration,
     private async Task RemoveTierFromCustomer(Subscription subscription)
     {
         var customerId = subscription.CustomerId;
-        var productId = subscription.Items.Data[0].Price.ProductId;
+
+        await UserService.ResetUserToFreeTier(customerId);
     }
 
     private async Task AddCustomerIdToUser(Customer customer)

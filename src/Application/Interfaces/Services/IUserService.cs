@@ -21,6 +21,6 @@ public interface IUserService
                                              string newPassword);
     public Task ForgotPassword(string email);
     public Task AddCustomerIdToUser(string email, string customerId);
-    public Task AddTierToUser(string email, string productId);
-    public Task ResetUserToFreeTier(string email);
+    public Task AddTierToUser(string customerId, string productId);
+    public Task ResetUserToFreeTier(string customerId);
 }
