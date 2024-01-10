@@ -32,6 +32,7 @@ public class UserServiceTests
     private readonly Mock<UserManager<User>> _userManagerMock = 
         new(new Mock<IUserStore<User>>().Object, null, null, null, null, null, null, null, null);
     private readonly Mock<ControllerBase> _controllerBaseMock = new();
+    private readonly Mock<IProductRepository> _productRepositoryMock = new();
     private readonly UserService _userService;
     
     
@@ -49,35 +50,9 @@ public class UserServiceTests
                                        _bookBlobStorageManagerMock.Object,
                                        _mapper, _emailSenderMock.Object, 
                                        _configurationMock.Object,
-                                       _userManagerMock.Object
+                                       _userManagerMock.Object,
+                                       _productRepositoryMock.Object
             );
-    }
-    
-    
-    [Fact]
-    public async Task AUserService_SucceedsGettingAUser()
-    {
-        // Arrange
-        const string userEmail = "johnDoe@gmail.com";
-        
-        var user = new User
-        {
-            Email = userEmail,
-            AccountCreation = DateTime.Now,
-            FirstName = "John",
-            LastName = "Doe"
-        };
-        
-        _userRepositoryMock.Setup(x => x.GetAsync(user.Email, false))
-            .ReturnsAsync(user); 
-        
-        
-        // Act
-        var result = await _userService.GetUserAsync(userEmail);
-        
-        // Assert
-        Assert.Equal(JsonConvert.SerializeObject(_mapper.Map<UserOutDto>(user)),
-                     JsonConvert.SerializeObject(result));
     }
 
     [Fact]

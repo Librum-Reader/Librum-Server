@@ -22,8 +22,9 @@ public class User : IdentityUser
     [MaxLength(50, ErrorMessage = "The email is too long")]
     public override string Email { get; set; }
 
-    [Required]
-    public string Role { get; set; }
+    public string ProductId { get; set; }
+    
+    public string CustomerId { get; set; }
     
     [Required]
     public DateTime AccountCreation { get; set; }
@@ -38,7 +39,6 @@ public class User : IdentityUser
 
     [Required]
     public int AiExplanationRequestsMadeToday { get; set; } = 0;
-    
     
     public ICollection<Book> Books { get; set; }
     public ICollection<Tag> Tags { get; set; }

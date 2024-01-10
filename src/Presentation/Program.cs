@@ -1,6 +1,5 @@
 using Application.Common.Middleware;
-using Application.Interfaces.Services;
-using AspNetCoreRateLimit;
+using Stripe;
 using Azure.Identity;
 using Domain.Entities;
 using Infrastructure.Persistence;
@@ -11,18 +10,19 @@ using Presentation;
 var builder = WebApplication.CreateBuilder(args);
 
 
-// Add AzureKeyVault as configuration provider if not self-hosted
+// Add AzureKeyVault and Stripe as configuration provider if not self-hosted
 if (builder.Configuration["LIBRUM_SELFHOSTED"] != "true")
 {
     var keyVaultUrl = new Uri(builder.Configuration.GetSection("AzureKeyVaultUri").Value!);
     var azureCredential = new DefaultAzureCredential();
     builder.Configuration.AddAzureKeyVault(keyVaultUrl, azureCredential);
+
+    StripeConfiguration.ApiKey = builder.Configuration["StripeSecretKey"];
 }
 else
 {
-    Console.WriteLine("Running in selfhosted mode, skipping AzureKeyVault configuration");
+    Console.WriteLine("Running in selfhosted mode, skipping AzureKeyVault and Stripe configuration");
 }
-
 
 // Services
 builder.Services.AddControllers().AddNewtonsoftJson();
@@ -103,12 +103,10 @@ async Task SeedWithAdminUser(IServiceProvider services)
             LastName = lastName,
             Email = email,
             UserName = email,
-            Role = "Admin",
             AccountCreation = DateTime.UtcNow
         };
 
         await userManager.CreateAsync(user, password);
-        await userManager.AddToRoleAsync(user, "Admin");
         var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
         await userManager.ConfirmEmailAsync(user, token);
     }

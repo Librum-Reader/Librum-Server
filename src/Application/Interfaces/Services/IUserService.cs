@@ -20,4 +20,7 @@ public interface IUserService
     public Task ChangePasswordWithTokenAsync(string email, string token,
                                              string newPassword);
     public Task ForgotPassword(string email);
+    public Task AddCustomerIdToUser(string email, string customerId);
+    public Task AddTierToUser(string email, string productId);
+    public Task ResetUserToFreeTier(string email);
 }

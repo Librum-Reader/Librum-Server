@@ -41,6 +41,8 @@ public static class DependencyInjection
         services.AddScoped<ITagRepository, TagRepository>();
         services.AddScoped<IEmailSender, EmailSender>();
         services.AddScoped<IAiService, AiService>();
+        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IProductRepository, ProductRepository>();
         services.AddHostedService<DeleteUnconfirmedUsers>();
         services.AddHostedService<ResetAiExplanationCount>();
         

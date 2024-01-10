@@ -11,6 +11,10 @@ public class UserOutDto
     public string Email { get; set; }
     
     public string Role { get; set; }
+    
+    public string ProductId { get; set; }
+    
+    public string CustomerId { get; set; }
 
     public DateTime AccountCreation { get; set; }
     

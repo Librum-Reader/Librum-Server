@@ -2,6 +2,7 @@ using System.Web;
 using Application.Common.DTOs.Users;
 using Application.Common.Exceptions;
 using Application.Interfaces.Managers;
+using Application.Interfaces.Repositories;
 using Application.Interfaces.Services;
 using Application.Interfaces.Utility;
 using AutoMapper;
@@ -17,19 +18,22 @@ public class AuthenticationService : IAuthenticationService
     private readonly IEmailSender _emailSender;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IConfiguration _configuration;
+    private readonly IProductRepository _productRepository;
 
 
     public AuthenticationService(IMapper mapper,
                                  IAuthenticationManager authenticationManager,
                                  IEmailSender emailSender,
                                  IHttpClientFactory httpClientFactory,
-                                 IConfiguration configuration)
+                                 IConfiguration configuration,
+                                 IProductRepository productRepository)
     {
         _mapper = mapper;
         _authenticationManager = authenticationManager;
         _emailSender = emailSender;
         _httpClientFactory = httpClientFactory;
         _configuration = configuration;
+        _productRepository = productRepository;
     }
     
     
@@ -62,6 +66,13 @@ public class AuthenticationService : IAuthenticationService
         }
 
         var user = _mapper.Map<User>(registerDto);
+        
+        // Assign the free product by default
+        var freeProduct = _productRepository.GetAll().SingleOrDefault(p => p.Price == 0.0);
+        if(freeProduct == null)
+            throw new CommonErrorException(500, "No free product found", 0);
+        
+        user.ProductId = freeProduct.ProductId;
 
         var success =
             await _authenticationManager.CreateUserAsync(user, registerDto.Password);

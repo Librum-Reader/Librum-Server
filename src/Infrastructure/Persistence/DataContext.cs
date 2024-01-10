@@ -11,7 +11,7 @@ public class DataContext : IdentityDbContext<User>
     public DbSet<Highlight> Highlights { get; set; }
     public DbSet<Bookmark> Bookmarks { get; set; }
     public DbSet<Tag> Tags { get; set; }
-
+    public DbSet<Product> Products { get; set; }
 
     public DataContext(DbContextOptions<DataContext> options) :
         base(options)
@@ -26,6 +26,13 @@ public class DataContext : IdentityDbContext<User>
     {
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
+        builder
+            .Entity<Product>()
+            .HasMany(p => p.Features)
+            .WithOne(pf => pf.Product)
+            .HasForeignKey(pf => pf.ProductId)
+            .IsRequired();
+        
         base.OnModelCreating(builder);
     }
 }

@@ -10,7 +10,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Services;
 
@@ -22,6 +24,7 @@ public class UserService : IUserService
     private readonly IEmailSender _emailSender;
     private readonly IConfiguration _configuration;
     private readonly UserManager<User> _userManager;
+    private readonly IProductRepository _productRepository;
     private readonly IUserBlobStorageManager _userBlobStorageManager;
     private readonly IBookBlobStorageManager _bookBlobStorageManager;
 
@@ -32,7 +35,8 @@ public class UserService : IUserService
                        IBookBlobStorageManager bookBlobStorageManager, IMapper mapper,
                        IEmailSender emailSender,
                        IConfiguration configuration,
-                       UserManager<User> userManager)
+                       UserManager<User> userManager,
+                       IProductRepository productRepository)
     {
         _userRepository = userRepository;
         _bookRepository = bookRepository;
@@ -42,6 +46,7 @@ public class UserService : IUserService
         _emailSender = emailSender;
         _configuration = configuration;
         _userManager = userManager;
+        _productRepository = productRepository;
     }
 
 
@@ -50,6 +55,9 @@ public class UserService : IUserService
         var user = await _userRepository.GetAsync(email, trackChanges: false);
         var userOut = _mapper.Map<UserOutDto>(user);
         userOut.UsedBookStorage = await _bookRepository.GetUsedBookStorage(user.Id);
+        userOut.Role = user.ProductId.IsNullOrEmpty()
+            ? "Unknown"
+            : (await _productRepository.GetAll().FirstOrDefaultAsync(p => p.ProductId == user.ProductId)).Name;
 
         return userOut;
     }
@@ -199,5 +207,47 @@ public class UserService : IUserService
             var message = "Reset the password via queries to your DB directly.";
             throw new CommonErrorException(400, message, 0);
         }
+    }
+
+    public async Task AddCustomerIdToUser(string email, string customerId)
+    {
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        if (user == null)
+        {
+            throw new CommonErrorException(400, "No user with this email exists", 17);
+        }
+        
+        user.CustomerId = customerId;
+        await _userRepository.SaveChangesAsync();
+    }
+    
+    public async Task AddTierToUser(string email, string productId)
+    {
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        if (user == null)
+        {
+            throw new CommonErrorException(400, "No user with this email exists", 17);
+        }
+        
+        user.ProductId = productId;
+        await _userRepository.SaveChangesAsync();
+    }
+
+    public async Task ResetUserToFreeTier(string email)
+    {
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        if (user == null)
+        {
+            throw new CommonErrorException(400, "No user with this email exists", 17);
+        }
+
+        var freeTier = await _productRepository.GetAll().FirstOrDefaultAsync(p => p.Price == 0.0);
+        if (freeTier == null)
+        {
+            throw new CommonErrorException(400, "No free tier exists", 17);
+        }
+
+        user.ProductId = freeTier.ProductId;
+        await _userRepository.SaveChangesAsync();
     }
 }
