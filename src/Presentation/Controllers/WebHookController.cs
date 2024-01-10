@@ -6,7 +6,7 @@ using Stripe;
 namespace Presentation.Controllers;
 
 [ApiController]
-[Route("webhook")]
+[Route("webhooks")]
 public class WebHookController(IConfiguration configuration, 
                               ILogger<BookController> logger, 
                               IProductService productService,
