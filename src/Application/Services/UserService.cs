@@ -57,7 +57,7 @@ public class UserService : IUserService
         userOut.UsedBookStorage = await _bookRepository.GetUsedBookStorage(user.Id);
         userOut.Role = user.ProductId.IsNullOrEmpty()
             ? "Unknown"
-            : (await _productRepository.GetAll().FirstOrDefaultAsync(p => p.ProductId == user.ProductId)).Name;
+            : (await _productRepository.GetAll().FirstOrDefaultAsync(p => p.ProductId == user.ProductId))?.Name;
 
         return userOut;
     }

@@ -69,10 +69,8 @@ public class AuthenticationService : IAuthenticationService
         
         // Assign the free product by default
         var freeProduct = _productRepository.GetAll().SingleOrDefault(p => p.Price == 0.0);
-        if(freeProduct == null)
-            throw new CommonErrorException(500, "No free product found", 0);
-        
-        user.ProductId = freeProduct.ProductId;
+        if (freeProduct != null)
+            user.ProductId = freeProduct.ProductId;
 
         var success =
             await _authenticationManager.CreateUserAsync(user, registerDto.Password);
