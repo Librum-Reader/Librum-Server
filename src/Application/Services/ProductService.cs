@@ -131,7 +131,7 @@ public class ProductService(IMapper mapper, IProductRepository productRepository
         await productRepository.SaveChangesAsync();
     }
 
-    public async Task AddPriceToProductAsync(string id, int price)
+    public async Task AddPriceToProductAsync(string id, string priceId, int price)
     {
         var product = await productRepository.GetByIdAsync(id);
         
@@ -151,6 +151,7 @@ public class ProductService(IMapper mapper, IProductRepository productRepository
         }
         
         product.Price = price;
+        product.PriceId = priceId;
         await productRepository.SaveChangesAsync();
     }
 }

@@ -13,6 +13,8 @@ public class ProductOutDto
     public string Description { get; set; }
     
     public int Price { get; set; }
+    
+    public string PriceId { get; set; }
 
     public ICollection<string> Features { get; set; } = new Collection<string>();
 }

@@ -8,5 +8,5 @@ public interface IProductService
     public Task CreateProductAsync(ProductInDto productInDto);
     public Task UpdateProductAsync(ProductForUpdateDto productInDto);
     public Task DeleteProductAsync(string id);
-    public Task AddPriceToProductAsync(string id, int price);
+    public Task AddPriceToProductAsync(string id, string priceId, int price);
 }

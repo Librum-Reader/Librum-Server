@@ -18,6 +18,8 @@ public class Product
     
     public int Price { get; set; }
     
+    public string PriceId { get; set; }
+    
     [Required]
     public long BookStorageLimit { get; set; }
     

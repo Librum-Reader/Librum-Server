@@ -114,9 +114,10 @@ public class WebHookController(IConfiguration configuration,
     private async Task AddPriceToProduct(Price price)
     {
         var product = price.ProductId;
+        var priceId = price.Id;
         var amount = (int)price.UnitAmount!.Value;
         
-        await productService.AddPriceToProductAsync(product, amount);
+        await productService.AddPriceToProductAsync(product, priceId, amount);
     }
 
     private async Task CreateProduct(Product product)
