@@ -68,7 +68,7 @@ public class AuthenticationService : IAuthenticationService
         var user = _mapper.Map<User>(registerDto);
         
         // Assign the free product by default
-        var freeProduct = _productRepository.GetAll().SingleOrDefault(p => p.Price == 0.0);
+        var freeProduct = _productRepository.GetAll().SingleOrDefault(p => p.Price == 0.0 && p.LiveMode == true);
         if (freeProduct != null)
             user.ProductId = freeProduct.ProductId;
 
