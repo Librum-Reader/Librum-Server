@@ -228,8 +228,10 @@ public class UserService : IUserService
         {
             throw new CommonErrorException(400, "No user with this customer Id exists", 0);
         }
-        
+
         user.ProductId = productId;
+        // Adding a new tier can also be a downgrade, so schedule the account for checking for storage exceeding.
+        user.AccountLastDowngraded = DateTime.Now;
         await _userRepository.SaveChangesAsync();
     }
 
@@ -248,6 +250,7 @@ public class UserService : IUserService
         }
 
         user.ProductId = freeTier.ProductId;
+        user.AccountLastDowngraded = DateTime.Now;
         await _userRepository.SaveChangesAsync();
     }
 }

@@ -181,6 +181,9 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("LiveMode")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -281,6 +284,9 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("AccountCreation")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("AccountLastDowngraded")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("AiExplanationRequestsMadeToday")

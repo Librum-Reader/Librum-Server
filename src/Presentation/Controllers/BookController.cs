@@ -27,11 +27,11 @@ public class BookController : ControllerBase
     }
 
     /// Books are created in two steps, first of all an entry containing all of their
-    /// meta data is created on the Database (See 'CreateBook()') and then their
+    /// meta data is created on the Database (See CreateBook) and then their
     /// binary data, so their actual content is added to the existing book.
     [HttpPost("bookData/{guid:guid}")]
     [DisableFormValueModelBinding]
-    [RequestSizeLimit(400000000)]   // Allow max 400MB
+    [RequestSizeLimit(300000000)]   // Allow max 300MB
     public async Task<ActionResult> AddBookBinaryData(Guid guid)
     {
         // Check if the book binary data was sent in the correct format

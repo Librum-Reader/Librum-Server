@@ -45,6 +45,7 @@ public static class DependencyInjection
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddHostedService<DeleteUnconfirmedUsers>();
         services.AddHostedService<ResetAiExplanationCount>();
+        services.AddHostedService<DeleteBooksOfDowngradedAccounts>();
         
 		// If not self hosted add the managers that store data to Azure
 		if (configuration["LIBRUM_SELFHOSTED"] != "true")

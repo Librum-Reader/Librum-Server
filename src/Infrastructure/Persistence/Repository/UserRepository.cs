@@ -51,6 +51,11 @@ public class UserRepository : IUserRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<ICollection<User>> GetUsersWhoDowngradedMoreThanAWeekAgo()
+    {
+        return await _context.Users.Where(u => u.AccountLastDowngraded <= DateTime.UtcNow.AddDays(-7)).ToListAsync();
+    }
+
     public async Task ResetAiExplanationCount()
     {
         await _context.Users.ForEachAsync(u => u.AiExplanationRequestsMadeToday = 0);

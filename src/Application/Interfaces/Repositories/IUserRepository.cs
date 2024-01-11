@@ -8,6 +8,7 @@ public interface IUserRepository
     public Task<User> GetByCustomerIdAsync(string customerId, bool trackChanges);
     public void Delete(User user);
     public Task DeleteUnconfirmedUsers();
+    public Task<ICollection<User>> GetUsersWhoDowngradedMoreThanAWeekAgo();
     public Task ResetAiExplanationCount();
     public Task<int> SaveChangesAsync();
 }

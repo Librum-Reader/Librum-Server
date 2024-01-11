@@ -32,6 +32,8 @@ public class User : IdentityUser
     [Required]
     public DateTime ProfilePictureLastUpdated { get; set; }
     
+    public DateTime AccountLastDowngraded { get; set; } = DateTime.MaxValue;
+    
     public bool HasProfilePicture { get; set; }
     
     [Required]
