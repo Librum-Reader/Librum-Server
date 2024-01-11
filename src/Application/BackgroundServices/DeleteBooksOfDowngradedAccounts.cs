@@ -51,8 +51,6 @@ public class DeleteBooksOfDowngradedAccounts(IServiceProvider serviceProvider) :
                     if (difference <= (long)GetBytesFromSizeString(books.First().DocumentSize))
                         continue;
                     
-                    logger.LogWarning($"User with email {user.Email} has exceeded their book storage limit");
-                    
                     deletedBooks += await DeleteLatestBooks(books, user.Email, difference, bookService);
                     
                     // We have already dealt with them, avoid checking them again unless their tier changes.
