@@ -24,7 +24,7 @@ public class WebHookController(IConfiguration configuration,
         {
             var stripeEvent = EventUtility.ConstructEvent(json,
                                                           Request.Headers["Stripe-Signature"], 
-                                                          "whsec_83273595ebb73eab88c16c396f64c00265f8711c11b9d8c5d70563df9a23933e",
+                                                          WebhookSecret,
                                                           300,
                                                           (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds,
                                                           false);
