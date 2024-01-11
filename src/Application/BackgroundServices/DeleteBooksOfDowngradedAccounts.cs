@@ -19,7 +19,6 @@ public class DeleteBooksOfDowngradedAccounts(IServiceProvider serviceProvider) :
             {
                 var logger = scope.ServiceProvider
                     .GetService<ILogger<DeleteUnconfirmedUsers>>();
-                logger.LogWarning("Deleting books of downgraded accounts");
 
                 var userRepository = scope.ServiceProvider.GetService<IUserRepository>();
                 var downgradedUsers = await userRepository.GetUsersWhoDowngradedMoreThanAWeekAgo();
@@ -28,6 +27,7 @@ public class DeleteBooksOfDowngradedAccounts(IServiceProvider serviceProvider) :
                 var bookRepository = scope.ServiceProvider.GetService<IBookRepository>();
                 var productRepository = scope.ServiceProvider.GetService<IProductRepository>();
 
+                int deletedBooks = 0;
                 foreach (var user in downgradedUsers)
                 {
                     var product = await productRepository.GetAll().FirstOrDefaultAsync(p => p.ProductId == user.ProductId);
@@ -53,12 +53,14 @@ public class DeleteBooksOfDowngradedAccounts(IServiceProvider serviceProvider) :
                     
                     logger.LogWarning($"User with email {user.Email} has exceeded their book storage limit");
                     
-                    await DeleteLatestBooks(books, user.Email, difference, bookService);
+                    deletedBooks += await DeleteLatestBooks(books, user.Email, difference, bookService);
                     
                     // We have already dealt with them, avoid checking them again unless their tier changes.
                     var trackingUser = await userRepository.GetAsync(user.Email, trackChanges: true);
                     trackingUser.AccountLastDowngraded = DateTime.MaxValue;
                 }
+                
+                logger.LogWarning($"Deleted a total of {deletedBooks} books from downgraded users.");
             }
             
             // Repeat the check every 12 hours.
@@ -79,7 +81,7 @@ public class DeleteBooksOfDowngradedAccounts(IServiceProvider serviceProvider) :
         books.Reverse();
     }
     
-    private async Task DeleteLatestBooks(List<Book> books, string email, long difference, IBookService bookService)
+    private async Task<int> DeleteLatestBooks(List<Book> books, string email, long difference, IBookService bookService)
     {
         List<Guid> booksToDelete = new();
         while (difference - (long)GetBytesFromSizeString(books.First().DocumentSize) > 0)
@@ -91,6 +93,7 @@ public class DeleteBooksOfDowngradedAccounts(IServiceProvider serviceProvider) :
         }
 
         await bookService.DeleteBooksAsync(email, booksToDelete);
+        return booksToDelete.Count;
     }
     
     private double GetBytesFromSizeString(string size)
