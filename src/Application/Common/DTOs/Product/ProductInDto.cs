@@ -19,6 +19,9 @@ public class ProductInDto
     
     [Required]
     public int AiRequestLimit { get; set; }
+    
+    [Required]
+    public bool LiveMode { get; set; }
 
     [Required]
     public ICollection<string> Features { get; set; } = new Collection<string>();

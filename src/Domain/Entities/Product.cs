@@ -26,5 +26,8 @@ public class Product
     [Required]
     public int AiRequestLimit { get; set; }
 
+    [Required]
+    public bool LiveMode { get; set; } = true;
+
     public ICollection<ProductFeature> Features { get; set; } = new List<ProductFeature>();
 }

@@ -15,6 +15,8 @@ public class ProductOutDto
     public int Price { get; set; }
     
     public string PriceId { get; set; }
+    
+    public bool LiveMode { get; set; }
 
     public ICollection<string> Features { get; set; } = new Collection<string>();
 }
