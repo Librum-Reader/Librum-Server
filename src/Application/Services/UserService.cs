@@ -228,10 +228,21 @@ public class UserService : IUserService
         {
             throw new CommonErrorException(400, "No user with this customer Id exists", 0);
         }
+        
+        var currentProd = await _productRepository.GetAll().FirstOrDefaultAsync(p => p.ProductId == user.ProductId);
+        var newProd = await _productRepository.GetAll().FirstOrDefaultAsync(p => p.ProductId == productId);
+        if (currentProd.BookStorageLimit > newProd.BookStorageLimit)
+        {
+            user.AccountLastDowngraded = DateTime.UtcNow;
+            await _emailSender.SendDowngradeWarningEmail(user);
+        }
+        else
+        {
+            // No need to schedule the user for storage exceeding check if they are upgrading. 
+            user.AccountLastDowngraded = DateTime.MaxValue;
+        }
 
         user.ProductId = productId;
-        // Adding a new tier can also be a downgrade, so schedule the account for checking for storage exceeding.
-        user.AccountLastDowngraded = DateTime.Now;
         await _userRepository.SaveChangesAsync();
     }
 
@@ -250,7 +261,8 @@ public class UserService : IUserService
         }
 
         user.ProductId = freeTier.ProductId;
-        user.AccountLastDowngraded = DateTime.Now;
+        user.AccountLastDowngraded = DateTime.UtcNow;
+        await _emailSender.SendDowngradeWarningEmail(user);
         await _userRepository.SaveChangesAsync();
     }
 }

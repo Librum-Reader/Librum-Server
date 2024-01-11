@@ -91,6 +91,27 @@ public class EmailSender : IEmailSender
         await SendEmail(message);
     }
 
+    public async Task SendDowngradeWarningEmail(User user)
+    {
+	    var message = new MimeMessage();
+		message.From.Add (new MailboxAddress ("Librum", "noreply@librumreader.com"));
+		
+	    message.To.Add (new MailboxAddress (user.FirstName, user.Email));
+	    message.Subject = "Your books will be deleted in 7 days! - Take Action";
+        
+	    message.Body = new TextPart ("plain") {
+		    Text = $"Hello { user.FirstName },\n\nYou have recently downgraded your Account. " + 
+		           "Due to the downgrade your online storage was reduced and your current library " +
+		           "size exceeds your storage limit.\n" + 
+		           $"Please reduce your library size, otherwise books from your account will automatically be DELETED until " +
+		           "your used storage is less or equal to the storage your tier provides.\n\n" +
+		           "You have 7 days to perform this action. If you think that this is a mistake, or you have any " +
+		           "questions, please contact us at: contact@librumreader.com"
+	    };
+
+	    await SendEmail(message);
+    }
+
     private string GetEmailConfirmationLink(User user, string token)
     {
         var endpointLink = _urlHelper.Action("ConfirmEmail",
