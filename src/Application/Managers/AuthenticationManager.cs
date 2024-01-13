@@ -114,7 +114,7 @@ public class AuthenticationManager : IAuthenticationManager
             issuer: _configuration["JWTValidIssuer"],
             audience: "librumapi",
             claims: claims,
-            expires: DateTime.Now.AddYears(50),
+            expires: DateTime.Now.AddMonths(500),
             signingCredentials: signingCredentials
             );
 
