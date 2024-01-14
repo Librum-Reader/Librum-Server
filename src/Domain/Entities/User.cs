@@ -35,9 +35,6 @@ public class User : IdentityUser
     public DateTime AccountLastDowngraded { get; set; } = DateTime.MaxValue;
     
     public bool HasProfilePicture { get; set; }
-    
-    [Required]
-    public long BookStorageLimit { get; set; } = 2L * 1024 * 1024 * 1024; // 2 GB
 
     [Required]
     public int AiExplanationRequestsMadeToday { get; set; } = 0;

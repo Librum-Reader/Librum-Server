@@ -53,11 +53,14 @@ public class UserService : IUserService
     public async Task<UserOutDto> GetUserAsync(string email)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: false);
+        var userProd = await _productRepository.GetAll().SingleOrDefaultAsync(p => p.ProductId == user.ProductId);
+        if (userProd == null)
+            throw new CommonErrorException(500, "User has no product", 0);
+        
         var userOut = _mapper.Map<UserOutDto>(user);
         userOut.UsedBookStorage = await _bookRepository.GetUsedBookStorage(user.Id);
-        userOut.Role = user.ProductId.IsNullOrEmpty()
-            ? "Unknown"
-            : (await _productRepository.GetAll().FirstOrDefaultAsync(p => p.ProductId == user.ProductId))?.Name;
+        userOut.BookStorageLimit = userProd.BookStorageLimit;
+        userOut.Role = userProd.Name;
 
         return userOut;
     }

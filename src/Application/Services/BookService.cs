@@ -18,17 +18,20 @@ public class BookService : IBookService
     private readonly IMapper _mapper;
     private readonly IBookRepository _bookRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IProductRepository _productRepository;
     private readonly IConfiguration _configuration;
     private readonly IBookBlobStorageManager _bookBlobStorageManager;
 
     public BookService(IMapper mapper, IBookRepository bookRepository,
                        IUserRepository userRepository,
+                       IProductRepository productRepository,
                        IConfiguration configuration,
                        IBookBlobStorageManager bookBlobStorageManager)
     {
         _mapper = mapper;
         _bookRepository = bookRepository;
         _userRepository = userRepository;
+        _productRepository = productRepository;
         _configuration = configuration;
         _bookBlobStorageManager = bookBlobStorageManager;
     }
@@ -80,7 +83,9 @@ public class BookService : IBookService
     private async Task<bool> UserHasEnoughStorageSpaceAvailable(User user)
     {
         var usedStorage = await _bookRepository.GetUsedBookStorage(user.Id);
-        return usedStorage <= user.BookStorageLimit;
+        var storageLimit = (await _productRepository.GetByIdAsync(user.ProductId)).BookStorageLimit;
+        
+        return usedStorage <= storageLimit;
     }
 
     public async Task<IList<BookOutDto>> GetBooksAsync(string email)

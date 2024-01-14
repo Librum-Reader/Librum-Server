@@ -25,6 +25,7 @@ public class BookServiceTests
 {
     private readonly Mock<IBookRepository> _bookRepositoryMock = new();
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
+    private readonly Mock<IProductRepository> _productRepositoryMock = new();
     private readonly Mock<IBookBlobStorageManager> _bookBlobStorageManagerMock = new();
     private readonly Mock<IConfiguration> _configurationMock = new();
     private readonly IBookService _bookService;
@@ -38,8 +39,8 @@ public class BookServiceTests
             }));
         var mapper = new Mapper(mapperConfig);
 
-        _bookService = new BookService(mapper, _bookRepositoryMock.Object,
-            _userRepositoryMock.Object, _configurationMock.Object, _bookBlobStorageManagerMock.Object);
+        _bookService = new BookService(mapper, _bookRepositoryMock.Object, _userRepositoryMock.Object, 
+            _productRepositoryMock.Object, _configurationMock.Object, _bookBlobStorageManagerMock.Object);
     }
 
 
@@ -66,6 +67,9 @@ public class BookServiceTests
         
         _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
             .ReturnsAsync(1);
+        
+        _productRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(new Product { BookStorageLimit = 999999999 });
     
     
         // Act
@@ -126,6 +130,9 @@ public class BookServiceTests
         
         _bookRepositoryMock.Setup(x => x.SaveChangesAsync())
             .ReturnsAsync(1);
+
+        _productRepositoryMock.Setup(x => x.GetByIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(new Product { BookStorageLimit = 2000 });
 
         _bookRepositoryMock.Setup(x => x.GetUsedBookStorage(It.IsAny<string>()))
             .ReturnsAsync(999999999999); // Library is FULL!

@@ -19,15 +19,17 @@ public class AiService : IAiService
     private readonly ILogger<AiService> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IUserRepository _userRepository;
+    private readonly IProductRepository _productRepository;
     private readonly IConfiguration _configuration;
 
     public AiService(ILogger<AiService> logger, IHttpClientFactory httpClientFactory,
-                     IUserRepository userRepository, IConfiguration configuration)
+                     IUserRepository userRepository, IProductRepository productRepository, IConfiguration configuration)
     {
         _logger = logger;
         
         _httpClientFactory = httpClientFactory;
         _userRepository = userRepository;
+        _productRepository = productRepository;
         _configuration = configuration;
     }
 
@@ -42,7 +44,8 @@ public class AiService : IAiService
         }
 	
         var user = await _userRepository.GetAsync(email, trackChanges: true);
-        if(user.AiExplanationRequestsMadeToday >= 10)
+        var aiRequestLimit = (await _productRepository.GetByIdAsync(user.ProductId)).AiRequestLimit;
+        if(user.AiExplanationRequestsMadeToday >= aiRequestLimit)
         {
             const string message = "Ai explanation limit reached";
             _logger.LogWarning(message);
