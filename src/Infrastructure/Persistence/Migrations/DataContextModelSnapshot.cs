@@ -292,9 +292,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<int>("AiExplanationRequestsMadeToday")
                         .HasColumnType("int");
 
-                    b.Property<long>("BookStorageLimit")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
