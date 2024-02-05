@@ -43,6 +43,8 @@ public static class DependencyInjection
         services.AddScoped<IAiService, AiService>();
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IFolderService, FolderService>();
+        services.AddScoped<IFolderRepository, FolderRepository>();
         services.AddHostedService<DeleteUnconfirmedUsers>();
         services.AddHostedService<ResetAiExplanationCount>();
         services.AddHostedService<DeleteBooksOfDowngradedAccounts>();

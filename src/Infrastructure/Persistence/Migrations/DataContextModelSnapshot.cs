@@ -144,6 +144,41 @@ namespace Infrastructure.Persistence.Migrations
                     b.ToTable("Bookmarks");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Folder", b =>
+                {
+                    b.Property<Guid>("FolderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastModified")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ParentFolderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("FolderId");
+
+                    b.HasIndex("ParentFolderId");
+
+                    b.ToTable("Folders");
+                });
+
             modelBuilder.Entity("Domain.Entities.Highlight", b =>
                 {
                     b.Property<Guid>("HighlightId")
@@ -349,6 +384,9 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("ProfilePictureLastUpdated")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("RootFolderId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -530,6 +568,16 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("Book");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Folder", b =>
+                {
+                    b.HasOne("Domain.Entities.Folder", "ParentFolder")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentFolderId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("ParentFolder");
+                });
+
             modelBuilder.Entity("Domain.Entities.Highlight", b =>
                 {
                     b.HasOne("Domain.Entities.Book", "Book")
@@ -636,6 +684,11 @@ namespace Infrastructure.Persistence.Migrations
                     b.Navigation("Highlights");
 
                     b.Navigation("Tags");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Folder", b =>
+                {
+                    b.Navigation("Children");
                 });
 
             modelBuilder.Entity("Domain.Entities.Highlight", b =>

@@ -39,6 +39,8 @@ public class User : IdentityUser
     [Required]
     public int AiExplanationRequestsMadeToday { get; set; } = 0;
     
+    public Guid RootFolderId { get; set; }
+    
     public ICollection<Book> Books { get; set; }
     public ICollection<Tag> Tags { get; set; }
 }
