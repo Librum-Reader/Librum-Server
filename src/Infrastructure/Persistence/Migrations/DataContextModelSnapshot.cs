@@ -97,6 +97,10 @@ namespace Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("ParentFolderId")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<int>("ProjectGutenbergId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")

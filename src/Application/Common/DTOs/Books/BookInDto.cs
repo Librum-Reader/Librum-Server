@@ -77,9 +77,14 @@ public class BookInDto
 
     public int ProjectGutenbergId { get; set; } = 0;
     
+    [MaxLength(100, ErrorMessage = "ColorTheme is too long")]
     public string ColorTheme { get; set; }
     
+    [MaxLength(2000, ErrorMessage = "FileHash is too long")]
     public string FileHash { get; set; }
+    
+    [MaxLength(100, ErrorMessage = "ParentFolderId is too long")]
+    public string ParentFolderId { get; set; }
     
     public ICollection<TagInDto> Tags { get; set; } = new List<TagInDto>();
     

@@ -75,6 +75,9 @@ public class Book
     
     [Required]
     public string FileHash { get; set; }
+    
+    [MaxLength(200, ErrorMessage = "ParentFolderId is too long")]
+    public string ParentFolderId { get; set; }
 
     public ICollection<Tag> Tags { get; set; } = new List<Tag>();
 

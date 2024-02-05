@@ -43,6 +43,8 @@ public class BookOutDto
     public string ColorTheme { get; set; }
     
     public string FileHash { get; set; }
+    
+    public string ParentFolderId { get; set; }
 
     public ICollection<TagOutDto> Tags { get; set; } = new List<TagOutDto>();
     
