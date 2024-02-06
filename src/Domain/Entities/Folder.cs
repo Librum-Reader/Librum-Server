@@ -23,6 +23,8 @@ public class Folder
     
     [Required]
     public string LastModified { get; set; }
+
+    public int IndexInParent { get; set; }
     
     public Guid? ParentFolderId { get; set; }
     public Folder? ParentFolder { get; set; }

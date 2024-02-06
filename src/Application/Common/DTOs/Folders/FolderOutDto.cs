@@ -16,5 +16,7 @@ public class FolderOutDto
     
     public string LastModified { get; set; }
     
+    public int IndexInParent { get; set; }
+    
     public ICollection<FolderOutDto> Children { get; set; } = new Collection<FolderOutDto>();
 }

@@ -13,6 +13,8 @@ public class FolderInDto
     public string Description { get; set; }
 
     public string LastModified { get; set; }
+
+    public int IndexInParent { get; set; }
     
     public ICollection<FolderInDto> Children { get; set; } = new List<FolderInDto>();
 }

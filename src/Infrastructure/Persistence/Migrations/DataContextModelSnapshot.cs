@@ -165,6 +165,9 @@ namespace Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("IndexInParent")
+                        .HasColumnType("int");
+
                     b.Property<string>("LastModified")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
