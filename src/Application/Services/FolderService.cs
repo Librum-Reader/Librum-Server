@@ -50,6 +50,7 @@ public class FolderService(IUserRepository userRepository, IFolderRepository fol
             Icon = folderInDto.Icon,
             Description = folderInDto.Description,
             LastModified = folderInDto.LastModified,
+            IndexInParent = folderInDto.IndexInParent,
             Children = new List<Folder>()
         };
         
@@ -88,6 +89,7 @@ public class FolderService(IUserRepository userRepository, IFolderRepository fol
             Color = folder.Color,
             Icon = folder.Icon,
             LastModified = folder.LastModified,
+            IndexInParent = folder.IndexInParent,
             Description = folder.Description
         };
         
