@@ -13,6 +13,7 @@ SyslogIdentifier=librum-server
 Environment=ASPNETCORE_ENVIRONMENT=Production
 Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
 Environment=LIBRUM_SELFHOSTED=true
+Environment=AI_SELFHOSTED=false
 EnvironmentFile=/etc/librum-server/librum-server.conf
 
 [Install]

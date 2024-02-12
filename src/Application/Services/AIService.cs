@@ -112,6 +112,9 @@ public class AiService : IAiService
                                                               string text)
     {
         var url = "https://api.openai.com/v1/chat/completions";
+	    if (_configuration["AI_SELFHOSTED"] == "true" && String.IsNullOrEmpty(_configuration["AIServerUrl"])){
+            url = _configuration["AIServerUrl"];
+        }
         var body = new
         {
             model = "gpt-3.5-turbo",
