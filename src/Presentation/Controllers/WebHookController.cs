@@ -47,8 +47,10 @@ public class WebHookController(IConfiguration configuration,
                     await AddCustomerIdToUser(stripeEvent.Data.Object as Customer);
                     break;
                 case Events.CustomerSubscriptionCreated:
-                case Events.CustomerSubscriptionUpdated:
                     await AddTierToCustomer(stripeEvent.Data.Object as Subscription);
+                    break;
+                case Events.CustomerSubscriptionUpdated:
+                    await UpdateSubscription(stripeEvent.Data.Object as Subscription);
                     break;
                 case Events.CustomerSubscriptionDeleted:
                 case Events.CustomerSubscriptionPendingUpdateExpired:
@@ -65,6 +67,18 @@ public class WebHookController(IConfiguration configuration,
         catch (StripeException e)
         {
             return BadRequest();
+        }
+    }
+
+    private async Task UpdateSubscription(Subscription subscription)
+    {
+        if (subscription.Status == "incomplete_expired")
+        {
+            await RemoveTierFromCustomer(subscription);
+        }
+        else
+        {
+            await AddTierToCustomer(subscription);
         }
     }
 
