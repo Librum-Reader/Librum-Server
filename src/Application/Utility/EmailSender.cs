@@ -47,7 +47,7 @@ public class EmailSender : IEmailSender
         message.Subject = "Confirm Your Email";
         
         message.Body = new TextPart ("plain") {
-            Text = $"Hello { userName }.\n\nThank you for choosing Librum! " + 
+            Text = $"Hello { userName },\n\nThank you for choosing Librum! " + 
                    "We are happy to tell you, that your account has successfully been created. " +
                    "The final step remaining is to confirm it, and you're all set to go.\n" + 
                    $"To confirm your email, please click the link below:\n{confirmationLink}\n\n" +
@@ -87,7 +87,7 @@ public class EmailSender : IEmailSender
         message.Subject = "Reset Your Password";
         
         message.Body = new TextPart ("plain") {
-            Text = $"Hello { userName }.\n\nYou can find the link to reset your password below. " + 
+            Text = $"Hello { userName },\n\nYou can find the link to reset your password below. " + 
                    "Follow the link and continue the password reset on our website.\n" + 
                    $"{resetLink}\n\n" +
                    "If you didn't request this email, just ignore it."
