@@ -89,8 +89,7 @@ app.Run();
 async Task SeedWithAdminUser(IServiceProvider services)
 {
     var config = services.GetRequiredService<IConfiguration>();
-    string firstName = "Admin";
-    string lastName = "Admin";
+    string name = "Admin";
     string email = config["AdminEmail"];
     string password = config["AdminPassword"];
 
@@ -99,8 +98,7 @@ async Task SeedWithAdminUser(IServiceProvider services)
     {
         var user = new User
         {
-            FirstName = firstName,
-            LastName = lastName,
+            Name = name,
             Email = email,
             UserName = email,
             AccountCreation = DateTime.UtcNow

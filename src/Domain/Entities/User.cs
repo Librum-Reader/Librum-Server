@@ -7,15 +7,19 @@ namespace Domain.Entities;
 [Index(nameof(Email), IsUnique = true)]
 public class User : IdentityUser
 {
-    [Required]
+    // Legacy - to be removed
     [MinLength(2, ErrorMessage = "The firstname is too short")]
     [MaxLength(40, ErrorMessage = "The firstname is too long")]
     public string FirstName { get; set; }
 
-    [Required]
+    // Legacy - to be removed
     [MinLength(2, ErrorMessage = "The lastname is too short")]
     [MaxLength(50, ErrorMessage = "The lastname is too long")]
     public string LastName { get; set; }
+    
+    [MinLength(2, ErrorMessage = "The name is too short")]
+    [MaxLength(150, ErrorMessage = "The name is too long")]
+    public string Name { get; set; }
 
     [Required]
     [MinLength(6, ErrorMessage = "The email is too short")]

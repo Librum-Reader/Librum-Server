@@ -4,15 +4,19 @@ namespace Application.Common.DTOs.Users;
 
 public class RegisterDto
 {
-    [Required]
+    // Legacy - to be removed
     [MinLength(2, ErrorMessage = "13 The firstname is too short")]
     [MaxLength(40, ErrorMessage = "14 The firstname is too long")]
     public string FirstName { get; set; }
     
-    [Required]
+    // Legacy - to be removed
     [MinLength(2, ErrorMessage = "15 The lastname is too short")]
     [MaxLength(50, ErrorMessage = "16 The lastname is too long")]
     public string LastName { get; set; }
+    
+    [MinLength(2, ErrorMessage = "23 The name is too short")]
+    [MaxLength(150, ErrorMessage = "24 The name is too long")]
+    public string Name { get; set; }
 
     [Required]
     [EmailAddress(ErrorMessage = "8 Invalid email address format.")]
