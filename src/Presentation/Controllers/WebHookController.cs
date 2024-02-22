@@ -51,6 +51,7 @@ public class WebHookController(IConfiguration configuration,
                     await AddTierToCustomer(stripeEvent.Data.Object as Subscription);
                     break;
                 case Events.CustomerSubscriptionDeleted:
+                case Events.CustomerSubscriptionPendingUpdateExpired:
                     await RemoveTierFromCustomer(stripeEvent.Data.Object as Subscription);
                     break;
                 default:

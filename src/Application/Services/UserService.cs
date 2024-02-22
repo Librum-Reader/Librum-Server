@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Stripe;
 
 namespace Application.Services;
 
@@ -109,8 +110,30 @@ public class UserService : IUserService
             // ignored
         }
 
+        var customerId = user.CustomerId;
         _userRepository.Delete(user);
-        await _userRepository.SaveChangesAsync();
+        var success = await _userRepository.SaveChangesAsync();
+        
+        // Cancel a subscription if it exists
+        if (success > 0 && !customerId.IsNullOrEmpty())
+        {
+            await CancelUserSubscription(customerId);
+        }
+    }
+
+    private async Task CancelUserSubscription(string customerId)
+    {
+        var subscriptionService = new SubscriptionService();
+        var options = new SubscriptionListOptions
+        {
+            Customer = customerId,
+            Status = "active"
+        };
+        var subscriptions = await subscriptionService.ListAsync(options);
+        foreach (var subscription in subscriptions)
+        {
+            await subscriptionService.CancelAsync(subscription.Id);
+        }
     }
 
     public async Task PatchUserAsync(string email,
