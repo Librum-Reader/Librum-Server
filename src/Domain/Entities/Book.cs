@@ -11,7 +11,7 @@ public class Book
 
     [Required]
     [MinLength(2, ErrorMessage = "The book title is too short")]
-    [MaxLength(200, ErrorMessage = "The book title is too long")]
+    [MaxLength(2000, ErrorMessage = "The book title is too long")]
     public string Title { get; set; }
     
     [Required]
@@ -24,27 +24,27 @@ public class Book
     
     [Required]
     [MinLength(1, ErrorMessage = "The format is too short")]
-    [MaxLength(40, ErrorMessage = "The format is too long")]
+    [MaxLength(100, ErrorMessage = "The format is too long")]
     public string Format { get; set; }
     
     [MinLength(2, ErrorMessage = "The language is too short")]
-    [MaxLength(50, ErrorMessage = "The language is too long")]
+    [MaxLength(100, ErrorMessage = "The language is too long")]
     public string Language { get; set; }
     
     [Required]
     [MinLength(2, ErrorMessage = "The document size is too short")]
-    [MaxLength(30, ErrorMessage = "The document size is too long")]
+    [MaxLength(60, ErrorMessage = "The document size is too long")]
     public string DocumentSize { get; set; }
 
     [Required]
     [MinLength(2, ErrorMessage = "The pages size is too short")]
-    [MaxLength(100, ErrorMessage = "The pages size is too long")]
+    [MaxLength(600, ErrorMessage = "The pages size is too long")]
     public string PagesSize { get; set; }
     
-    [MaxLength(140, ErrorMessage = "The creator is too long")]
+    [MaxLength(2000, ErrorMessage = "The creator is too long")]
     public string Creator { get; set; }
     
-    [MaxLength(400, ErrorMessage = "The authors are too long")]
+    [MaxLength(2000, ErrorMessage = "The authors are too long")]
     public string Authors { get; set; }
 
     [MaxLength(140, ErrorMessage = "The creation date is too long")]

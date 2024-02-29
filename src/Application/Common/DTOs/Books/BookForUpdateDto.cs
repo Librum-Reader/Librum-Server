@@ -12,20 +12,20 @@ public class BookForUpdateDto
     public Guid Guid { get; set; }
 
     [MinLength(2, ErrorMessage = "The title is too short")]
-    [MaxLength(200, ErrorMessage = "The title is too long")]
+    [MaxLength(2000, ErrorMessage = "The title is too long")]
     public string Title { get; set; }
 
     [Range(0, int.MaxValue)]
     public int CurrentPage { get; set; }
 
     [EmptyOrMinLength(2, ErrorMessage = "The language is too short")]
-    [MaxLength(60, ErrorMessage = "The language is too long")]
+    [MaxLength(100, ErrorMessage = "The language is too long")]
     public string Language { get; set; }
 
-    [MaxLength(200, ErrorMessage = "The creator is too long")]
+    [MaxLength(2000, ErrorMessage = "The creator is too long")]
     public string Creator { get; set; }
 
-    [MaxLength(400, ErrorMessage = "The authors are too long")]
+    [MaxLength(2000, ErrorMessage = "The authors are too long")]
     public string Authors { get; set; }
 
     [MaxLength(100, ErrorMessage = "The creation date is too long")]

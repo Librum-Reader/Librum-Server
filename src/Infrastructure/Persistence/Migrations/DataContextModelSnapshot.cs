@@ -32,8 +32,8 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Authors")
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("ColorTheme")
                         .IsRequired()
@@ -53,16 +53,16 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(140)");
 
                     b.Property<string>("Creator")
-                        .HasMaxLength(140)
-                        .HasColumnType("nvarchar(140)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<int>("CurrentPage")
                         .HasColumnType("int");
 
                     b.Property<string>("DocumentSize")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
 
                     b.Property<string>("FileHash")
                         .IsRequired()
@@ -72,15 +72,15 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Format")
                         .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("HasCover")
                         .HasColumnType("bit");
 
                     b.Property<string>("Language")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("LastModified")
                         .IsRequired()
@@ -94,8 +94,8 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.Property<string>("PagesSize")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(600)
+                        .HasColumnType("nvarchar(600)");
 
                     b.Property<string>("ParentFolderId")
                         .HasMaxLength(200)
@@ -108,8 +108,8 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
