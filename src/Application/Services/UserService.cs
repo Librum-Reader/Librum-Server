@@ -147,7 +147,7 @@ public class UserService : IUserService
         patchDoc.ApplyTo(userToPatch, controllerBase.ModelState);
         controllerBase.TryValidateModel(controllerBase.ModelState);
 
-        if (!controllerBase.ModelState.IsValid || !userToPatch.DataIsValid)
+        if (!controllerBase.ModelState.IsValid || !userToPatch.DataIsValid())
         {
             const string message = "Updating the user failed";
             throw new CommonErrorException(400, message, 0);

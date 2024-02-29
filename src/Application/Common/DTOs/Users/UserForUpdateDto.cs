@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Common.DTOs.Users;
 
@@ -21,7 +22,14 @@ public class UserForUpdateDto
     public DateTime ProfilePictureLastUpdated { get; set; }
     
     public bool HasProfilePicture { get; set; }
-    
-    public bool DataIsValid => LastName.Length is >= 2 and <= 50 && 
-                               FirstName.Length is >= 2 and <= 40;
+
+    public bool DataIsValid()
+    {
+        if (Name.IsNullOrEmpty())
+        {
+            return LastName.Length is >= 2 and <= 50 &&
+                FirstName.Length is >= 2 and <= 40;
+        }
+        return Name.Length is >= 2 and <= 150;
+    }
 }
