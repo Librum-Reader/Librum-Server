@@ -16,6 +16,8 @@ public class BookOutDto
     
     public string Format { get; set; }
     
+    public string Extension { get; set; }
+    
     public string Language { get; set; }
     
     public string DocumentSize { get; set; }

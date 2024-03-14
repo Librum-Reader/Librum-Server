@@ -30,6 +30,9 @@ public class BookInDto
     [MinLength(2, ErrorMessage = "The format is too short")]
     [MaxLength(100, ErrorMessage = "The format is too long")]
     public string Format { get; set; }
+    
+    [MaxLength(500, ErrorMessage = "The extension is too long")]
+    public string Extension { get; set; }
 
     [EmptyOrMinLength(2, ErrorMessage = "The language is too short")]
     [MaxLength(100, ErrorMessage = "The language is too long")]
