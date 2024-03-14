@@ -255,6 +255,19 @@ public class BookService : IBookService
         return book.Format;
     }
 
+    public async Task<string> GetExtensionForBook(string email, Guid guid)
+    {
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        var book = user.Books.SingleOrDefault(book => book.BookId == guid);
+        if (book == null)
+        {
+            const string message = "No book with this id exists";
+            throw new CommonErrorException(404, message, 4);
+        }
+
+        return book.Extension;
+    }
+
     public async Task ChangeBookCover(string email, Guid guid, MultipartReader reader)
     {
         var user = await _userRepository.GetAsync(email, trackChanges: true);

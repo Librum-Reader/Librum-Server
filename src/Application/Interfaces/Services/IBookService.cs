@@ -16,4 +16,5 @@ public interface IBookService
     Task<Stream> GetBookCover(string email, Guid guid);
     Task DeleteBookCover(string email, Guid guid);
     Task<string> GetFormatForBook(string email, Guid guid);
+    Task<string> GetExtensionForBook(string email, Guid guid);
 }

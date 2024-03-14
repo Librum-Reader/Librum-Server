@@ -71,9 +71,14 @@ public class BookController : ControllerBase
             var email = HttpContext.User.Identity!.Name;
             var stream = await _bookService.GetBookBinaryData(email, 
                                                           guid);
-            
+            // This is added for legacy purposes. Previously the client depended on getting the format, but newer
+            // clients use the extension. We keep it to keep the old clients working.
             Response.Headers.Add("Format",
                                  await _bookService.GetFormatForBook(email, guid));
+            
+            Response.Headers.Add("Extension",
+                await _bookService.GetExtensionForBook(email, guid));
+            
             return File(stream, "application/octet-stream");
         }
         catch (CommonErrorException e)
