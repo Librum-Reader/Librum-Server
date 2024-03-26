@@ -10,6 +10,7 @@ public class Highlight
     public Guid HighlightId { get; set; }
     
     [Required]
+    [MaxLength(500, ErrorMessage = "The color is too long")]
     public string Color { get; set; }
     
     [Required]

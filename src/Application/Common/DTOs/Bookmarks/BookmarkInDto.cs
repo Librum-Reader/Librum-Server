@@ -9,7 +9,7 @@ public class BookmarkInDto
     public Guid Guid { get; set; }
     
     [Required]
-    [MaxLength(200, ErrorMessage = "The name is too long")]
+    [MaxLength(5000, ErrorMessage = "The name is too long")]
     public string Name { get; set; }
     
     [Required]
