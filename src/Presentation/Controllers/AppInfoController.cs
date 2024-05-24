@@ -41,8 +41,13 @@ public class AppInfoController : ControllerBase
         httpClient.DefaultRequestHeaders.TryAddWithoutValidation(
             "User-Agent",
             "Librum/1.0.0");
-        httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", _configuration["GitAccessToken"]);
+        
+        string accessToken = _configuration["GitAccessToken"];
+        if (!string.IsNullOrWhiteSpace(accessToken))
+        {
+            httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", accessToken);
+        }
 
         var response = await httpClient.GetAsync(url);
         if (response.IsSuccessStatusCode)
