@@ -111,7 +111,7 @@ public class EmailSender : IEmailSender
 		           "Due to the downgrade your online storage was reduced and your current library " +
 		           "size may exceed your new storage limit.\n" + 
 		           $"Please reduce your library size if that is the case, otherwise books from your account will automatically be DELETED until " +
-		           "your used storage is less or equal to the storage your tier provides.\n\n" +
+		           "your used storage does not exceed the storage your tier provides anymore.\n\n" +
 		           "You have 7 days to perform this action. If you think that this is a mistake, or you have any " +
 		           "questions, please contact us at: contact@librumreader.com"
 	    };
