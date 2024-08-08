@@ -9,7 +9,7 @@ The server is written in C# using ASP.NET Core. The codebase can be developed, b
 Librum-Server can easily be self-hosted. This way all your data and books remain on your own devices and are not synchronized to the official cloud.
 
 ## 🐋 With Docker
-Librum-Server can be run with Docker. We provide a [docker-compose.yml](docker-compose.yml) file as well as our own images. We are using GitHub's `ghrc.io` Container Registry.
+Librum-Server can be run with Docker. We provide a [docker-compose.yml](docker-compose.yml) file as well as our own images. We are using GitHub's `ghcr.io` Container Registry.
 
 ```bash
 wget https://github.com/Librum-Reader/Librum-Server/raw/main/docker-compose.yml
