@@ -2,6 +2,7 @@ using System.Reflection;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Infrastructure.Persistence;
 
@@ -33,6 +34,13 @@ public class DataContext : IdentityDbContext<User>
             .WithOne(pf => pf.Product)
             .HasForeignKey(pf => pf.ProductId)
             .IsRequired();
+
+        builder
+            .Entity<Folder>()
+            .Property(f => f.Description)
+            .HasColumnType(this.Database.ProviderName == "Pomelo.EntityFrameworkCore.MySql"
+                ? "longtext"
+                : "nvarchar(max)");
         
         base.OnModelCreating(builder);
     }

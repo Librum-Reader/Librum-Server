@@ -1,10 +1,12 @@
 using Application.Common.Middleware;
+using Application.Interfaces.Repositories;
 using Stripe;
 using Azure.Identity;
 using Domain.Entities;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Presentation;
+using Product = Domain.Entities.Product;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -65,6 +67,11 @@ using (var scope = app.Services.CreateScope())
             await roleManager.CreateAsync(new IdentityRole(role));
     }
 
+    if (builder.Configuration["LIBRUM_SELFHOSTED"] == "true")
+    {
+        await SeedWithSelfHostedProduct(services);
+    }
+
     await SeedWithAdminUser(services);
 }
 
@@ -93,6 +100,8 @@ async Task SeedWithAdminUser(IServiceProvider services)
     string email = config["AdminEmail"];
     string password = config["AdminPassword"];
 
+    var isSelfHosted = config["LIBRUM_SELFHOSTED"] == "true";
+
     var userManager = services.GetRequiredService<UserManager<User>>();
     if (await userManager.FindByEmailAsync(email) == null)
     {
@@ -101,11 +110,34 @@ async Task SeedWithAdminUser(IServiceProvider services)
             Name = name,
             Email = email,
             UserName = email,
-            AccountCreation = DateTime.UtcNow
+            AccountCreation = DateTime.UtcNow,
+            ProductId = isSelfHosted ? "1" : null,
         };
 
         await userManager.CreateAsync(user, password);
         var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
         await userManager.ConfirmEmailAsync(user, token);
+    }
+}
+
+async Task SeedWithSelfHostedProduct(IServiceProvider services)
+{
+    var product = new Product
+    {
+        ProductId = "1",
+        Name = "SelfHosted",
+        Description = "Dummy self hosted product",
+        Price = 0,
+        PriceId = "0",
+        BookStorageLimit = long.MaxValue,
+        AiRequestLimit = int.MaxValue,
+        LiveMode = true
+    };
+
+    var productRepo = services.GetRequiredService<IProductRepository>();
+    var existingProduct = await productRepo.GetByIdAsync(product.ProductId);
+    if (existingProduct == default)
+    {
+        productRepo.CreateProduct(product);
     }
 }
