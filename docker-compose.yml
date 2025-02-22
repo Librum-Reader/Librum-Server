@@ -41,6 +41,8 @@ services:
       - MARIADB_DATABASE=librum
       - MARIADB_ROOT_PASSWORD=mariadb
     restart: unless-stopped
+    ports:
+      - 3306:3306
     healthcheck:                              # Ensures the DB is up before the server.
       test: ["CMD", "mariadb-admin", "ping", "-u", "librum", "-p'mariadb'", "-h", "localhost"]
       interval: 20s
