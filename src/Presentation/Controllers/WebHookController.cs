@@ -145,6 +145,7 @@ public class WebHookController(IConfiguration configuration,
             Description = product.Description,
             BookStorageLimit = long.Parse(product.Metadata["bookStorageLimit"]),
             AiRequestLimit = int.Parse(product.Metadata["aiRequestLimit"]),
+            TranslationsLimit = int.Parse(product.Metadata["translationsLimit"]),
             LiveMode = product.Livemode
         };
         foreach(var feature in product.Features)
