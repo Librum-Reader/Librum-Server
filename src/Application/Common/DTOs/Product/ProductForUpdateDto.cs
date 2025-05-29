@@ -15,6 +15,8 @@ public class ProductForUpdateDto
     public long BookStorageLimit { get; set; }
     
     public int AiRequestLimit { get; set; }
+    
+    public int TranslationsLimit { get; set; }
 
     public ICollection<string> Features { get; set; } = new Collection<string>();
 }

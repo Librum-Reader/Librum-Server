@@ -19,10 +19,6 @@ public class DataContext : IdentityDbContext<User>
     {
     }
 
-    public DataContext()
-    {
-    }
-
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

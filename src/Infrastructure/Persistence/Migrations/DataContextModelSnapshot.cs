@@ -246,6 +246,9 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<string>("PriceId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("TranslationsLimit")
+                        .HasColumnType("int");
+
                     b.HasKey("ProductId");
 
                     b.ToTable("Products");
@@ -408,6 +411,9 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TranslationRequestsMadeToday")
+                        .HasColumnType("int");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");

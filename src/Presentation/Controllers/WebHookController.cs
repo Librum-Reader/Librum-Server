@@ -113,7 +113,8 @@ public class WebHookController(IConfiguration configuration,
             Name = product.Name,
             Description = product.Description,
             BookStorageLimit = long.Parse(product.Metadata["bookStorageLimit"]),
-            AiRequestLimit = int.Parse(product.Metadata["aiRequestLimit"])
+            AiRequestLimit = int.Parse(product.Metadata["aiRequestLimit"]),
+            TranslationsLimit = int.Parse(product.Metadata["translationsLimit"])
         };
         foreach(var feature in product.Features)
             productUpdateDto.Features.Add(feature.Name);

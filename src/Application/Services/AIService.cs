@@ -49,7 +49,7 @@ public class AiService : IAiService
         {
             const string message = "Ai explanation limit reached";
             _logger.LogWarning(message);
-            throw new CommonErrorException(403, message, 20);
+            throw new CommonErrorException(403, message, 26);
         }
         
         await context.SSEInitAsync();
@@ -156,5 +156,72 @@ public class AiService : IAiService
             sb.Append(b.ToString("X2"));
 
         return sb.ToString();
+    }
+
+    public async Task<string> TranslateAsync(string email, string text, string sourceLang, string targetLang) {
+        //  The DeepL Token needs to be provided by the user when the server is self-hosted
+	    if (_configuration["LIBRUM_SELFHOSTED"] == "true" && String.IsNullOrEmpty(_configuration["DeepLToken"]))
+        {
+            throw new CommonErrorException(403, "DeepL translation is unavailable when selfhosting Librum. " +
+                                                "You will need to provide a DeepL Token yourself.", 20);
+        }
+	
+        var user = await _userRepository.GetAsync(email, trackChanges: true);
+        var translationLimit = (await _productRepository.GetByIdAsync(user.ProductId)).TranslationsLimit;
+        if(user.AiExplanationRequestsMadeToday >= translationLimit)
+        {
+            const string message = "Translation limit reached";
+            _logger.LogWarning(message);
+            throw new CommonErrorException(403, message, 26);
+        }
+        
+        
+        var httpClient = _httpClientFactory.CreateClient();
+        httpClient.DefaultRequestHeaders.TryAddWithoutValidation(
+            "User-Agent",
+            "Librum/1.0.0");
+        httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization",  _configuration["DeepLToken"]);
+
+        var request = CreateDeeplTranslationRequest(email, text, sourceLang, targetLang);
+        var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+        if (!response.IsSuccessStatusCode)
+        {
+            const string message = "DeepL translation failed";
+            _logger.LogWarning(message);
+            throw new CommonErrorException(400, message, 0);
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var jsonObj = JsonConvert.DeserializeObject<dynamic>(content);
+        var result = jsonObj["translations"][0]["text"].Value.ToString();
+        
+        // Increment the translation count on the user
+        user.TranslationRequestsMadeToday++;
+        await _userRepository.SaveChangesAsync();
+
+        return result;
+    }
+
+    private HttpRequestMessage CreateDeeplTranslationRequest(string email,
+                                                             string text,
+                                                             string sourceLang,
+                                                             string targetLang)
+    {
+        var url = "https://api-free.deepl.com/v2/translate";
+        var body = new
+        {
+            text = new List<dynamic>
+            {
+                text
+            },
+            source_lang = sourceLang,
+            target_lang = targetLang,
+            split_sentences = "0"
+        };
+
+        var request = new HttpRequestMessage(HttpMethod.Post, url);
+        request.Content = JsonContent.Create(body);
+
+        return request;
     }
 }

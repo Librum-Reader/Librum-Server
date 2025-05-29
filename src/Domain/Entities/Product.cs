@@ -25,6 +25,9 @@ public class Product
     
     [Required]
     public int AiRequestLimit { get; set; }
+    
+    [Required]
+    public int TranslationsLimit { get; set; }
 
     [Required]
     public bool LiveMode { get; set; } = true;
