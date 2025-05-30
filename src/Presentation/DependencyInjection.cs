@@ -47,6 +47,7 @@ public static class DependencyInjection
         services.AddScoped<IFolderRepository, FolderRepository>();
         services.AddHostedService<DeleteUnconfirmedUsers>();
         services.AddHostedService<ResetAiExplanationCount>();
+        services.AddHostedService<ResetTranslationsCount>();
         services.AddHostedService<DeleteBooksOfDowngradedAccounts>();
         
 		// If not self hosted add the managers that store data to Azure

@@ -10,5 +10,6 @@ public interface IUserRepository
     public Task DeleteUnconfirmedUsers();
     public Task<ICollection<User>> GetUsersWhoDowngradedMoreThanAWeekAgo();
     public Task ResetAiExplanationCount();
+    public Task ResetTranslationsCount();
     public Task<int> SaveChangesAsync();
 }

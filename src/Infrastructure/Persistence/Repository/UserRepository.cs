@@ -61,6 +61,12 @@ public class UserRepository : IUserRepository
         await _context.Users.ForEachAsync(u => u.AiExplanationRequestsMadeToday = 0);
         await _context.SaveChangesAsync();
     }
+    
+    public async Task ResetTranslationsCount()
+    {
+        await _context.Users.ForEachAsync(u => u.TranslationRequestsMadeToday = 0);
+        await _context.SaveChangesAsync();
+    }
 
     public async Task<int> SaveChangesAsync()
     {
